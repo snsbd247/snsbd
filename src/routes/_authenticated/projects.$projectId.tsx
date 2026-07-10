@@ -46,6 +46,48 @@ function ProjectDetailPage() {
     queryFn: async () => (await supabase.from("project_activity_log").select("*").eq("project_id", projectId).order("created_at", { ascending: false }).limit(50)).data ?? [],
   });
 
+  const { data: projectServices } = useQuery({
+    queryKey: ["project-services", projectId],
+    queryFn: async () => (await supabase.from("services").select("*").eq("project_id", projectId).order("created_at")).data ?? [],
+  });
+
+  const { data: projectInvoices } = useQuery({
+    queryKey: ["project-invoices", projectId],
+    queryFn: async () => (await supabase.from("invoices").select("id, invoice_number, status, issue_date, total").eq("project_id", projectId).order("issue_date", { ascending: false })).data ?? [],
+  });
+
+  const [selectedServices, setSelectedServices] = useState<Record<string, boolean>>({});
+  const toggleService = (id: string) => setSelectedServices((s) => ({ ...s, [id]: !s[id] }));
+
+  const generate = useMutation({
+    mutationFn: async () => {
+      if (!project) throw new Error("No project");
+      const picked = (projectServices ?? []).filter((s: any) => selectedServices[s.id]);
+      if (picked.length === 0) throw new Error("Select at least one service");
+      const items = picked.map((s: any) => ({
+        description: `${s.type.toUpperCase()} — ${s.name}${s.details ? " (" + s.details + ")" : ""}`,
+        quantity: 1,
+        unit_price: Number(s.sale_price) || 0,
+        service_id: s.id,
+      }));
+      return await generateInvoiceDraft({
+        customer_id: project.customer_id,
+        project_id: projectId,
+        items,
+        notes: `Invoice for project: ${project.name}`,
+      });
+    },
+    onSuccess: () => {
+      toast.success("Invoice draft created");
+      setSelectedServices({});
+      qc.invalidateQueries({ queryKey: ["invoices"] });
+      qc.invalidateQueries({ queryKey: ["project-invoices", projectId] });
+      navigate({ to: "/invoices" });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["project-milestones", projectId] });
     qc.invalidateQueries({ queryKey: ["project-activity", projectId] });
