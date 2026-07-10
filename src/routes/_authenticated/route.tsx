@@ -43,9 +43,9 @@ function AuthedLayout() {
       <Sidebar>
         <SidebarHeader className="border-b border-sidebar-border">
           <div className="flex items-center gap-2 px-2 py-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground font-bold">N</div>
+            <img src="/favicon.png" alt="Sync & Solutions IT logo" className="h-8 w-8 rounded-md bg-white" />
             <div>
-              <div className="font-semibold text-sm">Nexus CRM</div>
+              <div className="font-semibold text-sm">Sync & Solutions IT</div>
               <div className="text-[10px] uppercase tracking-wider text-sidebar-foreground/60">{isAdmin ? "Admin" : "Customer"}</div>
             </div>
           </div>

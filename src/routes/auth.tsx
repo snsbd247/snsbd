@@ -33,8 +33,8 @@ function AuthPage() {
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-accent/30 px-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground text-xl font-bold">N</div>
-          <h1 className="mt-4 text-2xl font-bold">Nexus CRM</h1>
+          <img src="/favicon.png" alt="Sync & Solutions IT logo" className="mx-auto h-14 w-14 rounded-xl" />
+          <h1 className="mt-4 text-2xl font-bold">Sync & Solutions IT</h1>
           <p className="text-sm text-muted-foreground">Sign in or create your account</p>
         </div>
 
