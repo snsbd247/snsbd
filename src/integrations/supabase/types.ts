@@ -108,6 +108,7 @@ export type Database = {
           invoice_number: string
           issue_date: string
           notes: string | null
+          project_id: string | null
           status: Database["public"]["Enums"]["invoice_status"]
           subtotal: number
           tax: number
@@ -123,6 +124,7 @@ export type Database = {
           invoice_number: string
           issue_date?: string
           notes?: string | null
+          project_id?: string | null
           status?: Database["public"]["Enums"]["invoice_status"]
           subtotal?: number
           tax?: number
@@ -138,6 +140,7 @@ export type Database = {
           invoice_number?: string
           issue_date?: string
           notes?: string | null
+          project_id?: string | null
           status?: Database["public"]["Enums"]["invoice_status"]
           subtotal?: number
           tax?: number
@@ -150,6 +153,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -417,6 +427,7 @@ export type Database = {
           id: string
           name: string
           notes: string | null
+          project_id: string | null
           purchase_date: string | null
           sale_price: number
           status: Database["public"]["Enums"]["service_status"]
@@ -432,6 +443,7 @@ export type Database = {
           id?: string
           name: string
           notes?: string | null
+          project_id?: string | null
           purchase_date?: string | null
           sale_price?: number
           status?: Database["public"]["Enums"]["service_status"]
@@ -447,6 +459,7 @@ export type Database = {
           id?: string
           name?: string
           notes?: string | null
+          project_id?: string | null
           purchase_date?: string | null
           sale_price?: number
           status?: Database["public"]["Enums"]["service_status"]
@@ -459,6 +472,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -558,7 +578,7 @@ export type Database = {
         | "on_hold"
         | "cancelled"
       service_status: "active" | "expired" | "cancelled" | "pending"
-      service_type: "domain" | "hosting" | "software"
+      service_type: "domain" | "hosting" | "software" | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -704,7 +724,7 @@ export const Constants = {
         "cancelled",
       ],
       service_status: ["active", "expired", "cancelled", "pending"],
-      service_type: ["domain", "hosting", "software"],
+      service_type: ["domain", "hosting", "software", "other"],
     },
   },
 } as const
