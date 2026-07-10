@@ -120,7 +120,9 @@ function ProjectDetailPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  if (isLoading) return <div className="text-sm text-muted-foreground">Loading…</div>;
+  if (isLoading) return (
+    <div className="flex items-center gap-2 text-sm text-muted-foreground p-6"><Loader2 className="h-4 w-4 animate-spin" />Loading project…</div>
+  );
   if (!project) return (
     <div className="space-y-4">
       <div className="text-sm text-muted-foreground">Project not found.</div>
@@ -132,11 +134,22 @@ function ProjectDetailPage() {
   const done = (milestones ?? []).filter((m: any) => m.completed).length;
   const pct = total ? Math.round((done / total) * 100) : 0;
   const next = (milestones ?? []).find((m: any) => !m.completed);
+  const milestonesLoading = milestones === undefined;
+  const activityLoading = activity === undefined;
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div className="flex items-center justify-between">
-        <Link to="/projects" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1"><ArrowLeft className="h-4 w-4" />Back to projects</Link>
+      <nav className="text-xs text-muted-foreground flex items-center gap-1.5" aria-label="Breadcrumb">
+        <Link to="/" className="hover:text-foreground">Home</Link>
+        <span>/</span>
+        <Link to="/projects" className="hover:text-foreground">Projects</Link>
+        <span>/</span>
+        <span className="text-foreground font-medium truncate max-w-[240px]">{project.name}</span>
+      </nav>
+      <div>
+        <Button variant="outline" size="sm" onClick={() => navigate({ to: "/projects" })}>
+          <ArrowLeft className="mr-2 h-4 w-4" />Back to projects
+        </Button>
       </div>
 
       <div>
