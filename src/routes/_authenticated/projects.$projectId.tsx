@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
 import { generateInvoiceDraft } from "@/lib/generate-invoice";
-import { Checkbox as CheckboxUI } from "@/components/ui/checkbox";
+
 
 export const Route = createFileRoute("/_authenticated/projects/$projectId")({
   component: ProjectDetailPage,
