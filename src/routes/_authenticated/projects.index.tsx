@@ -18,7 +18,7 @@ import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 
-export const Route = createFileRoute("/_authenticated/projects")({
+export const Route = createFileRoute("/_authenticated/projects/")({
   component: ProjectsPage,
 });
 
