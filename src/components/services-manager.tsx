@@ -101,7 +101,9 @@ export function ServicesManager({
                 return (
                   <TableRow key={s.id}>
                     <TableCell className="font-medium">
-                      <Link to="/services/$serviceId" params={{ serviceId: s.id }} className="hover:underline">{s.name}</Link>
+                      {s.type === "domain"
+                        ? <Link to="/domains/$domainId" params={{ domainId: s.id }} className="hover:underline">{s.name}</Link>
+                        : <Link to="/services/$serviceId" params={{ serviceId: s.id }} className="hover:underline">{s.name}</Link>}
                       <div className="text-xs text-muted-foreground">{s.details}</div>
                     </TableCell>
                     {!lockType && <TableCell><Badge variant="outline" className="capitalize">{s.type}</Badge></TableCell>}
