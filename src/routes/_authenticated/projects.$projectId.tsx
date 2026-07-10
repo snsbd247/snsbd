@@ -9,10 +9,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, Plus, Trash2, Check, Circle, ChevronUp, ChevronDown, Activity, Loader2, Pencil, X, Save } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Check, Circle, ChevronUp, ChevronDown, Activity, Loader2, Pencil, X, Save, FileText, Server } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
+import { generateInvoiceDraft } from "@/lib/generate-invoice";
+import { Checkbox as CheckboxUI } from "@/components/ui/checkbox";
 
 export const Route = createFileRoute("/_authenticated/projects/$projectId")({
   component: ProjectDetailPage,
