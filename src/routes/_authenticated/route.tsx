@@ -7,7 +7,7 @@ import {
   SidebarHeader, SidebarFooter, SidebarInset,
 } from "@/components/ui/sidebar";
 import {
-  LayoutDashboard, Users, Server, FileText, FolderKanban,
+  LayoutDashboard, Users, Globe, HardDrive, Package, FileText, FolderKanban,
   UserCog, Receipt, LogOut, User as UserIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -56,9 +56,11 @@ function AuthedLayout() {
             <SidebarGroupContent>
               <SidebarMenu>
                 <NavItem to="/dashboard" icon={LayoutDashboard} label="Dashboard" />
-                <NavItem to="/services" icon={Server} label={isAdmin ? "Services" : "My Services"} />
-                <NavItem to="/invoices" icon={FileText} label={isAdmin ? "Invoices" : "My Invoices"} />
                 <NavItem to="/projects" icon={FolderKanban} label={isAdmin ? "Projects" : "My Projects"} />
+                <NavItem to="/domains" icon={Globe} label={isAdmin ? "Domains" : "My Domains"} />
+                <NavItem to="/hosting" icon={HardDrive} label={isAdmin ? "Hosting" : "My Hosting"} />
+                <NavItem to="/other-services" icon={Package} label={isAdmin ? "Other Services" : "My Services"} />
+                <NavItem to="/invoices" icon={FileText} label={isAdmin ? "Invoices" : "My Invoices"} />
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
