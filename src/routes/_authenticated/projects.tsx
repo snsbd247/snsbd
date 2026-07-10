@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, ListChecks, Check, Circle } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
@@ -27,6 +28,7 @@ function ProjectsPage() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<any>(null);
+  const [timelineFor, setTimelineFor] = useState<any>(null);
 
   const { data: projects, isLoading } = useQuery({
     queryKey: ["projects"],
@@ -66,12 +68,12 @@ function ProjectsPage() {
                 <TableHead>Status</TableHead>
                 <TableHead>Timeline</TableHead>
                 <TableHead>Budget</TableHead>
-                {role === "admin" && <TableHead className="w-24" />}
+                <TableHead className="w-32 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading && <TableRow><TableCell colSpan={6} className="py-8 text-center text-sm text-muted-foreground">Loading…</TableCell></TableRow>}
-              {!isLoading && (projects ?? []).length === 0 && <TableRow><TableCell colSpan={6} className="py-8 text-center text-sm text-muted-foreground">No projects.</TableCell></TableRow>}
+              {isLoading && <TableRow><TableCell colSpan={role === "admin" ? 6 : 5} className="py-8 text-center text-sm text-muted-foreground">Loading…</TableCell></TableRow>}
+              {!isLoading && (projects ?? []).length === 0 && <TableRow><TableCell colSpan={role === "admin" ? 6 : 5} className="py-8 text-center text-sm text-muted-foreground">No projects.</TableCell></TableRow>}
               {(projects ?? []).map((p: any) => (
                 <TableRow key={p.id}>
                   <TableCell className="font-medium">{p.name}<div className="text-xs text-muted-foreground line-clamp-1">{p.description}</div></TableCell>
@@ -79,12 +81,15 @@ function ProjectsPage() {
                   <TableCell><Badge variant="secondary" className="capitalize">{p.status.replace("_", " ")}</Badge></TableCell>
                   <TableCell className="text-xs">{formatDate(p.start_date)} → {formatDate(p.end_date)}</TableCell>
                   <TableCell>{formatBDT(p.budget)}</TableCell>
-                  {role === "admin" && (
-                    <TableCell className="text-right">
-                      <Button size="icon" variant="ghost" onClick={() => { setEditing(p); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
-                      <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete?")) del.mutate(p.id); }}><Trash2 className="h-4 w-4" /></Button>
-                    </TableCell>
-                  )}
+                  <TableCell className="text-right">
+                    <Button size="icon" variant="ghost" title="Timeline" onClick={() => setTimelineFor(p)}><ListChecks className="h-4 w-4" /></Button>
+                    {role === "admin" && (
+                      <>
+                        <Button size="icon" variant="ghost" onClick={() => { setEditing(p); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
+                        <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete?")) del.mutate(p.id); }}><Trash2 className="h-4 w-4" /></Button>
+                      </>
+                    )}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -93,6 +98,7 @@ function ProjectsPage() {
       </Card>
 
       {role === "admin" && <ProjectDialog open={open} onOpenChange={setOpen} editing={editing} customers={customers ?? []} />}
+      <TimelineDialog project={timelineFor} onOpenChange={(o) => !o && setTimelineFor(null)} canEdit={role === "admin"} />
     </div>
   );
 }
@@ -151,6 +157,114 @@ function ProjectDialog({ open, onOpenChange, editing, customers }: any) {
           <div><Label>Budget (৳)</Label><Input type="number" value={f.budget} onChange={(e) => setF({ ...f, budget: e.target.value })} /></div>
         </div>
         <DialogFooter><Button onClick={() => save.mutate()} disabled={!f.customer_id || !f.name || save.isPending}>Save</Button></DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function TimelineDialog({ project, onOpenChange, canEdit }: { project: any; onOpenChange: (o: boolean) => void; canEdit: boolean }) {
+  const qc = useQueryClient();
+  const open = !!project;
+  const [title, setTitle] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [description, setDescription] = useState("");
+
+  const { data: milestones, isLoading } = useQuery({
+    queryKey: ["project-milestones", project?.id],
+    enabled: open,
+    queryFn: async () => {
+      const { data } = await supabase.from("project_milestones").select("*").eq("project_id", project.id).order("due_date", { ascending: true, nullsFirst: false }).order("created_at", { ascending: true });
+      return data ?? [];
+    },
+  });
+
+  const invalidate = () => qc.invalidateQueries({ queryKey: ["project-milestones", project?.id] });
+
+  const add = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("project_milestones").insert({
+        project_id: project.id, title, description: description || null, due_date: dueDate || null,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => { setTitle(""); setDueDate(""); setDescription(""); invalidate(); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const toggle = useMutation({
+    mutationFn: async (m: any) => {
+      const { error } = await supabase.from("project_milestones").update({
+        completed: !m.completed, completed_at: !m.completed ? new Date().toISOString() : null,
+      }).eq("id", m.id);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("project_milestones").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Timeline — {project?.name}</DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div className="relative border-l-2 border-border pl-6 space-y-4 max-h-[50vh] overflow-y-auto py-2">
+            {isLoading && <div className="text-sm text-muted-foreground">Loading…</div>}
+            {!isLoading && (milestones ?? []).length === 0 && (
+              <div className="text-sm text-muted-foreground">No milestones yet.</div>
+            )}
+            {(milestones ?? []).map((m: any) => (
+              <div key={m.id} className="relative">
+                <div className={`absolute -left-[31px] top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 ${m.completed ? "bg-primary border-primary text-primary-foreground" : "bg-background border-border"}`}>
+                  {m.completed ? <Check className="h-3 w-3" /> : <Circle className="h-2 w-2" />}
+                </div>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className={`text-sm font-medium ${m.completed ? "line-through text-muted-foreground" : ""}`}>{m.title}</div>
+                    {m.description && <div className="text-xs text-muted-foreground mt-0.5">{m.description}</div>}
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {m.due_date ? `Due ${formatDate(m.due_date)}` : "No due date"}
+                      {m.completed && m.completed_at && ` • Completed ${formatDate(m.completed_at)}`}
+                    </div>
+                  </div>
+                  {canEdit && (
+                    <div className="flex items-center gap-1 shrink-0">
+                      <Checkbox checked={m.completed} onCheckedChange={() => toggle.mutate(m)} />
+                      <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete milestone?")) remove.mutate(m.id); }}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {canEdit && (
+            <div className="border-t pt-4 space-y-3">
+              <div className="grid grid-cols-[1fr_180px] gap-2">
+                <Input placeholder="Milestone title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+              </div>
+              <Textarea placeholder="Description (optional)" value={description} onChange={(e) => setDescription(e.target.value)} rows={2} />
+              <div className="flex justify-end">
+                <Button onClick={() => add.mutate()} disabled={!title.trim() || add.isPending}>
+                  <Plus className="mr-2 h-4 w-4" />Add milestone
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
