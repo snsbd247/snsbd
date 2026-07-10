@@ -310,6 +310,19 @@ function TimelineDialog({ project, onOpenChange, canEdit }: { project: any; onOp
               </div>
             </div>
           )}
+
+          <div className="border-t pt-4">
+            <div className="mb-2 flex items-center gap-2 text-sm font-medium"><Activity className="h-4 w-4" />Activity</div>
+            <div className="max-h-40 overflow-y-auto space-y-1 text-xs">
+              {(activity ?? []).length === 0 && <div className="text-muted-foreground">No activity yet.</div>}
+              {(activity ?? []).map((a: any) => (
+                <div key={a.id} className="flex justify-between gap-2 text-muted-foreground">
+                  <span><span className="capitalize font-medium text-foreground">{a.action}</span> — {a.milestone_title}</span>
+                  <span className="shrink-0">{formatDate(a.created_at)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
