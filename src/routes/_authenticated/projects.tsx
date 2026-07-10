@@ -186,17 +186,28 @@ function TimelineDialog({ project, onOpenChange, canEdit }: { project: any; onOp
     queryKey: ["project-milestones", project?.id],
     enabled: open,
     queryFn: async () => {
-      const { data } = await supabase.from("project_milestones").select("*").eq("project_id", project.id).order("due_date", { ascending: true, nullsFirst: false }).order("created_at", { ascending: true });
+      const { data } = await supabase.from("project_milestones").select("*").eq("project_id", project.id).order("sort_order", { ascending: true }).order("due_date", { ascending: true, nullsFirst: false }).order("created_at", { ascending: true });
       return data ?? [];
     },
   });
 
-  const invalidate = () => qc.invalidateQueries({ queryKey: ["project-milestones", project?.id] });
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["project-milestones", project?.id] });
+    qc.invalidateQueries({ queryKey: ["all-milestones"] });
+    qc.invalidateQueries({ queryKey: ["project-activity", project?.id] });
+  };
+
+  const { data: activity } = useQuery({
+    queryKey: ["project-activity", project?.id],
+    enabled: open,
+    queryFn: async () => (await supabase.from("project_activity_log").select("*").eq("project_id", project.id).order("created_at", { ascending: false }).limit(50)).data ?? [],
+  });
 
   const add = useMutation({
     mutationFn: async () => {
+      const nextOrder = (milestones ?? []).reduce((mx: number, m: any) => Math.max(mx, m.sort_order ?? 0), 0) + 10;
       const { error } = await supabase.from("project_milestones").insert({
-        project_id: project.id, title, description: description || null, due_date: dueDate || null,
+        project_id: project.id, title, description: description || null, due_date: dueDate || null, sort_order: nextOrder,
       });
       if (error) throw error;
     },
