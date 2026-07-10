@@ -86,6 +86,24 @@ function ProjectDetailPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDue, setEditDue] = useState("");
+  const [editDesc, setEditDesc] = useState("");
+  const startEdit = (m: any) => { setEditingId(m.id); setEditTitle(m.title); setEditDue(m.due_date ?? ""); setEditDesc(m.description ?? ""); };
+  const cancelEdit = () => { setEditingId(null); };
+
+  const update = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("project_milestones").update({
+        title: editTitle, description: editDesc || null, due_date: editDue || null,
+      }).eq("id", editingId!);
+      if (error) throw error;
+    },
+    onSuccess: () => { cancelEdit(); invalidate(); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const reorder = useMutation({
     mutationFn: async ({ m, dir }: { m: any; dir: -1 | 1 }) => {
       const list = milestones ?? [];
