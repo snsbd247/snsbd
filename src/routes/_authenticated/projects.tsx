@@ -68,12 +68,12 @@ function ProjectsPage() {
                 <TableHead>Status</TableHead>
                 <TableHead>Timeline</TableHead>
                 <TableHead>Budget</TableHead>
-                {role === "admin" && <TableHead className="w-24" />}
+                <TableHead className="w-32 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading && <TableRow><TableCell colSpan={6} className="py-8 text-center text-sm text-muted-foreground">Loading…</TableCell></TableRow>}
-              {!isLoading && (projects ?? []).length === 0 && <TableRow><TableCell colSpan={6} className="py-8 text-center text-sm text-muted-foreground">No projects.</TableCell></TableRow>}
+              {isLoading && <TableRow><TableCell colSpan={role === "admin" ? 6 : 5} className="py-8 text-center text-sm text-muted-foreground">Loading…</TableCell></TableRow>}
+              {!isLoading && (projects ?? []).length === 0 && <TableRow><TableCell colSpan={role === "admin" ? 6 : 5} className="py-8 text-center text-sm text-muted-foreground">No projects.</TableCell></TableRow>}
               {(projects ?? []).map((p: any) => (
                 <TableRow key={p.id}>
                   <TableCell className="font-medium">{p.name}<div className="text-xs text-muted-foreground line-clamp-1">{p.description}</div></TableCell>
@@ -98,6 +98,7 @@ function ProjectsPage() {
       </Card>
 
       {role === "admin" && <ProjectDialog open={open} onOpenChange={setOpen} editing={editing} customers={customers ?? []} />}
+      <TimelineDialog project={timelineFor} onOpenChange={(o) => !o && setTimelineFor(null)} canEdit={role === "admin"} />
     </div>
   );
 }
