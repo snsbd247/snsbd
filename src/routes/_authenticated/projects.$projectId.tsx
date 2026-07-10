@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, Plus, Trash2, Check, Circle, ChevronUp, ChevronDown, Activity } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Check, Circle, ChevronUp, ChevronDown, Activity, Loader2, Pencil, X, Save } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
@@ -86,6 +86,24 @@ function ProjectDetailPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDue, setEditDue] = useState("");
+  const [editDesc, setEditDesc] = useState("");
+  const startEdit = (m: any) => { setEditingId(m.id); setEditTitle(m.title); setEditDue(m.due_date ?? ""); setEditDesc(m.description ?? ""); };
+  const cancelEdit = () => { setEditingId(null); };
+
+  const update = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("project_milestones").update({
+        title: editTitle, description: editDesc || null, due_date: editDue || null,
+      }).eq("id", editingId!);
+      if (error) throw error;
+    },
+    onSuccess: () => { cancelEdit(); invalidate(); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const reorder = useMutation({
     mutationFn: async ({ m, dir }: { m: any; dir: -1 | 1 }) => {
       const list = milestones ?? [];
@@ -102,7 +120,9 @@ function ProjectDetailPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  if (isLoading) return <div className="text-sm text-muted-foreground">Loading…</div>;
+  if (isLoading) return (
+    <div className="flex items-center gap-2 text-sm text-muted-foreground p-6"><Loader2 className="h-4 w-4 animate-spin" />Loading project…</div>
+  );
   if (!project) return (
     <div className="space-y-4">
       <div className="text-sm text-muted-foreground">Project not found.</div>
@@ -114,11 +134,22 @@ function ProjectDetailPage() {
   const done = (milestones ?? []).filter((m: any) => m.completed).length;
   const pct = total ? Math.round((done / total) * 100) : 0;
   const next = (milestones ?? []).find((m: any) => !m.completed);
+  const milestonesLoading = milestones === undefined;
+  const activityLoading = activity === undefined;
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div className="flex items-center justify-between">
-        <Link to="/projects" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1"><ArrowLeft className="h-4 w-4" />Back to projects</Link>
+      <nav className="text-xs text-muted-foreground flex items-center gap-1.5" aria-label="Breadcrumb">
+        <Link to="/" className="hover:text-foreground">Home</Link>
+        <span>/</span>
+        <Link to="/projects" className="hover:text-foreground">Projects</Link>
+        <span>/</span>
+        <span className="text-foreground font-medium truncate max-w-[240px]">{project.name}</span>
+      </nav>
+      <div>
+        <Button variant="outline" size="sm" onClick={() => navigate({ to: "/projects" })}>
+          <ArrowLeft className="mr-2 h-4 w-4" />Back to projects
+        </Button>
       </div>
 
       <div>
@@ -149,30 +180,52 @@ function ProjectDetailPage() {
         <CardHeader><CardTitle className="text-base">Milestones</CardTitle></CardHeader>
         <CardContent>
           <div className="relative border-l-2 border-border pl-6 space-y-4 py-2">
-            {total === 0 && <div className="text-sm text-muted-foreground">No milestones yet.</div>}
+            {milestonesLoading && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Loading milestones…</div>
+            )}
+            {!milestonesLoading && total === 0 && (
+              <div className="text-sm text-muted-foreground">
+                No milestones yet.{canEdit ? " Add the first one below." : ""}
+              </div>
+            )}
             {(milestones ?? []).map((m: any) => (
               <div key={m.id} className="relative">
                 <div className={`absolute -left-[31px] top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 ${m.completed ? "bg-primary border-primary text-primary-foreground" : "bg-background border-border"}`}>
                   {m.completed ? <Check className="h-3 w-3" /> : <Circle className="h-2 w-2" />}
                 </div>
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <div className={`text-sm font-medium ${m.completed ? "line-through text-muted-foreground" : ""}`}>{m.title}</div>
-                    {m.description && <div className="text-xs text-muted-foreground mt-0.5">{m.description}</div>}
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {m.due_date ? `Due ${formatDate(m.due_date)}` : "No due date"}
-                      {m.completed && m.completed_at && ` • Completed ${formatDate(m.completed_at)}`}
+                {editingId === m.id ? (
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-[1fr_180px] gap-2">
+                      <Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+                      <Input type="date" value={editDue} onChange={(e) => setEditDue(e.target.value)} />
+                    </div>
+                    <Textarea value={editDesc} onChange={(e) => setEditDesc(e.target.value)} rows={2} />
+                    <div className="flex justify-end gap-2">
+                      <Button size="sm" variant="ghost" onClick={cancelEdit}><X className="mr-1 h-4 w-4" />Cancel</Button>
+                      <Button size="sm" onClick={() => update.mutate()} disabled={!editTitle.trim() || update.isPending}><Save className="mr-1 h-4 w-4" />Save</Button>
                     </div>
                   </div>
-                  {canEdit && (
-                    <div className="flex items-center gap-1 shrink-0">
-                      <Button size="icon" variant="ghost" onClick={() => reorder.mutate({ m, dir: -1 })}><ChevronUp className="h-4 w-4" /></Button>
-                      <Button size="icon" variant="ghost" onClick={() => reorder.mutate({ m, dir: 1 })}><ChevronDown className="h-4 w-4" /></Button>
-                      <Checkbox checked={m.completed} onCheckedChange={() => toggle.mutate(m)} />
-                      <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete milestone?")) remove.mutate(m.id); }}><Trash2 className="h-4 w-4" /></Button>
+                ) : (
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className={`text-sm font-medium ${m.completed ? "line-through text-muted-foreground" : ""}`}>{m.title}</div>
+                      {m.description && <div className="text-xs text-muted-foreground mt-0.5">{m.description}</div>}
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {m.due_date ? `Due ${formatDate(m.due_date)}` : "No due date"}
+                        {m.completed && m.completed_at && ` • Completed ${formatDate(m.completed_at)}`}
+                      </div>
                     </div>
-                  )}
-                </div>
+                    {canEdit && (
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Button size="icon" variant="ghost" onClick={() => reorder.mutate({ m, dir: -1 })}><ChevronUp className="h-4 w-4" /></Button>
+                        <Button size="icon" variant="ghost" onClick={() => reorder.mutate({ m, dir: 1 })}><ChevronDown className="h-4 w-4" /></Button>
+                        <Checkbox checked={m.completed} onCheckedChange={() => toggle.mutate(m)} />
+                        <Button size="icon" variant="ghost" onClick={() => startEdit(m)}><Pencil className="h-4 w-4" /></Button>
+                        <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete milestone?")) remove.mutate(m.id); }}><Trash2 className="h-4 w-4" /></Button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -198,7 +251,8 @@ function ProjectDetailPage() {
         <CardHeader><CardTitle className="text-base flex items-center gap-2"><Activity className="h-4 w-4" />Activity</CardTitle></CardHeader>
         <CardContent>
           <div className="space-y-1 text-xs">
-            {(activity ?? []).length === 0 && <div className="text-muted-foreground">No activity yet.</div>}
+            {activityLoading && <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="h-3 w-3 animate-spin" />Loading activity…</div>}
+            {!activityLoading && (activity ?? []).length === 0 && <div className="text-muted-foreground">No activity yet.</div>}
             {(activity ?? []).map((a: any) => (
               <div key={a.id} className="flex justify-between gap-2 text-muted-foreground">
                 <span><span className="capitalize font-medium text-foreground">{a.action}</span> — {a.milestone_title}</span>
