@@ -76,13 +76,16 @@ function ProjectsPage() {
               <TableRow>
                 <TableHead>Name</TableHead>
                 {role === "admin" && <TableHead>Customer</TableHead>}
-                <TableHead>Progress</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Dates</TableHead>
+                <TableHead>Budget</TableHead>
+                <TableHead className="min-w-[180px]">Progress</TableHead>
                 <TableHead className="w-32 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading && <TableRow><TableCell colSpan={role === "admin" ? 6 : 5} className="py-8 text-center text-sm text-muted-foreground">Loading…</TableCell></TableRow>}
-              {!isLoading && (projects ?? []).length === 0 && <TableRow><TableCell colSpan={role === "admin" ? 6 : 5} className="py-8 text-center text-sm text-muted-foreground">No projects.</TableCell></TableRow>}
+              {isLoading && <TableRow><TableCell colSpan={role === "admin" ? 7 : 6} className="py-8 text-center text-sm text-muted-foreground">Loading…</TableCell></TableRow>}
+              {!isLoading && (projects ?? []).length === 0 && <TableRow><TableCell colSpan={role === "admin" ? 7 : 6} className="py-8 text-center text-sm text-muted-foreground">No projects.</TableCell></TableRow>}
               {(projects ?? []).map((p: any) => (
                 <TableRow key={p.id}>
                   <TableCell className="font-medium">{p.name}<div className="text-xs text-muted-foreground line-clamp-1">{p.description}</div></TableCell>
@@ -90,6 +93,7 @@ function ProjectsPage() {
                   <TableCell><Badge variant="secondary" className="capitalize">{p.status.replace("_", " ")}</Badge></TableCell>
                   <TableCell className="text-xs">{formatDate(p.start_date)} → {formatDate(p.end_date)}</TableCell>
                   <TableCell>{formatBDT(p.budget)}</TableCell>
+                  <TableCell><ProgressCell stats={progressByProject[p.id]} /></TableCell>
                   <TableCell className="text-right">
                     <Button size="icon" variant="ghost" title="Timeline" onClick={() => setTimelineFor(p)}><ListChecks className="h-4 w-4" /></Button>
                     {role === "admin" && (
