@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, ListChecks, Check, Circle } from "lucide-react";
+import { Plus, Pencil, Trash2, ListChecks, Check, Circle, ChevronUp, ChevronDown, Activity } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
@@ -37,6 +38,17 @@ function ProjectsPage() {
       return data ?? [];
     },
   });
+
+  const { data: allMilestones } = useQuery({
+    queryKey: ["all-milestones"],
+    queryFn: async () => (await supabase.from("project_milestones").select("project_id,title,due_date,completed,sort_order").order("sort_order").order("due_date", { ascending: true, nullsFirst: false })).data ?? [],
+  });
+  const progressByProject = (allMilestones ?? []).reduce<Record<string, { total: number; done: number; next: any }>>((acc, m: any) => {
+    const g = acc[m.project_id] ?? { total: 0, done: 0, next: null };
+    g.total += 1; if (m.completed) g.done += 1;
+    if (!m.completed && !g.next) g.next = m;
+    acc[m.project_id] = g; return acc;
+  }, {});
 
   const { data: customers } = useQuery({
     queryKey: ["customer-list"], enabled: role === "admin",
@@ -66,14 +78,15 @@ function ProjectsPage() {
                 <TableHead>Name</TableHead>
                 {role === "admin" && <TableHead>Customer</TableHead>}
                 <TableHead>Status</TableHead>
-                <TableHead>Timeline</TableHead>
+                <TableHead>Dates</TableHead>
                 <TableHead>Budget</TableHead>
+                <TableHead className="min-w-[180px]">Progress</TableHead>
                 <TableHead className="w-32 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading && <TableRow><TableCell colSpan={role === "admin" ? 6 : 5} className="py-8 text-center text-sm text-muted-foreground">Loading…</TableCell></TableRow>}
-              {!isLoading && (projects ?? []).length === 0 && <TableRow><TableCell colSpan={role === "admin" ? 6 : 5} className="py-8 text-center text-sm text-muted-foreground">No projects.</TableCell></TableRow>}
+              {isLoading && <TableRow><TableCell colSpan={role === "admin" ? 7 : 6} className="py-8 text-center text-sm text-muted-foreground">Loading…</TableCell></TableRow>}
+              {!isLoading && (projects ?? []).length === 0 && <TableRow><TableCell colSpan={role === "admin" ? 7 : 6} className="py-8 text-center text-sm text-muted-foreground">No projects.</TableCell></TableRow>}
               {(projects ?? []).map((p: any) => (
                 <TableRow key={p.id}>
                   <TableCell className="font-medium">{p.name}<div className="text-xs text-muted-foreground line-clamp-1">{p.description}</div></TableCell>
@@ -81,6 +94,7 @@ function ProjectsPage() {
                   <TableCell><Badge variant="secondary" className="capitalize">{p.status.replace("_", " ")}</Badge></TableCell>
                   <TableCell className="text-xs">{formatDate(p.start_date)} → {formatDate(p.end_date)}</TableCell>
                   <TableCell>{formatBDT(p.budget)}</TableCell>
+                  <TableCell><ProgressCell stats={progressByProject[p.id]} /></TableCell>
                   <TableCell className="text-right">
                     <Button size="icon" variant="ghost" title="Timeline" onClick={() => setTimelineFor(p)}><ListChecks className="h-4 w-4" /></Button>
                     {role === "admin" && (
@@ -173,17 +187,28 @@ function TimelineDialog({ project, onOpenChange, canEdit }: { project: any; onOp
     queryKey: ["project-milestones", project?.id],
     enabled: open,
     queryFn: async () => {
-      const { data } = await supabase.from("project_milestones").select("*").eq("project_id", project.id).order("due_date", { ascending: true, nullsFirst: false }).order("created_at", { ascending: true });
+      const { data } = await supabase.from("project_milestones").select("*").eq("project_id", project.id).order("sort_order", { ascending: true }).order("due_date", { ascending: true, nullsFirst: false }).order("created_at", { ascending: true });
       return data ?? [];
     },
   });
 
-  const invalidate = () => qc.invalidateQueries({ queryKey: ["project-milestones", project?.id] });
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["project-milestones", project?.id] });
+    qc.invalidateQueries({ queryKey: ["all-milestones"] });
+    qc.invalidateQueries({ queryKey: ["project-activity", project?.id] });
+  };
+
+  const { data: activity } = useQuery({
+    queryKey: ["project-activity", project?.id],
+    enabled: open,
+    queryFn: async () => (await supabase.from("project_activity_log").select("*").eq("project_id", project.id).order("created_at", { ascending: false }).limit(50)).data ?? [],
+  });
 
   const add = useMutation({
     mutationFn: async () => {
+      const nextOrder = (milestones ?? []).reduce((mx: number, m: any) => Math.max(mx, m.sort_order ?? 0), 0) + 10;
       const { error } = await supabase.from("project_milestones").insert({
-        project_id: project.id, title, description: description || null, due_date: dueDate || null,
+        project_id: project.id, title, description: description || null, due_date: dueDate || null, sort_order: nextOrder,
       });
       if (error) throw error;
     },
@@ -208,6 +233,25 @@ function TimelineDialog({ project, onOpenChange, canEdit }: { project: any; onOp
       if (error) throw error;
     },
     onSuccess: invalidate,
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const reorder = useMutation({
+    mutationFn: async ({ m, dir }: { m: any; dir: -1 | 1 }) => {
+      const list = milestones ?? [];
+      const i = list.findIndex((x: any) => x.id === m.id);
+      const j = i + dir;
+      if (i < 0 || j < 0 || j >= list.length) return;
+      const other: any = list[j];
+      const a = m.sort_order ?? 0, b = other.sort_order ?? 0;
+      const [na, nb] = a === b ? [b - 1, b + 1] : [b, a];
+      const { error: e1 } = await supabase.from("project_milestones").update({ sort_order: na }).eq("id", m.id);
+      if (e1) throw e1;
+      const { error: e2 } = await supabase.from("project_milestones").update({ sort_order: nb }).eq("id", other.id);
+      if (e2) throw e2;
+    },
+    onSuccess: invalidate,
+    onError: (e: Error) => toast.error(e.message),
   });
 
   return (
@@ -239,6 +283,8 @@ function TimelineDialog({ project, onOpenChange, canEdit }: { project: any; onOp
                   </div>
                   {canEdit && (
                     <div className="flex items-center gap-1 shrink-0">
+                      <Button size="icon" variant="ghost" onClick={() => reorder.mutate({ m, dir: -1 })}><ChevronUp className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => reorder.mutate({ m, dir: 1 })}><ChevronDown className="h-4 w-4" /></Button>
                       <Checkbox checked={m.completed} onCheckedChange={() => toggle.mutate(m)} />
                       <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete milestone?")) remove.mutate(m.id); }}>
                         <Trash2 className="h-4 w-4" />
@@ -264,6 +310,19 @@ function TimelineDialog({ project, onOpenChange, canEdit }: { project: any; onOp
               </div>
             </div>
           )}
+
+          <div className="border-t pt-4">
+            <div className="mb-2 flex items-center gap-2 text-sm font-medium"><Activity className="h-4 w-4" />Activity</div>
+            <div className="max-h-40 overflow-y-auto space-y-1 text-xs">
+              {(activity ?? []).length === 0 && <div className="text-muted-foreground">No activity yet.</div>}
+              {(activity ?? []).map((a: any) => (
+                <div key={a.id} className="flex justify-between gap-2 text-muted-foreground">
+                  <span><span className="capitalize font-medium text-foreground">{a.action}</span> — {a.milestone_title}</span>
+                  <span className="shrink-0">{formatDate(a.created_at)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
