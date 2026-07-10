@@ -180,30 +180,52 @@ function ProjectDetailPage() {
         <CardHeader><CardTitle className="text-base">Milestones</CardTitle></CardHeader>
         <CardContent>
           <div className="relative border-l-2 border-border pl-6 space-y-4 py-2">
-            {total === 0 && <div className="text-sm text-muted-foreground">No milestones yet.</div>}
+            {milestonesLoading && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Loading milestones…</div>
+            )}
+            {!milestonesLoading && total === 0 && (
+              <div className="text-sm text-muted-foreground">
+                No milestones yet.{canEdit ? " Add the first one below." : ""}
+              </div>
+            )}
             {(milestones ?? []).map((m: any) => (
               <div key={m.id} className="relative">
                 <div className={`absolute -left-[31px] top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 ${m.completed ? "bg-primary border-primary text-primary-foreground" : "bg-background border-border"}`}>
                   {m.completed ? <Check className="h-3 w-3" /> : <Circle className="h-2 w-2" />}
                 </div>
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <div className={`text-sm font-medium ${m.completed ? "line-through text-muted-foreground" : ""}`}>{m.title}</div>
-                    {m.description && <div className="text-xs text-muted-foreground mt-0.5">{m.description}</div>}
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {m.due_date ? `Due ${formatDate(m.due_date)}` : "No due date"}
-                      {m.completed && m.completed_at && ` • Completed ${formatDate(m.completed_at)}`}
+                {editingId === m.id ? (
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-[1fr_180px] gap-2">
+                      <Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+                      <Input type="date" value={editDue} onChange={(e) => setEditDue(e.target.value)} />
+                    </div>
+                    <Textarea value={editDesc} onChange={(e) => setEditDesc(e.target.value)} rows={2} />
+                    <div className="flex justify-end gap-2">
+                      <Button size="sm" variant="ghost" onClick={cancelEdit}><X className="mr-1 h-4 w-4" />Cancel</Button>
+                      <Button size="sm" onClick={() => update.mutate()} disabled={!editTitle.trim() || update.isPending}><Save className="mr-1 h-4 w-4" />Save</Button>
                     </div>
                   </div>
-                  {canEdit && (
-                    <div className="flex items-center gap-1 shrink-0">
-                      <Button size="icon" variant="ghost" onClick={() => reorder.mutate({ m, dir: -1 })}><ChevronUp className="h-4 w-4" /></Button>
-                      <Button size="icon" variant="ghost" onClick={() => reorder.mutate({ m, dir: 1 })}><ChevronDown className="h-4 w-4" /></Button>
-                      <Checkbox checked={m.completed} onCheckedChange={() => toggle.mutate(m)} />
-                      <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete milestone?")) remove.mutate(m.id); }}><Trash2 className="h-4 w-4" /></Button>
+                ) : (
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className={`text-sm font-medium ${m.completed ? "line-through text-muted-foreground" : ""}`}>{m.title}</div>
+                      {m.description && <div className="text-xs text-muted-foreground mt-0.5">{m.description}</div>}
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {m.due_date ? `Due ${formatDate(m.due_date)}` : "No due date"}
+                        {m.completed && m.completed_at && ` • Completed ${formatDate(m.completed_at)}`}
+                      </div>
                     </div>
-                  )}
-                </div>
+                    {canEdit && (
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Button size="icon" variant="ghost" onClick={() => reorder.mutate({ m, dir: -1 })}><ChevronUp className="h-4 w-4" /></Button>
+                        <Button size="icon" variant="ghost" onClick={() => reorder.mutate({ m, dir: 1 })}><ChevronDown className="h-4 w-4" /></Button>
+                        <Checkbox checked={m.completed} onCheckedChange={() => toggle.mutate(m)} />
+                        <Button size="icon" variant="ghost" onClick={() => startEdit(m)}><Pencil className="h-4 w-4" /></Button>
+                        <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete milestone?")) remove.mutate(m.id); }}><Trash2 className="h-4 w-4" /></Button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
