@@ -283,6 +283,8 @@ function TimelineDialog({ project, onOpenChange, canEdit }: { project: any; onOp
                   </div>
                   {canEdit && (
                     <div className="flex items-center gap-1 shrink-0">
+                      <Button size="icon" variant="ghost" onClick={() => reorder.mutate({ m, dir: -1 })}><ChevronUp className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => reorder.mutate({ m, dir: 1 })}><ChevronDown className="h-4 w-4" /></Button>
                       <Checkbox checked={m.completed} onCheckedChange={() => toggle.mutate(m)} />
                       <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete milestone?")) remove.mutate(m.id); }}>
                         <Trash2 className="h-4 w-4" />
