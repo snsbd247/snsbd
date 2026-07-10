@@ -251,7 +251,8 @@ function ProjectDetailPage() {
         <CardHeader><CardTitle className="text-base flex items-center gap-2"><Activity className="h-4 w-4" />Activity</CardTitle></CardHeader>
         <CardContent>
           <div className="space-y-1 text-xs">
-            {(activity ?? []).length === 0 && <div className="text-muted-foreground">No activity yet.</div>}
+            {activityLoading && <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="h-3 w-3 animate-spin" />Loading activity…</div>}
+            {!activityLoading && (activity ?? []).length === 0 && <div className="text-muted-foreground">No activity yet.</div>}
             {(activity ?? []).map((a: any) => (
               <div key={a.id} className="flex justify-between gap-2 text-muted-foreground">
                 <span><span className="capitalize font-medium text-foreground">{a.action}</span> — {a.milestone_title}</span>
