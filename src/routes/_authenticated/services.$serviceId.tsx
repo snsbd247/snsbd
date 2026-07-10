@@ -130,12 +130,12 @@ function ServiceDetailPage() {
           {(!invoices || invoices.length === 0) && <div className="text-sm text-muted-foreground">No invoices yet for this service.</div>}
           <div className="space-y-1">
             {(invoices ?? []).map((row: any) => row.invoices && (
-              <div key={row.invoice_id} className="flex items-center justify-between text-sm border-b py-2">
+              <Link key={row.invoice_id} to="/invoices/$invoiceId" params={{ invoiceId: row.invoices.id }} className="flex items-center justify-between text-sm border-b py-2 hover:bg-muted/40 px-2 -mx-2 rounded">
                 <span className="font-mono text-xs">{row.invoices.invoice_number}</span>
                 <span className="text-muted-foreground">{formatDate(row.invoices.issue_date)}</span>
                 <Badge variant="outline" className="capitalize">{row.invoices.status}</Badge>
                 <span className="font-medium">{formatBDT(row.invoices.total)}</span>
-              </div>
+              </Link>
             ))}
           </div>
         </CardContent>
