@@ -328,3 +328,19 @@ function TimelineDialog({ project, onOpenChange, canEdit }: { project: any; onOp
     </Dialog>
   );
 }
+
+function ProgressCell({ stats }: { stats?: { total: number; done: number; next: any } }) {
+  if (!stats || stats.total === 0) return <span className="text-xs text-muted-foreground">No milestones</span>;
+  const pct = Math.round((stats.done / stats.total) * 100);
+  return (
+    <div className="space-y-1 min-w-[160px]">
+      <div className="text-xs text-muted-foreground">{stats.done}/{stats.total} • {pct}%</div>
+      <Progress value={pct} className="h-1.5" />
+      {stats.next && (
+        <div className="text-xs text-muted-foreground line-clamp-1">
+          Next: {stats.next.title}{stats.next.due_date ? ` (${formatDate(stats.next.due_date)})` : ""}
+        </div>
+      )}
+    </div>
+  );
+}
