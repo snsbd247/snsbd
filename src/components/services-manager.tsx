@@ -120,7 +120,9 @@ export function ServicesManager({
                     <TableCell>{formatBDT(s.sale_price)}</TableCell>
                     <TableCell><Badge variant={s.status === "active" ? "default" : "secondary"} className="capitalize">{s.status}</Badge></TableCell>
                     <TableCell className="text-right">
-                      <Button size="icon" variant="ghost" asChild><Link to="/services/$serviceId" params={{ serviceId: s.id }}><ExternalLink className="h-4 w-4" /></Link></Button>
+                      {s.type === "domain"
+                        ? <Button size="icon" variant="ghost" asChild><Link to="/domains/$domainId" params={{ domainId: s.id }}><ExternalLink className="h-4 w-4" /></Link></Button>
+                        : <Button size="icon" variant="ghost" asChild><Link to="/services/$serviceId" params={{ serviceId: s.id }}><ExternalLink className="h-4 w-4" /></Link></Button>}
                       {role === "admin" && (
                         <>
                           <Button size="icon" variant="ghost" onClick={() => { setEditing(s); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
