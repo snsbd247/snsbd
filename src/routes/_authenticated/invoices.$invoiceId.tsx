@@ -68,7 +68,7 @@ function InvoiceDetailPage() {
 
   const updateStatus = useMutation({
     mutationFn: async (status: string) => {
-      const { error } = await supabase.from("invoices").update({ status }).eq("id", invoiceId);
+      const { error } = await supabase.from("invoices").update({ status: status as any }).eq("id", invoiceId);
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Status updated"); qc.invalidateQueries({ queryKey: ["invoice", invoiceId] }); qc.invalidateQueries({ queryKey: ["invoices"] }); },
