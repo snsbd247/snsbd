@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -89,7 +89,10 @@ function ProjectsPage() {
               {!isLoading && (projects ?? []).length === 0 && <TableRow><TableCell colSpan={role === "admin" ? 7 : 6} className="py-8 text-center text-sm text-muted-foreground">No projects.</TableCell></TableRow>}
               {(projects ?? []).map((p: any) => (
                 <TableRow key={p.id}>
-                  <TableCell className="font-medium">{p.name}<div className="text-xs text-muted-foreground line-clamp-1">{p.description}</div></TableCell>
+                  <TableCell className="font-medium">
+                    <Link to="/projects/$projectId" params={{ projectId: p.id }} className="hover:underline text-primary">{p.name}</Link>
+                    <div className="text-xs text-muted-foreground line-clamp-1">{p.description}</div>
+                  </TableCell>
                   {role === "admin" && <TableCell>{p.profiles?.full_name ?? p.profiles?.email ?? "—"}</TableCell>}
                   <TableCell><Badge variant="secondary" className="capitalize">{p.status.replace("_", " ")}</Badge></TableCell>
                   <TableCell className="text-xs">{formatDate(p.start_date)} → {formatDate(p.end_date)}</TableCell>
