@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -85,7 +85,7 @@ function InvoicesPage() {
               {!isLoading && (invoices ?? []).length === 0 && <TableRow><TableCell colSpan={8} className="py-8 text-center text-sm text-muted-foreground">No invoices.</TableCell></TableRow>}
               {(invoices ?? []).map((i: any) => (
                 <TableRow key={i.id}>
-                  <TableCell className="font-mono text-xs">{i.invoice_number}</TableCell>
+                  <TableCell className="font-mono text-xs"><Link to="/invoices/$invoiceId" params={{ invoiceId: i.id }} className="hover:underline">{i.invoice_number}</Link></TableCell>
                   {role === "admin" && <TableCell>{i.profiles?.full_name ?? i.profiles?.email ?? "—"}</TableCell>}
                   <TableCell>{formatDate(i.issue_date)}</TableCell>
                   <TableCell>{formatDate(i.due_date)}</TableCell>
@@ -93,7 +93,7 @@ function InvoicesPage() {
                   <TableCell className="text-success">{formatBDT(i.amount_paid)}</TableCell>
                   <TableCell><Badge variant={statusVariant(i.status)} className="capitalize">{i.status}</Badge></TableCell>
                   <TableCell className="text-right">
-                    <Button size="icon" variant="ghost" onClick={() => setViewing(i.id)}><Eye className="h-4 w-4" /></Button>
+                    <Button size="icon" variant="ghost" asChild><Link to="/invoices/$invoiceId" params={{ invoiceId: i.id }}><Eye className="h-4 w-4" /></Link></Button>
                     {role === "admin" && (
                       <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete?")) del.mutate(i.id); }}><Trash2 className="h-4 w-4" /></Button>
                     )}

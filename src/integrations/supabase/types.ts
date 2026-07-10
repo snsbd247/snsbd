@@ -423,12 +423,16 @@ export type Database = {
           created_at: string
           customer_id: string
           details: string | null
+          dns_notes: string | null
           expiry_date: string | null
           id: string
+          linked_hosting_id: string | null
           name: string
+          nameservers: string | null
           notes: string | null
           project_id: string | null
           purchase_date: string | null
+          registrar: string | null
           sale_price: number
           status: Database["public"]["Enums"]["service_status"]
           type: Database["public"]["Enums"]["service_type"]
@@ -439,12 +443,16 @@ export type Database = {
           created_at?: string
           customer_id: string
           details?: string | null
+          dns_notes?: string | null
           expiry_date?: string | null
           id?: string
+          linked_hosting_id?: string | null
           name: string
+          nameservers?: string | null
           notes?: string | null
           project_id?: string | null
           purchase_date?: string | null
+          registrar?: string | null
           sale_price?: number
           status?: Database["public"]["Enums"]["service_status"]
           type: Database["public"]["Enums"]["service_type"]
@@ -455,12 +463,16 @@ export type Database = {
           created_at?: string
           customer_id?: string
           details?: string | null
+          dns_notes?: string | null
           expiry_date?: string | null
           id?: string
+          linked_hosting_id?: string | null
           name?: string
+          nameservers?: string | null
           notes?: string | null
           project_id?: string | null
           purchase_date?: string | null
+          registrar?: string | null
           sale_price?: number
           status?: Database["public"]["Enums"]["service_status"]
           type?: Database["public"]["Enums"]["service_type"]
@@ -472,6 +484,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_linked_hosting_id_fkey"
+            columns: ["linked_hosting_id"]
+            isOneToOne: false
+            referencedRelation: "services"
             referencedColumns: ["id"]
           },
           {

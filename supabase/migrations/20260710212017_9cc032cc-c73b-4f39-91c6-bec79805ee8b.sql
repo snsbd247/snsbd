@@ -1,0 +1,6 @@
+
+ALTER TABLE public.services
+  ADD COLUMN IF NOT EXISTS registrar TEXT,
+  ADD COLUMN IF NOT EXISTS nameservers TEXT,
+  ADD COLUMN IF NOT EXISTS dns_notes TEXT,
+  ADD COLUMN IF NOT EXISTS linked_hosting_id UUID REFERENCES public.services(id) ON DELETE SET NULL;

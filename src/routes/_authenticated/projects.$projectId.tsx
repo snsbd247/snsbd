@@ -328,12 +328,12 @@ function ProjectDetailPage() {
           ) : (
             <div className="space-y-1">
               {(projectInvoices ?? []).map((i: any) => (
-                <div key={i.id} className="flex items-center justify-between text-sm border-b py-2">
+                <Link key={i.id} to="/invoices/$invoiceId" params={{ invoiceId: i.id }} className="flex items-center justify-between text-sm border-b py-2 hover:bg-muted/40 px-2 -mx-2 rounded">
                   <span className="font-mono text-xs">{i.invoice_number}</span>
                   <span className="text-muted-foreground">{formatDate(i.issue_date)}</span>
                   <Badge variant="outline" className="capitalize">{i.status}</Badge>
                   <span className="font-medium">{formatBDT(i.total)}</span>
-                </div>
+                </Link>
               ))}
             </div>
           )}
