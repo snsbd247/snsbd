@@ -56,19 +56,41 @@ function AuthPage() {
   );
 }
 
-const emailSchema = z.string().email();
+const usernameSchema = z
+  .string()
+  .trim()
+  .min(3, "Username must be at least 3 characters")
+  .max(32, "Username too long")
+  .regex(/^[a-zA-Z0-9_.-]+$/, "Only letters, numbers, . _ - allowed");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
+const emailSchema = z.string().email();
+
+// Synthesize a stable pseudo-email for username-only accounts
+const usernameToEmail = (u: string) => `${u.trim().toLowerCase()}@users.nexus.local`;
+
+async function resolveLoginEmail(identifier: string): Promise<string | null> {
+  const id = identifier.trim();
+  if (emailSchema.safeParse(id).success) return id;
+  const { data, error } = await supabase.rpc("email_for_username", { _username: id });
+  if (error) return null;
+  return (data as string | null) ?? null;
+}
 
 function SignInForm() {
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!emailSchema.safeParse(email).success) return toast.error("Invalid email");
+    if (!identifier.trim()) return toast.error("Enter your username or email");
     setBusy(true);
+    const email = await resolveLoginEmail(identifier);
+    if (!email) {
+      setBusy(false);
+      return toast.error("No account found for that username");
+    }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
     if (error) return toast.error(error.message);
@@ -79,8 +101,8 @@ function SignInForm() {
   return (
     <form onSubmit={onSubmit} className="mt-4 space-y-4">
       <div className="space-y-2">
-        <Label>Email</Label>
-        <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <Label>Username or Email</Label>
+        <Input value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder="superadmin" required />
       </div>
       <div className="space-y-2">
         <Label>Password</Label>
@@ -93,6 +115,7 @@ function SignInForm() {
 
 function SignUpForm() {
   const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -100,15 +123,23 @@ function SignUpForm() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!emailSchema.safeParse(email).success) return toast.error("Invalid email");
+    const u = usernameSchema.safeParse(username);
+    if (!u.success) return toast.error(u.error.issues[0].message);
     if (!passwordSchema.safeParse(password).success) return toast.error("Password too short (min 6)");
+
+    const trimmedEmail = email.trim();
+    const finalEmail = trimmedEmail
+      ? (emailSchema.safeParse(trimmedEmail).success ? trimmedEmail : null)
+      : usernameToEmail(username);
+    if (!finalEmail) return toast.error("Invalid email address");
+
     setBusy(true);
     const { error } = await supabase.auth.signUp({
-      email,
+      email: finalEmail,
       password,
       options: {
         emailRedirectTo: window.location.origin + "/dashboard",
-        data: { full_name: fullName },
+        data: { full_name: fullName || username, username: username.trim().toLowerCase() },
       },
     });
     setBusy(false);
@@ -121,18 +152,23 @@ function SignUpForm() {
     <form onSubmit={onSubmit} className="mt-4 space-y-4">
       <div className="space-y-2">
         <Label>Full name</Label>
-        <Input value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+        <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
       </div>
       <div className="space-y-2">
-        <Label>Email</Label>
-        <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <Label>Username</Label>
+        <Input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="superadmin" required />
+      </div>
+      <div className="space-y-2">
+        <Label>Email <span className="text-muted-foreground">(optional)</span></Label>
+        <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Leave blank to skip" />
+        <p className="text-xs text-muted-foreground">Email is optional. If skipped, you'll only log in with your username.</p>
       </div>
       <div className="space-y-2">
         <Label>Password</Label>
         <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
       </div>
       <Button className="w-full" type="submit" disabled={busy}>{busy ? "Creating…" : "Create account"}</Button>
-      <p className="text-xs text-muted-foreground text-center">New signups start as a customer. Contact your administrator for admin access.</p>
+      <p className="text-xs text-muted-foreground text-center">The first account becomes admin. Others start as customer.</p>
     </form>
   );
 }
