@@ -18,8 +18,8 @@ function Landing() {
       <header className="border-b">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold">N</div>
-            <span className="font-semibold text-lg">Nexus CRM</span>
+            <img src="/favicon.png" alt="Sync & Solutions IT logo" className="h-8 w-8 rounded-md" />
+            <span className="font-semibold text-lg">Sync & Solutions IT</span>
           </div>
           <div className="flex gap-2">
             <Button asChild variant="ghost"><Link to="/auth">Sign in</Link></Button>
