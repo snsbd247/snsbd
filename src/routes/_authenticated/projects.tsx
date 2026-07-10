@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, ListChecks, Check, Circle } from "lucide-react";
+import { Plus, Pencil, Trash2, ListChecks, Check, Circle, ChevronUp, ChevronDown, Activity } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
@@ -232,6 +233,25 @@ function TimelineDialog({ project, onOpenChange, canEdit }: { project: any; onOp
       if (error) throw error;
     },
     onSuccess: invalidate,
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const reorder = useMutation({
+    mutationFn: async ({ m, dir }: { m: any; dir: -1 | 1 }) => {
+      const list = milestones ?? [];
+      const i = list.findIndex((x: any) => x.id === m.id);
+      const j = i + dir;
+      if (i < 0 || j < 0 || j >= list.length) return;
+      const other: any = list[j];
+      const a = m.sort_order ?? 0, b = other.sort_order ?? 0;
+      const [na, nb] = a === b ? [b - 1, b + 1] : [b, a];
+      const { error: e1 } = await supabase.from("project_milestones").update({ sort_order: na }).eq("id", m.id);
+      if (e1) throw e1;
+      const { error: e2 } = await supabase.from("project_milestones").update({ sort_order: nb }).eq("id", other.id);
+      if (e2) throw e2;
+    },
+    onSuccess: invalidate,
+    onError: (e: Error) => toast.error(e.message),
   });
 
   return (
