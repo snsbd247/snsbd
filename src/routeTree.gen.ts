@@ -18,6 +18,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedOtherServicesRouteImport } from './routes/_authenticated/other-services'
 import { Route as AuthenticatedInvoicesRouteImport } from './routes/_authenticated/invoices'
+import { Route as AuthenticatedHostingPackagesRouteImport } from './routes/_authenticated/hosting-packages'
 import { Route as AuthenticatedHostingRouteImport } from './routes/_authenticated/hosting'
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedDomainsRouteImport } from './routes/_authenticated/domains'
@@ -79,6 +80,12 @@ const AuthenticatedInvoicesRoute = AuthenticatedInvoicesRouteImport.update({
   path: '/invoices',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedHostingPackagesRoute =
+  AuthenticatedHostingPackagesRouteImport.update({
+    id: '/hosting-packages',
+    path: '/hosting-packages',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedHostingRoute = AuthenticatedHostingRouteImport.update({
   id: '/hosting',
   path: '/hosting',
@@ -174,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/domains': typeof AuthenticatedDomainsRouteWithChildren
   '/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/hosting': typeof AuthenticatedHostingRoute
+  '/hosting-packages': typeof AuthenticatedHostingPackagesRoute
   '/invoices': typeof AuthenticatedInvoicesRouteWithChildren
   '/other-services': typeof AuthenticatedOtherServicesRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -199,6 +207,7 @@ export interface FileRoutesByTo {
   '/domains': typeof AuthenticatedDomainsRouteWithChildren
   '/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/hosting': typeof AuthenticatedHostingRoute
+  '/hosting-packages': typeof AuthenticatedHostingPackagesRoute
   '/invoices': typeof AuthenticatedInvoicesRouteWithChildren
   '/other-services': typeof AuthenticatedOtherServicesRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -226,6 +235,7 @@ export interface FileRoutesById {
   '/_authenticated/domains': typeof AuthenticatedDomainsRouteWithChildren
   '/_authenticated/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/_authenticated/hosting': typeof AuthenticatedHostingRoute
+  '/_authenticated/hosting-packages': typeof AuthenticatedHostingPackagesRoute
   '/_authenticated/invoices': typeof AuthenticatedInvoicesRouteWithChildren
   '/_authenticated/other-services': typeof AuthenticatedOtherServicesRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
@@ -253,6 +263,7 @@ export interface FileRouteTypes {
     | '/domains'
     | '/expenses'
     | '/hosting'
+    | '/hosting-packages'
     | '/invoices'
     | '/other-services'
     | '/profile'
@@ -278,6 +289,7 @@ export interface FileRouteTypes {
     | '/domains'
     | '/expenses'
     | '/hosting'
+    | '/hosting-packages'
     | '/invoices'
     | '/other-services'
     | '/profile'
@@ -304,6 +316,7 @@ export interface FileRouteTypes {
     | '/_authenticated/domains'
     | '/_authenticated/expenses'
     | '/_authenticated/hosting'
+    | '/_authenticated/hosting-packages'
     | '/_authenticated/invoices'
     | '/_authenticated/other-services'
     | '/_authenticated/profile'
@@ -392,6 +405,13 @@ declare module '@tanstack/react-router' {
       path: '/invoices'
       fullPath: '/invoices'
       preLoaderRoute: typeof AuthenticatedInvoicesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/hosting-packages': {
+      id: '/_authenticated/hosting-packages'
+      path: '/hosting-packages'
+      fullPath: '/hosting-packages'
+      preLoaderRoute: typeof AuthenticatedHostingPackagesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/hosting': {
@@ -571,6 +591,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDomainsRoute: typeof AuthenticatedDomainsRouteWithChildren
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRouteWithChildren
   AuthenticatedHostingRoute: typeof AuthenticatedHostingRoute
+  AuthenticatedHostingPackagesRoute: typeof AuthenticatedHostingPackagesRoute
   AuthenticatedInvoicesRoute: typeof AuthenticatedInvoicesRouteWithChildren
   AuthenticatedOtherServicesRoute: typeof AuthenticatedOtherServicesRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
@@ -588,6 +609,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDomainsRoute: AuthenticatedDomainsRouteWithChildren,
   AuthenticatedExpensesRoute: AuthenticatedExpensesRouteWithChildren,
   AuthenticatedHostingRoute: AuthenticatedHostingRoute,
+  AuthenticatedHostingPackagesRoute: AuthenticatedHostingPackagesRoute,
   AuthenticatedInvoicesRoute: AuthenticatedInvoicesRouteWithChildren,
   AuthenticatedOtherServicesRoute: AuthenticatedOtherServicesRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
