@@ -123,7 +123,7 @@ function WhmServersPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>{editing ? "Edit WHM server" : "Add WHM server"}</DialogTitle>
-            <DialogDescription>Create an API token in WHM → Manage API Tokens with the <b>root</b> user (or any reseller with account, passwd, and create_user_session privileges).</DialogDescription>
+            <DialogDescription>Authenticate with an API token (recommended) or root password. For token: WHM → Manage API Tokens with root (or a reseller with listaccts, passwd, create_user_session privileges).</DialogDescription>
           </DialogHeader>
           <div className="grid gap-3">
             <div><Label>Name</Label><Input value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} placeholder="Main server" /></div>
@@ -132,10 +132,18 @@ function WhmServersPage() {
               <div><Label>Port</Label><Input type="number" value={f.port} onChange={(e) => setF({ ...f, port: e.target.value })} /></div>
             </div>
             <div><Label>Username</Label><Input value={f.username} onChange={(e) => setF({ ...f, username: e.target.value })} /></div>
-            <div><Label>API token</Label><Input type="password" value={f.api_token} onChange={(e) => setF({ ...f, api_token: e.target.value })} autoComplete="new-password" /></div>
+            <div>
+              <Label>Auth method</Label>
+              <div className="flex gap-2 mt-1">
+                <Button type="button" size="sm" variant={f.auth_type === "token" ? "default" : "outline"} onClick={() => setF({ ...f, auth_type: "token" })}>API Token</Button>
+                <Button type="button" size="sm" variant={f.auth_type === "password" ? "default" : "outline"} onClick={() => setF({ ...f, auth_type: "password" })}>Root Password</Button>
+              </div>
+            </div>
+            <div><Label>{f.auth_type === "password" ? "Password" : "API token"}</Label><Input type="password" value={f.api_token} onChange={(e) => setF({ ...f, api_token: e.target.value })} autoComplete="new-password" /></div>
             <div className="flex items-center gap-2"><Switch checked={f.is_active} onCheckedChange={(v) => setF({ ...f, is_active: v })} /><Label>Active</Label></div>
           </div>
           <DialogFooter><Button onClick={() => save.mutate()} disabled={save.isPending || !f.name || !f.hostname || !f.api_token}>Save</Button></DialogFooter>
+
         </DialogContent>
       </Dialog>
     </div>
