@@ -108,12 +108,15 @@ function PackagesPage() {
           <TableBody>
             {(rows ?? []).map((r: any) => (
               <TableRow key={r.id}>
-                <TableCell className="font-medium">{r.name}</TableCell>
+                <TableCell className="font-medium">
+                  <button className="text-primary hover:underline text-left" onClick={() => setUsageFor(r)}>{r.name}</button>
+                </TableCell>
                 <TableCell className="text-xs text-muted-foreground">{r.disk_space ?? "—"} / {r.bandwidth ?? "—"}</TableCell>
                 <TableCell>{formatBDT(r.price)}</TableCell>
                 <TableCell className="capitalize">{r.billing_cycle}</TableCell>
                 <TableCell><Badge variant={r.is_active ? "default" : "outline"}>{r.is_active ? "Active" : "Hidden"}</Badge></TableCell>
                 <TableCell className="text-right">
+                  <Button size="icon" variant="ghost" title="View usage" onClick={() => setUsageFor(r)}><Users className="h-4 w-4" /></Button>
                   <Button size="icon" variant="ghost" onClick={() => { setEditing(r); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
                   <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete package?")) del.mutate(r.id); }}><Trash2 className="h-4 w-4" /></Button>
                 </TableCell>
