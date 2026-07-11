@@ -161,7 +161,9 @@ const empty = (t: ServiceType = "other") => ({
   renewable: false,
   cpanel_url: "", cpanel_username: "", cpanel_password: "",
   hosting_package_id: "",
+  whm_server_id: "",
 });
+
 
 
 function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockType }: any) {
