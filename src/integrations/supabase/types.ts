@@ -23,6 +23,7 @@ export type Database = {
           favicon_url: string | null
           footer_copyright: string | null
           id: boolean
+          late_fee_percent: number
           logo_url: string | null
           phone: string | null
           updated_at: string
@@ -35,6 +36,7 @@ export type Database = {
           favicon_url?: string | null
           footer_copyright?: string | null
           id?: boolean
+          late_fee_percent?: number
           logo_url?: string | null
           phone?: string | null
           updated_at?: string
@@ -47,6 +49,7 @@ export type Database = {
           favicon_url?: string | null
           footer_copyright?: string | null
           id?: boolean
+          late_fee_percent?: number
           logo_url?: string | null
           phone?: string | null
           updated_at?: string
@@ -261,6 +264,8 @@ export type Database = {
           id: string
           invoice_number: string
           issue_date: string
+          late_fee: number
+          late_fee_applied_at: string | null
           notes: string | null
           project_id: string | null
           status: Database["public"]["Enums"]["invoice_status"]
@@ -277,6 +282,8 @@ export type Database = {
           id?: string
           invoice_number: string
           issue_date?: string
+          late_fee?: number
+          late_fee_applied_at?: string | null
           notes?: string | null
           project_id?: string | null
           status?: Database["public"]["Enums"]["invoice_status"]
@@ -293,6 +300,8 @@ export type Database = {
           id?: string
           invoice_number?: string
           issue_date?: string
+          late_fee?: number
+          late_fee_applied_at?: string | null
           notes?: string | null
           project_id?: string | null
           status?: Database["public"]["Enums"]["invoice_status"]
@@ -1048,7 +1057,12 @@ export type Database = {
         | "completed"
         | "on_hold"
         | "cancelled"
-      service_status: "active" | "expired" | "cancelled" | "pending"
+      service_status:
+        | "active"
+        | "expired"
+        | "cancelled"
+        | "pending"
+        | "suspended"
       service_type: "domain" | "hosting" | "software" | "other"
     }
     CompositeTypes: {
@@ -1212,7 +1226,13 @@ export const Constants = {
         "on_hold",
         "cancelled",
       ],
-      service_status: ["active", "expired", "cancelled", "pending"],
+      service_status: [
+        "active",
+        "expired",
+        "cancelled",
+        "pending",
+        "suspended",
+      ],
       service_type: ["domain", "hosting", "software", "other"],
     },
   },

@@ -83,6 +83,7 @@ function SettingsPage() {
     phone: "",
     address: "",
     footer_copyright: "",
+    late_fee_percent: "2",
   });
 
   useEffect(() => {
@@ -95,6 +96,7 @@ function SettingsPage() {
         phone: data.phone ?? "",
         address: data.address ?? "",
         footer_copyright: data.footer_copyright ?? "",
+        late_fee_percent: String(data.late_fee_percent ?? 2),
       });
     }
   }, [data]);
@@ -110,6 +112,7 @@ function SettingsPage() {
         phone: f.phone.trim() || null,
         address: f.address.trim() || null,
         footer_copyright: f.footer_copyright.trim() || null,
+        late_fee_percent: Math.max(0, Number(f.late_fee_percent) || 0),
       };
       const { error } = await supabase.from("company_settings").upsert(payload);
       if (error) throw error;
@@ -186,6 +189,19 @@ function SettingsPage() {
           <div>
             <Label>Copyright text</Label>
             <Input value={f.footer_copyright} placeholder="© 2026 Sync & Solutions IT. All rights reserved." onChange={(e) => setF({ ...f, footer_copyright: e.target.value })} />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Billing</CardTitle>
+          <CardDescription>Automation for overdue invoices. A daily job marks unpaid invoices past their due date as overdue, adds this late fee once, suspends the linked hosting, and deactivates the linked domain.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="max-w-xs">
+            <Label>Late fee (% of subtotal)</Label>
+            <Input type="number" min="0" step="0.1" value={f.late_fee_percent} onChange={(e) => setF({ ...f, late_fee_percent: e.target.value })} />
           </div>
         </CardContent>
       </Card>

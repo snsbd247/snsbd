@@ -10,6 +10,7 @@ export type CompanySettings = {
   phone: string | null;
   address: string | null;
   footer_copyright: string | null;
+  late_fee_percent: number;
 };
 
 export const COMPANY_DEFAULTS: CompanySettings = {
@@ -21,6 +22,7 @@ export const COMPANY_DEFAULTS: CompanySettings = {
   phone: null,
   address: "Bangladesh",
   footer_copyright: null,
+  late_fee_percent: 2,
 };
 
 export function useCompanySettings() {

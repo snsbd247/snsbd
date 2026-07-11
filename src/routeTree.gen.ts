@@ -39,6 +39,7 @@ import { Route as AuthenticatedExpensesExpenseIdRouteImport } from './routes/_au
 import { Route as AuthenticatedDomainsDomainIdRouteImport } from './routes/_authenticated/domains_.$domainId'
 import { Route as AuthenticatedCustomersCustomerIdRouteImport } from './routes/_authenticated/customers_.$customerId'
 import { Route as ApiPublicHooksRenewInvoicesRouteImport } from './routes/api/public/hooks/renew-invoices'
+import { Route as ApiPublicHooksEnforceOverdueRouteImport } from './routes/api/public/hooks/enforce-overdue'
 
 const PortalRoute = PortalRouteImport.update({
   id: '/portal',
@@ -203,6 +204,12 @@ const ApiPublicHooksRenewInvoicesRoute =
     path: '/api/public/hooks/renew-invoices',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksEnforceOverdueRoute =
+  ApiPublicHooksEnforceOverdueRouteImport.update({
+    id: '/api/public/hooks/enforce-overdue',
+    path: '/api/public/hooks/enforce-overdue',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -233,6 +240,7 @@ export interface FileRoutesByFullPath {
   '/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/team/$memberId': typeof AuthenticatedTeamMemberIdRoute
   '/projects/': typeof AuthenticatedProjectsIndexRoute
+  '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
 }
 export interface FileRoutesByTo {
@@ -264,6 +272,7 @@ export interface FileRoutesByTo {
   '/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/team/$memberId': typeof AuthenticatedTeamMemberIdRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
+  '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
 }
 export interface FileRoutesById {
@@ -297,6 +306,7 @@ export interface FileRoutesById {
   '/_authenticated/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/_authenticated/team_/$memberId': typeof AuthenticatedTeamMemberIdRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
+  '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
 }
 export interface FileRouteTypes {
@@ -330,6 +340,7 @@ export interface FileRouteTypes {
     | '/services/$serviceId'
     | '/team/$memberId'
     | '/projects/'
+    | '/api/public/hooks/enforce-overdue'
     | '/api/public/hooks/renew-invoices'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -361,6 +372,7 @@ export interface FileRouteTypes {
     | '/services/$serviceId'
     | '/team/$memberId'
     | '/projects'
+    | '/api/public/hooks/enforce-overdue'
     | '/api/public/hooks/renew-invoices'
   id:
     | '__root__'
@@ -393,6 +405,7 @@ export interface FileRouteTypes {
     | '/_authenticated/services/$serviceId'
     | '/_authenticated/team_/$memberId'
     | '/_authenticated/projects/'
+    | '/api/public/hooks/enforce-overdue'
     | '/api/public/hooks/renew-invoices'
   fileRoutesById: FileRoutesById
 }
@@ -401,6 +414,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   PortalRoute: typeof PortalRouteWithChildren
+  ApiPublicHooksEnforceOverdueRoute: typeof ApiPublicHooksEnforceOverdueRoute
   ApiPublicHooksRenewInvoicesRoute: typeof ApiPublicHooksRenewInvoicesRoute
 }
 
@@ -616,6 +630,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksRenewInvoicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/enforce-overdue': {
+      id: '/api/public/hooks/enforce-overdue'
+      path: '/api/public/hooks/enforce-overdue'
+      fullPath: '/api/public/hooks/enforce-overdue'
+      preLoaderRoute: typeof ApiPublicHooksEnforceOverdueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -692,6 +713,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   PortalRoute: PortalRouteWithChildren,
+  ApiPublicHooksEnforceOverdueRoute: ApiPublicHooksEnforceOverdueRoute,
   ApiPublicHooksRenewInvoicesRoute: ApiPublicHooksRenewInvoicesRoute,
 }
 export const routeTree = rootRouteImport
