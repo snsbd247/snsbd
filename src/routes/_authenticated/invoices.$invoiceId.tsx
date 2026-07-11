@@ -25,6 +25,7 @@ function statusVariant(s: string) {
 function InvoiceDetailPage() {
   const { invoiceId } = Route.useParams();
   const { role } = useAuth();
+  const { data: company } = useCompanySettings();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const isAdmin = role === "admin";
