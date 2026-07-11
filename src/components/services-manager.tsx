@@ -10,7 +10,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, ExternalLink } from "lucide-react";
+import { Plus, Pencil, Trash2, ExternalLink, Check, ChevronsUpDown } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate, daysUntil } from "@/lib/format";
@@ -278,30 +281,24 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
           {f.type === "hosting" && (
             <div>
               <Label>Hosting package (optional)</Label>
-              <Select
-                value={f.hosting_package_id || "none"}
-                onValueChange={(v) => {
-                  if (v === "none") { setF({ ...f, hosting_package_id: "" }); return; }
-                  const pkg = (packages ?? []).find((p: any) => p.id === v);
+              <PackageCombobox
+                packages={packages ?? []}
+                value={f.hosting_package_id}
+                onChange={(id) => {
+                  if (!id) { setF({ ...f, hosting_package_id: "" }); return; }
+                  const pkg = (packages ?? []).find((p: any) => p.id === id);
+                  if (!pkg) { setF({ ...f, hosting_package_id: id }); return; }
                   setF({
                     ...f,
-                    hosting_package_id: v,
-                    name: f.name || (pkg?.name ?? ""),
-                    details: f.details || [pkg?.disk_space, pkg?.bandwidth].filter(Boolean).join(" / "),
-                    sale_price: (!f.sale_price || f.sale_price === "0") ? String(pkg?.price ?? "0") : f.sale_price,
+                    hosting_package_id: id,
+                    name: pkg.name ?? "",
+                    details: [pkg.disk_space, pkg.bandwidth].filter(Boolean).join(" / "),
+                    sale_price: String(pkg.price ?? "0"),
                   });
+                  toast.success(`Filled from package “${pkg.name}”`);
                 }}
-              >
-                <SelectTrigger><SelectValue placeholder="Select a package" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">— None (custom) —</SelectItem>
-                  {(packages ?? []).map((p: any) => (
-                    <SelectItem key={p.id} value={p.id}>
-                      {p.name} — {formatBDT(p.price)}/{p.billing_cycle}{!p.is_active ? " (hidden)" : ""}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              />
+              <p className="mt-1 text-xs text-muted-foreground">Selecting a package auto-fills name, details and price. You can still edit them below.</p>
             </div>
           )}
           {f.type === "hosting" && (
@@ -320,5 +317,47 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
         <DialogFooter><Button onClick={() => save.mutate()} disabled={save.isPending || !f.customer_id || !f.name}>Save</Button></DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function PackageCombobox({ packages, value, onChange }: { packages: any[]; value: string; onChange: (id: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const selected = packages.find((p) => p.id === value);
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" role="combobox" className={cn("w-full justify-between font-normal", !selected && "text-muted-foreground")}>
+          {selected ? `${selected.name} — ${formatBDT(selected.price)}/${selected.billing_cycle}` : "Search & select a package…"}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Search by package name…" />
+          <CommandList>
+            <CommandEmpty>No package found.</CommandEmpty>
+            <CommandGroup>
+              <CommandItem value="__none__" onSelect={() => { onChange(""); setOpen(false); }}>
+                <Check className={cn("mr-2 h-4 w-4", !value ? "opacity-100" : "opacity-0")} />
+                — None (custom) —
+              </CommandItem>
+              {packages.map((p) => (
+                <CommandItem
+                  key={p.id}
+                  value={`${p.name} ${p.disk_space ?? ""} ${p.bandwidth ?? ""}`}
+                  onSelect={() => { onChange(p.id); setOpen(false); }}
+                >
+                  <Check className={cn("mr-2 h-4 w-4", value === p.id ? "opacity-100" : "opacity-0")} />
+                  <div className="flex-1">
+                    <div className="text-sm">{p.name}{!p.is_active && <span className="ml-2 text-xs text-muted-foreground">(hidden)</span>}</div>
+                    <div className="text-xs text-muted-foreground">{[p.disk_space, p.bandwidth].filter(Boolean).join(" / ") || "—"} · {formatBDT(p.price)}/{p.billing_cycle}</div>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }

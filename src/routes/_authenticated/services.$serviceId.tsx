@@ -77,6 +77,18 @@ function ServiceDetailPage() {
     },
   });
 
+  const { data: packageChanges } = useQuery({
+    queryKey: ["service-package-changes", serviceId],
+    enabled: !!service && service.type === "hosting",
+    queryFn: async () => {
+      const { data } = await (supabase as any).from("service_package_changes")
+        .select("id, old_package_name, new_package_name, actor_id, created_at, profiles:actor_id(full_name, email)")
+        .eq("service_id", serviceId)
+        .order("created_at", { ascending: false });
+      return data ?? [];
+    },
+  });
+
   const generate = useMutation({
     mutationFn: async () => {
       if (!service) throw new Error("No service");
@@ -182,6 +194,28 @@ function ServiceDetailPage() {
 
       {service.notes && (
         <Card><CardHeader><CardTitle className="text-base">Notes</CardTitle></CardHeader><CardContent><p className="text-sm whitespace-pre-wrap">{service.notes}</p></CardContent></Card>
+      )}
+
+      {service.type === "hosting" && packageChanges && packageChanges.length > 0 && (
+        <Card>
+          <CardHeader><CardTitle className="text-base">Hosting package history</CardTitle></CardHeader>
+          <CardContent>
+            <ul className="space-y-2 text-sm">
+              {packageChanges.map((c: any) => (
+                <li key={c.id} className="flex items-center justify-between border-b pb-2 last:border-0">
+                  <div>
+                    <span className="text-muted-foreground">{c.old_package_name ?? "None"}</span>
+                    <span className="mx-2">→</span>
+                    <span className="font-medium">{c.new_package_name ?? "None"}</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {c.profiles?.full_name ?? c.profiles?.email ?? "System"} · {formatDate(c.created_at)}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
       )}
 
 
