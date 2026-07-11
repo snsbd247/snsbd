@@ -53,6 +53,76 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_orders: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          customer_id: string
+          customer_notes: string | null
+          domain_action: Database["public"]["Enums"]["domain_action"] | null
+          domain_name: string | null
+          hosting_package_id: string | null
+          id: string
+          order_type: Database["public"]["Enums"]["customer_order_type"]
+          quoted_price: number
+          service_catalog_id: string | null
+          status: Database["public"]["Enums"]["customer_order_status"]
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          customer_id: string
+          customer_notes?: string | null
+          domain_action?: Database["public"]["Enums"]["domain_action"] | null
+          domain_name?: string | null
+          hosting_package_id?: string | null
+          id?: string
+          order_type: Database["public"]["Enums"]["customer_order_type"]
+          quoted_price?: number
+          service_catalog_id?: string | null
+          status?: Database["public"]["Enums"]["customer_order_status"]
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          customer_id?: string
+          customer_notes?: string | null
+          domain_action?: Database["public"]["Enums"]["domain_action"] | null
+          domain_name?: string | null
+          hosting_package_id?: string | null
+          id?: string
+          order_type?: Database["public"]["Enums"]["customer_order_type"]
+          quoted_price?: number
+          service_catalog_id?: string | null
+          status?: Database["public"]["Enums"]["customer_order_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_orders_hosting_package_id_fkey"
+            columns: ["hosting_package_id"]
+            isOneToOne: false
+            referencedRelation: "hosting_packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_orders_service_catalog_id_fkey"
+            columns: ["service_catalog_id"]
+            isOneToOne: false
+            referencedRelation: "service_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expenses: {
         Row: {
           amount: number
@@ -723,6 +793,14 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "customer"
+      customer_order_status:
+        | "pending"
+        | "processing"
+        | "completed"
+        | "cancelled"
+        | "rejected"
+      customer_order_type: "hosting" | "service" | "domain"
+      domain_action: "register" | "transfer" | "use_existing" | "renew"
       expense_category: "office" | "server" | "utility" | "marketing" | "other"
       invoice_status:
         | "draft"
@@ -867,6 +945,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "customer"],
+      customer_order_status: [
+        "pending",
+        "processing",
+        "completed",
+        "cancelled",
+        "rejected",
+      ],
+      customer_order_type: ["hosting", "service", "domain"],
+      domain_action: ["register", "transfer", "use_existing", "renew"],
       expense_category: ["office", "server", "utility", "marketing", "other"],
       invoice_status: [
         "draft",

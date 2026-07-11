@@ -8,8 +8,9 @@ import {
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard, Users, Globe, HardDrive, Package, FileText, FolderKanban,
-  UserCog, Receipt, LogOut, User as UserIcon,
+  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart,
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -80,6 +81,8 @@ function AuthedLayout() {
               <SidebarGroupContent>
                 <SidebarMenu>
                   <NavItem to="/customers" icon={Users} label="Customers" />
+                  <NavItem to="/orders" icon={ShoppingCart} label="Customer Orders" />
+
                   <NavItem to="/hosting-packages" icon={HardDrive} label="Hosting Packages" />
                   <NavItem to="/service-catalog" icon={Package} label="Service Catalog" />
                   <NavItem to="/team" icon={UserCog} label="Team & Salary" />
