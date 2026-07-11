@@ -80,9 +80,12 @@ function AuthedLayout() {
               <SidebarGroupContent>
                 <SidebarMenu>
                   <NavItem to="/customers" icon={Users} label="Customers" />
+                  <NavItem to="/hosting-packages" icon={HardDrive} label="Hosting Packages" />
+                  <NavItem to="/service-catalog" icon={Package} label="Service Catalog" />
                   <NavItem to="/team" icon={UserCog} label="Team & Salary" />
                   <NavItem to="/expenses" icon={Receipt} label="Expenses" />
                   <NavItem to="/settings" icon={Settings} label="Settings" />
+
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
