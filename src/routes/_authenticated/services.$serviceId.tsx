@@ -167,30 +167,46 @@ function ServiceDetailPage() {
         <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Sale price</div><div className="text-sm font-medium mt-1">{formatBDT(service.sale_price)}</div></CardContent></Card>
       </div>
 
-      {service.type === "hosting" && (service.cpanel_url || service.cpanel_username || service.cpanel_password) && (
+      {service.type === "hosting" && (service.whm_server_id || service.cpanel_url || service.cpanel_username || service.cpanel_password) && (
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base">cPanel access</CardTitle>
-            {service.cpanel_url && service.cpanel_username && service.cpanel_password && (
-              <Button size="sm" onClick={() => cpanelLogin(service.cpanel_url!, service.cpanel_username!, service.cpanel_password!)}>
-                <LogIn className="mr-2 h-4 w-4" />Login to cPanel
-              </Button>
-            )}
+            <div className="flex gap-2">
+              {service.whm_server_id && (
+                <Button size="sm" onClick={async () => {
+                  try {
+                    const { cpanelSsoUrl } = await import("@/lib/whm.functions");
+                    const res = await cpanelSsoUrl({ data: { service_id: service.id } });
+                    window.open(res.url, "_blank", "noopener,noreferrer");
+                  } catch (e: any) { toast.error(e?.message ?? "SSO failed"); }
+                }}>
+                  <LogIn className="mr-2 h-4 w-4" />Login to cPanel (SSO)
+                </Button>
+              )}
+              {!service.whm_server_id && service.cpanel_url && service.cpanel_username && service.cpanel_password && (
+                <Button size="sm" variant="outline" onClick={() => cpanelLogin(service.cpanel_url!, service.cpanel_username!, service.cpanel_password!)}>
+                  <LogIn className="mr-2 h-4 w-4" />Login to cPanel
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
             <div className="flex items-center gap-2"><span className="text-muted-foreground w-24">URL</span><span className="font-mono">{service.cpanel_url || "—"}</span></div>
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground w-24">Username</span>
-              <span className="font-mono">{service.cpanel_username || "—"}</span>
-              {service.cpanel_username && <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => { navigator.clipboard.writeText(service.cpanel_username!); toast.success("Copied"); }}><Copy className="h-3 w-3" /></Button>}
+              <span className="font-mono">{service.cpanel_username || service.whm_account_user || "—"}</span>
+              {(service.cpanel_username || service.whm_account_user) && <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => { navigator.clipboard.writeText(service.cpanel_username || service.whm_account_user!); toast.success("Copied"); }}><Copy className="h-3 w-3" /></Button>}
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-muted-foreground w-24">Password</span>
-              <PasswordReveal value={service.cpanel_password || ""} />
-            </div>
+            {service.cpanel_password && (
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground w-24">Password</span>
+                <PasswordReveal value={service.cpanel_password || ""} />
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
+
 
       {service.notes && (
         <Card><CardHeader><CardTitle className="text-base">Notes</CardTitle></CardHeader><CardContent><p className="text-sm whitespace-pre-wrap">{service.notes}</p></CardContent></Card>
