@@ -93,14 +93,22 @@ function SettingsPage() {
               <Input value={f.company_name} onChange={(e) => setF({ ...f, company_name: e.target.value })} />
             </div>
             <div>
-              <Label>Logo URL</Label>
-              <Input value={f.logo_url} placeholder="https://…/logo.png" onChange={(e) => setF({ ...f, logo_url: e.target.value })} />
-              {f.logo_url && <img src={f.logo_url} alt="Logo preview" className="h-12 mt-2 object-contain" />}
+              <Label>Logo</Label>
+              <ImageUpload
+                value={f.logo_url}
+                onChange={(v) => setF({ ...f, logo_url: v })}
+                previewClass="h-14"
+                maxKB={500}
+              />
             </div>
             <div>
-              <Label>Favicon URL</Label>
-              <Input value={f.favicon_url} placeholder="https://…/favicon.png" onChange={(e) => setF({ ...f, favicon_url: e.target.value })} />
-              {f.favicon_url && <img src={f.favicon_url} alt="Favicon preview" className="h-8 w-8 mt-2 object-contain" />}
+              <Label>Favicon</Label>
+              <ImageUpload
+                value={f.favicon_url}
+                onChange={(v) => setF({ ...f, favicon_url: v })}
+                previewClass="h-10 w-10"
+                maxKB={100}
+              />
             </div>
           </div>
         </CardContent>
