@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -14,6 +14,8 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatDate } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
+import { useServerFn } from "@tanstack/react-start";
+import { createCustomer } from "@/lib/customers.functions";
 
 export const Route = createFileRoute("/_authenticated/customers")({
   component: CustomersPage,
