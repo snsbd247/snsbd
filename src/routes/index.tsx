@@ -68,6 +68,8 @@ function Landing() {
           ))}
         </div>
       </main>
+      <SiteFooter />
     </div>
   );
 }
+
