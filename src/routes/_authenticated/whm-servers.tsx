@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/whm-servers")({
   component: WhmServersPage,
 });
 
-const empty = { name: "", hostname: "", port: "2087", username: "root", api_token: "", is_active: true };
+const empty = { name: "", hostname: "", port: "2087", username: "root", api_token: "", auth_type: "token" as "token" | "password", is_active: true };
 
 function WhmServersPage() {
   const { role } = useAuth();
