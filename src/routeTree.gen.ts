@@ -29,6 +29,7 @@ import { Route as AuthenticatedProjectsProjectIdRouteImport } from './routes/_au
 import { Route as AuthenticatedInvoicesInvoiceIdRouteImport } from './routes/_authenticated/invoices.$invoiceId'
 import { Route as AuthenticatedDomainsDomainIdRouteImport } from './routes/_authenticated/domains.$domainId'
 import { Route as AuthenticatedCustomersCustomerIdRouteImport } from './routes/_authenticated/customers.$customerId'
+import { Route as ApiPublicHooksRenewInvoicesRouteImport } from './routes/api/public/hooks/renew-invoices'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -137,6 +138,12 @@ const AuthenticatedCustomersCustomerIdRoute =
     path: '/$customerId',
     getParentRoute: () => AuthenticatedCustomersRoute,
   } as any)
+const ApiPublicHooksRenewInvoicesRoute =
+  ApiPublicHooksRenewInvoicesRouteImport.update({
+    id: '/api/public/hooks/renew-invoices',
+    path: '/api/public/hooks/renew-invoices',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -158,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/projects/': typeof AuthenticatedProjectsIndexRoute
+  '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -179,6 +187,7 @@ export interface FileRoutesByTo {
   '/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
+  '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -202,6 +211,7 @@ export interface FileRoutesById {
   '/_authenticated/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/_authenticated/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
+  '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/receipts/$paymentId'
     | '/services/$serviceId'
     | '/projects/'
+    | '/api/public/hooks/renew-invoices'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/receipts/$paymentId'
     | '/services/$serviceId'
     | '/projects'
+    | '/api/public/hooks/renew-invoices'
   id:
     | '__root__'
     | '/'
@@ -268,12 +280,14 @@ export interface FileRouteTypes {
     | '/_authenticated/receipts/$paymentId'
     | '/_authenticated/services/$serviceId'
     | '/_authenticated/projects/'
+    | '/api/public/hooks/renew-invoices'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicHooksRenewInvoicesRoute: typeof ApiPublicHooksRenewInvoicesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -418,6 +432,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCustomersCustomerIdRouteImport
       parentRoute: typeof AuthenticatedCustomersRoute
     }
+    '/api/public/hooks/renew-invoices': {
+      id: '/api/public/hooks/renew-invoices'
+      path: '/api/public/hooks/renew-invoices'
+      fullPath: '/api/public/hooks/renew-invoices'
+      preLoaderRoute: typeof ApiPublicHooksRenewInvoicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -501,6 +522,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicHooksRenewInvoicesRoute: ApiPublicHooksRenewInvoicesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
