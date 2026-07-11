@@ -135,7 +135,7 @@ function Home() {
             { to: "/bdix-hosting", title: "BDIX Hosting", desc: "Ultra-fast for Bangladesh traffic", icon: Cloud },
             { to: "/reseller-hosting", title: "Reseller", desc: "Sell hosting under your own brand", icon: Globe },
             { to: "/vps", title: "VPS Hosting", desc: "Root access, KVM virtualization", icon: Server },
-            { to: "/domains", title: "Domain Names", desc: "Register or transfer .com from ৳1,150", icon: Globe },
+            { to: "/register-domain", title: "Domain Names", desc: "Register or transfer .com from ৳1,150", icon: Globe },
             { to: "/email-hosting", title: "Business Email", desc: "you@yourdomain.com with webmail", icon: Cloud },
           ].map((s) => (
             <Link key={s.to} to={s.to} className="group rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg">

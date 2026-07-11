@@ -12,7 +12,7 @@ const hostingLinks = [
 ];
 
 const services = [
-  { to: "/domains", label: "Domains" },
+  { to: "/register-domain", label: "Domains" },
   { to: "/email-hosting", label: "Email Hosting" },
   { to: "/support", label: "Support" },
   { to: "/about", label: "About" },

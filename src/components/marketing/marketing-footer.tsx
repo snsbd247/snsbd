@@ -19,7 +19,7 @@ const cols = [
       { to: "/about", label: "About Us" },
       { to: "/contact", label: "Contact" },
       { to: "/support", label: "Support Center" },
-      { to: "/domains", label: "Domain Search" },
+      { to: "/register-domain", label: "Domain Search" },
     ],
   },
   {
