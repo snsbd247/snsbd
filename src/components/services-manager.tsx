@@ -172,7 +172,9 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
         expiry_date: editing.expiry_date ?? "", cost_price: String(editing.cost_price ?? "0"),
         sale_price: String(editing.sale_price ?? "0"), status: editing.status, notes: editing.notes ?? "",
         renewable: !!editing.renewable,
+        cpanel_url: editing.cpanel_url ?? "", cpanel_username: editing.cpanel_username ?? "", cpanel_password: editing.cpanel_password ?? "",
       });
+
       else setF(empty(lockType));
     }
   }, [open, editing, lockType]);
