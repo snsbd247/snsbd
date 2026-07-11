@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -69,7 +69,7 @@ function ExpensesPage() {
                 <TableRow key={e.id}>
                   <TableCell>{formatDate(e.expense_date)}</TableCell>
                   <TableCell><Badge variant="outline" className="capitalize">{e.category}</Badge></TableCell>
-                  <TableCell>{e.description}</TableCell>
+                  <TableCell><Link to="/expenses/$expenseId" params={{ expenseId: e.id }} className="text-primary hover:underline">{e.description}</Link></TableCell>
                   <TableCell>{e.vendor ?? "—"}</TableCell>
                   <TableCell className="font-medium">{formatBDT(e.amount)}</TableCell>
                   <TableCell className="text-right">

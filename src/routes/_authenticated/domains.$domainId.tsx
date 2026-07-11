@@ -144,7 +144,7 @@ function DomainDetailPage() {
 
       <div className="grid gap-4 md:grid-cols-4">
         <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Customer</div><div className="text-sm font-medium mt-1">{domain.profiles?.full_name ?? domain.profiles?.email ?? "—"}</div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Project</div><div className="text-sm font-medium mt-1">{domain.projects?.name ? <Link to="/projects/$projectId" params={{ projectId: domain.projects.id }} className="hover:underline">{domain.projects.name}</Link> : "—"}</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Project</div><div className="text-sm font-medium mt-1">{domain.projects?.name ? <Link to="/projects/$projectId" params={{ projectId: domain.projects.id }} className="text-primary hover:underline">{domain.projects.name}</Link> : "—"}</div></CardContent></Card>
         <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Purchase</div><div className="text-sm font-medium mt-1">{formatDate(domain.purchase_date)}</div></CardContent></Card>
         <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Expiry</div><div className="text-sm font-medium mt-1">{formatDate(domain.expiry_date)}{days != null && <Badge variant={days < 0 ? "destructive" : days <= 30 ? "secondary" : "outline"} className="ml-2">{days < 0 ? "Expired" : `${days}d`}</Badge>}</div></CardContent></Card>
       </div>
@@ -163,7 +163,7 @@ function DomainDetailPage() {
                   {(hostings ?? []).map((h: any) => <SelectItem key={h.id} value={h.id}>{h.name}</SelectItem>)}
                 </SelectContent>
               </Select>
-              {domain.linked_hosting && <div className="text-xs text-muted-foreground mt-1">Currently: <Link to="/services/$serviceId" params={{ serviceId: domain.linked_hosting.id }} className="hover:underline">{domain.linked_hosting.name}</Link></div>}
+              {domain.linked_hosting && <div className="text-xs text-muted-foreground mt-1">Currently: <Link to="/services/$serviceId" params={{ serviceId: domain.linked_hosting.id }} className="text-primary hover:underline">{domain.linked_hosting.name}</Link></div>}
             </div>
           </div>
           <div><Label>Nameservers</Label><Textarea rows={2} value={f.nameservers} disabled={!isAdmin} onChange={(e) => setF({ ...f, nameservers: e.target.value })} placeholder="ns1.example.com&#10;ns2.example.com" /></div>

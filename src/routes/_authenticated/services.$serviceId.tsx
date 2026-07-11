@@ -145,7 +145,7 @@ function ServiceDetailPage() {
 
       <div className="grid gap-4 md:grid-cols-4">
         <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Customer</div><div className="text-sm font-medium mt-1">{service.profiles?.full_name ?? service.profiles?.email ?? "—"}</div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Project</div><div className="text-sm font-medium mt-1">{service.projects?.name ? <Link to="/projects/$projectId" params={{ projectId: service.projects.id }} className="hover:underline">{service.projects.name}</Link> : "—"}</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Project</div><div className="text-sm font-medium mt-1">{service.projects?.name ? <Link to="/projects/$projectId" params={{ projectId: service.projects.id }} className="text-primary hover:underline">{service.projects.name}</Link> : "—"}</div></CardContent></Card>
         <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Purchase</div><div className="text-sm font-medium mt-1">{formatDate(service.purchase_date)}</div></CardContent></Card>
         <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Expiry</div><div className="text-sm font-medium mt-1">{formatDate(service.expiry_date)}{days != null && <Badge variant={days < 0 ? "destructive" : days <= 30 ? "secondary" : "outline"} className="ml-2">{days < 0 ? "Expired" : `${days}d`}</Badge>}</div></CardContent></Card>
       </div>

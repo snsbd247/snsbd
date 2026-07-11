@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -62,7 +62,7 @@ function TeamPage() {
             <TableBody>
               {(members ?? []).map((m: any) => (
                 <TableRow key={m.id}>
-                  <TableCell className="font-medium">{m.full_name}</TableCell>
+                  <TableCell className="font-medium"><Link to="/team/$memberId" params={{ memberId: m.id }} className="text-primary hover:underline">{m.full_name}</Link></TableCell>
                   <TableCell>{m.role ?? "—"}</TableCell>
                   <TableCell className="text-xs">{m.email}<br />{m.phone}</TableCell>
                   <TableCell>{formatBDT(m.monthly_salary)}</TableCell>
@@ -91,7 +91,7 @@ function TeamPage() {
                 {(payments ?? []).map((p: any) => (
                   <TableRow key={p.id}>
                     <TableCell>{formatDate(p.paid_at)}</TableCell>
-                    <TableCell>{p.team_members?.full_name}</TableCell>
+                    <TableCell>{p.team_member_id ? <Link to="/team/$memberId" params={{ memberId: p.team_member_id }} className="text-primary hover:underline">{p.team_members?.full_name}</Link> : p.team_members?.full_name}</TableCell>
                     <TableCell>{p.pay_period}</TableCell>
                     <TableCell className="font-medium">{formatBDT(p.amount)}</TableCell>
                     <TableCell className="text-xs text-muted-foreground">{p.notes}</TableCell>
