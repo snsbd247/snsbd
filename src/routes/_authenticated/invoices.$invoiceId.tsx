@@ -197,6 +197,10 @@ function InvoiceDetailPage() {
               <p className="whitespace-pre-wrap">{inv.notes}</p>
             </div>
           )}
+
+          {company?.footer_copyright && (
+            <div className="text-center text-[11px] text-muted-foreground border-t pt-3">{company.footer_copyright}</div>
+          )}
         </CardContent>
       </Card>
 
@@ -205,9 +209,16 @@ function InvoiceDetailPage() {
         <CardContent className="space-y-2">
           {data.payments.length === 0 && <p className="text-sm text-muted-foreground">No payments recorded.</p>}
           {data.payments.map((p: any) => (
-            <div key={p.id} className="flex justify-between text-sm border-b py-1">
-              <span>{formatDate(p.paid_at)} · {p.method}</span>
-              <span className="font-medium">{formatBDT(p.amount)}</span>
+            <div key={p.id} className="flex items-center justify-between text-sm border-b py-1.5">
+              <span>{formatDate(p.paid_at)} · <span className="capitalize">{p.method}</span>{p.receipt_number && <span className="text-xs text-muted-foreground ml-2 font-mono">{p.receipt_number}</span>}</span>
+              <div className="flex items-center gap-2">
+                <span className="font-medium">{formatBDT(p.amount)}</span>
+                <Button asChild size="sm" variant="outline">
+                  <Link to="/receipts/$paymentId" params={{ paymentId: p.id }}>
+                    <ReceiptIcon className="mr-1 h-3.5 w-3.5" />Receipt
+                  </Link>
+                </Button>
+              </div>
             </div>
           ))}
           {isAdmin && balance > 0 && (
