@@ -87,7 +87,9 @@ function AuthedLayout() {
                   <NavItem to="/service-catalog" icon={Package} label="Service Catalog" />
                   <NavItem to="/team" icon={UserCog} label="Team & Salary" />
                   <NavItem to="/expenses" icon={Receipt} label="Expenses" />
+                  <NavItem to="/payment-settings" icon={Settings} label="Payment Gateways" />
                   <NavItem to="/settings" icon={Settings} label="Settings" />
+
 
                 </SidebarMenu>
               </SidebarGroupContent>

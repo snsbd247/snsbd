@@ -194,12 +194,19 @@ function PortalPage() {
 
           <TabsContent value="invoices" className="space-y-2">
             {invoices.length === 0 && <Card><CardContent className="p-6 text-sm text-muted-foreground">No invoices yet.</CardContent></Card>}
-            {invoices.map((i) => (
-              <Card key={i.id}><CardContent className="p-4 flex items-center justify-between">
-                <div><div className="font-mono text-xs">{i.invoice_number}</div><div className="text-xs text-muted-foreground">{formatDate(i.issue_date)}</div></div>
-                <div className="flex items-center gap-3"><Badge variant="outline" className="capitalize">{i.status}</Badge><span className="font-medium">{formatBDT(i.total)}</span></div>
-              </CardContent></Card>
-            ))}
+            {invoices.map((i) => {
+              const outstanding = Number(i.total) - Number(i.amount_paid);
+              return (
+                <Card key={i.id}><CardContent className="p-4 flex items-center justify-between gap-3">
+                  <div><div className="font-mono text-xs">{i.invoice_number}</div><div className="text-xs text-muted-foreground">{formatDate(i.issue_date)}</div></div>
+                  <div className="flex items-center gap-3">
+                    <Badge variant="outline" className="capitalize">{i.status}</Badge>
+                    <span className="font-medium">{formatBDT(i.total)}</span>
+                    {outstanding > 0 && i.status !== "paid" && <BkashPayButton invoiceId={i.id} amount={outstanding} />}
+                  </div>
+                </CardContent></Card>
+              );
+            })}
           </TabsContent>
         </Tabs>
       </div>
@@ -207,6 +214,24 @@ function PortalPage() {
     </div>
   );
 }
+
+function BkashPayButton({ invoiceId, amount }: { invoiceId: string; amount: number }) {
+  const [busy, setBusy] = useState(false);
+  const pay = async () => {
+    setBusy(true);
+    try {
+      const { bkashCreatePayment } = await import("@/lib/bkash.functions");
+      const callback_url = `${window.location.origin}/portal/bkash-callback`;
+      const res = await bkashCreatePayment({ data: { invoice_id: invoiceId, amount, callback_url } });
+      window.location.href = res.bkashURL;
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to start bKash payment");
+      setBusy(false);
+    }
+  };
+  return <Button size="sm" onClick={pay} disabled={busy}>{busy ? "Redirecting…" : `Pay ${formatBDT(amount)} with bKash`}</Button>;
+}
+
 
 /* ---------- Domain ---------- */
 function DomainOrder({ uid, onSubmitted }: { uid: string; onSubmitted: () => void }) {
