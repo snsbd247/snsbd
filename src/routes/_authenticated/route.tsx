@@ -122,7 +122,9 @@ function AuthedLayout() {
         <main className="p-6">
           <Outlet />
         </main>
+        <SiteFooter />
       </SidebarInset>
+
     </SidebarProvider>
   );
 }
