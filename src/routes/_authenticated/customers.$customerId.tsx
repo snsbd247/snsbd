@@ -181,3 +181,26 @@ function ServiceSection({ title, icon, rows, kind }: { title: string; icon: any;
     </Section>
   );
 }
+
+function LoginAsCustomerButton({ customerId }: { customerId: string }) {
+  const fn = useServerFn(createPortalSession);
+  const [loading, setLoading] = useState(false);
+  const onClick = async () => {
+    setLoading(true);
+    try {
+      const res = await fn({ data: { customer_id: customerId } });
+      const url = `${window.location.origin}/portal#at=${encodeURIComponent(res.access_token)}&rt=${encodeURIComponent(res.refresh_token)}`;
+      const win = window.open(url, "_blank", "noopener");
+      if (!win) toast.error("Popup blocked — allow popups to open the portal");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to open portal");
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <Button size="sm" onClick={onClick} disabled={loading}>
+      <LogIn className="mr-2 h-4 w-4" />{loading ? "Opening…" : "Login as customer"}
+    </Button>
+  );
+}
