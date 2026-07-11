@@ -73,10 +73,14 @@ function CustomerDetailPage() {
             {p.address && <div className="whitespace-pre-line">{p.address}</div>}
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={() => navigate({ to: "/customers" })}>
-          <ArrowLeft className="mr-2 h-4 w-4" />Back
-        </Button>
+        <div className="flex gap-2">
+          <LoginAsCustomerButton customerId={customerId} />
+          <Button variant="outline" size="sm" onClick={() => navigate({ to: "/customers" })}>
+            <ArrowLeft className="mr-2 h-4 w-4" />Back
+          </Button>
+        </div>
       </div>
+
 
       <div className="grid gap-4 md:grid-cols-4">
         <StatCard icon={FolderKanban} label="Projects" value={data.projects.length} />
