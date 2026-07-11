@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT } from "@/lib/format";
@@ -31,6 +31,7 @@ function PackagesPage() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<any>(null);
+  const [usageFor, setUsageFor] = useState<any>(null);
   const [f, setF] = useState(empty);
 
   useEffect(() => {
@@ -107,12 +108,15 @@ function PackagesPage() {
           <TableBody>
             {(rows ?? []).map((r: any) => (
               <TableRow key={r.id}>
-                <TableCell className="font-medium">{r.name}</TableCell>
+                <TableCell className="font-medium">
+                  <button className="text-primary hover:underline text-left" onClick={() => setUsageFor(r)}>{r.name}</button>
+                </TableCell>
                 <TableCell className="text-xs text-muted-foreground">{r.disk_space ?? "—"} / {r.bandwidth ?? "—"}</TableCell>
                 <TableCell>{formatBDT(r.price)}</TableCell>
                 <TableCell className="capitalize">{r.billing_cycle}</TableCell>
                 <TableCell><Badge variant={r.is_active ? "default" : "outline"}>{r.is_active ? "Active" : "Hidden"}</Badge></TableCell>
                 <TableCell className="text-right">
+                  <Button size="icon" variant="ghost" title="View usage" onClick={() => setUsageFor(r)}><Users className="h-4 w-4" /></Button>
                   <Button size="icon" variant="ghost" onClick={() => { setEditing(r); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
                   <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete package?")) del.mutate(r.id); }}><Trash2 className="h-4 w-4" /></Button>
                 </TableCell>
@@ -155,6 +159,55 @@ function PackagesPage() {
           <DialogFooter><Button onClick={() => save.mutate()} disabled={!f.name || save.isPending}>Save</Button></DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <UsageDialog pkg={usageFor} onClose={() => setUsageFor(null)} />
     </div>
+  );
+}
+
+function UsageDialog({ pkg, onClose }: { pkg: any; onClose: () => void }) {
+  const { data: rows, isLoading } = useQuery({
+    queryKey: ["hosting_package_usage", pkg?.id],
+    enabled: !!pkg?.id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("services")
+        .select("id, name, status, expiry_date, sale_price, profiles(id, full_name, email)")
+        .eq("hosting_package_id", pkg.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  return (
+    <Dialog open={!!pkg} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader><DialogTitle>Hostings using “{pkg?.name}”</DialogTitle></DialogHeader>
+        {isLoading ? (
+          <p className="text-sm text-muted-foreground py-6 text-center">Loading…</p>
+        ) : (rows ?? []).length === 0 ? (
+          <p className="text-sm text-muted-foreground py-6 text-center">No hostings use this package yet.</p>
+        ) : (
+          <Table>
+            <TableHeader><TableRow>
+              <TableHead>Hosting</TableHead><TableHead>Customer</TableHead>
+              <TableHead>Expiry</TableHead><TableHead>Price</TableHead><TableHead>Status</TableHead>
+            </TableRow></TableHeader>
+            <TableBody>
+              {rows!.map((r: any) => (
+                <TableRow key={r.id}>
+                  <TableCell><Link to="/services/$serviceId" params={{ serviceId: r.id }} className="text-primary hover:underline">{r.name}</Link></TableCell>
+                  <TableCell>{r.profiles?.full_name ?? r.profiles?.email ?? "—"}</TableCell>
+                  <TableCell className="text-xs">{r.expiry_date ?? "—"}</TableCell>
+                  <TableCell>{formatBDT(r.sale_price)}</TableCell>
+                  <TableCell><Badge variant={r.status === "active" ? "default" : "secondary"} className="capitalize">{r.status}</Badge></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }

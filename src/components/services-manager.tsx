@@ -157,12 +157,18 @@ const empty = (t: ServiceType = "other") => ({
   purchase_date: "", expiry_date: "", cost_price: "0", sale_price: "0", status: "active", notes: "",
   renewable: false,
   cpanel_url: "", cpanel_username: "", cpanel_password: "",
+  hosting_package_id: "",
 });
 
 
 function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockType }: any) {
   const qc = useQueryClient();
   const [f, setF] = useState<any>(empty(lockType));
+
+  const { data: packages } = useQuery({
+    queryKey: ["hosting_packages_active"],
+    queryFn: async () => (await supabase.from("hosting_packages").select("id, name, price, billing_cycle, disk_space, bandwidth, is_active").order("sort_order").order("price")).data ?? [],
+  });
 
   useEffect(() => {
     if (open) {
@@ -173,6 +179,7 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
         sale_price: String(editing.sale_price ?? "0"), status: editing.status, notes: editing.notes ?? "",
         renewable: !!editing.renewable,
         cpanel_url: editing.cpanel_url ?? "", cpanel_username: editing.cpanel_username ?? "", cpanel_password: editing.cpanel_password ?? "",
+        hosting_package_id: editing.hosting_package_id ?? "",
       });
 
       else setF(empty(lockType));
@@ -184,6 +191,7 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
       const payload: any = {
         ...f,
         project_id: f.project_id || null,
+        hosting_package_id: f.type === "hosting" ? (f.hosting_package_id || null) : null,
         cost_price: Number(f.cost_price) || 0,
         sale_price: Number(f.sale_price) || 0,
         purchase_date: f.purchase_date || null,
@@ -267,6 +275,35 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
             <input type="checkbox" checked={!!f.renewable} onChange={(e) => setF({ ...f, renewable: e.target.checked })} />
             Renewable — auto-generate a draft invoice 10 days before expiry
           </label>
+          {f.type === "hosting" && (
+            <div>
+              <Label>Hosting package (optional)</Label>
+              <Select
+                value={f.hosting_package_id || "none"}
+                onValueChange={(v) => {
+                  if (v === "none") { setF({ ...f, hosting_package_id: "" }); return; }
+                  const pkg = (packages ?? []).find((p: any) => p.id === v);
+                  setF({
+                    ...f,
+                    hosting_package_id: v,
+                    name: f.name || (pkg?.name ?? ""),
+                    details: f.details || [pkg?.disk_space, pkg?.bandwidth].filter(Boolean).join(" / "),
+                    sale_price: (!f.sale_price || f.sale_price === "0") ? String(pkg?.price ?? "0") : f.sale_price,
+                  });
+                }}
+              >
+                <SelectTrigger><SelectValue placeholder="Select a package" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">— None (custom) —</SelectItem>
+                  {(packages ?? []).map((p: any) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name} — {formatBDT(p.price)}/{p.billing_cycle}{!p.is_active ? " (hidden)" : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           {f.type === "hosting" && (
             <div className="grid gap-3 rounded-md border p-3 bg-muted/30">
               <div className="text-xs font-semibold uppercase text-muted-foreground">cPanel login</div>

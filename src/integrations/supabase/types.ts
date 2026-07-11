@@ -726,6 +726,7 @@ export type Database = {
           details: string | null
           dns_notes: string | null
           expiry_date: string | null
+          hosting_package_id: string | null
           id: string
           last_renewal_invoice_at: string | null
           linked_hosting_id: string | null
@@ -751,6 +752,7 @@ export type Database = {
           details?: string | null
           dns_notes?: string | null
           expiry_date?: string | null
+          hosting_package_id?: string | null
           id?: string
           last_renewal_invoice_at?: string | null
           linked_hosting_id?: string | null
@@ -776,6 +778,7 @@ export type Database = {
           details?: string | null
           dns_notes?: string | null
           expiry_date?: string | null
+          hosting_package_id?: string | null
           id?: string
           last_renewal_invoice_at?: string | null
           linked_hosting_id?: string | null
@@ -797,6 +800,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_hosting_package_id_fkey"
+            columns: ["hosting_package_id"]
+            isOneToOne: false
+            referencedRelation: "hosting_packages"
             referencedColumns: ["id"]
           },
           {
