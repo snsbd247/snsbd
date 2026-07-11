@@ -8,6 +8,7 @@ type WhmServer = {
   port: number;
   username: string;
   api_token: string;
+  auth_type?: "token" | "password";
 };
 
 function whmBase(s: WhmServer) {
@@ -15,11 +16,13 @@ function whmBase(s: WhmServer) {
 }
 
 function whmHeaders(s: WhmServer) {
-  return {
-    Authorization: `whm ${s.username}:${s.api_token}`,
-    Accept: "application/json",
-  };
+  const auth =
+    s.auth_type === "password"
+      ? `Basic ${btoa(`${s.username}:${s.api_token}`)}`
+      : `whm ${s.username}:${s.api_token}`;
+  return { Authorization: auth, Accept: "application/json" };
 }
+
 
 async function whmGet(s: WhmServer, path: string) {
   const url = `${whmBase(s)}${path}${path.includes("?") ? "&" : "?"}api.version=1`;

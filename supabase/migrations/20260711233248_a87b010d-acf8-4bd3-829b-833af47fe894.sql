@@ -1,0 +1,1 @@
+ALTER TABLE public.whm_servers ADD COLUMN IF NOT EXISTS auth_type text NOT NULL DEFAULT 'token' CHECK (auth_type IN ('token','password'));
