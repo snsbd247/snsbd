@@ -715,6 +715,61 @@ export type Database = {
         }
         Relationships: []
       }
+      service_package_changes: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          id: string
+          new_package_id: string | null
+          new_package_name: string | null
+          old_package_id: string | null
+          old_package_name: string | null
+          service_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          new_package_id?: string | null
+          new_package_name?: string | null
+          old_package_id?: string | null
+          old_package_name?: string | null
+          service_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          new_package_id?: string | null
+          new_package_name?: string | null
+          old_package_id?: string | null
+          old_package_name?: string | null
+          service_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_package_changes_new_package_id_fkey"
+            columns: ["new_package_id"]
+            isOneToOne: false
+            referencedRelation: "hosting_packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_package_changes_old_package_id_fkey"
+            columns: ["old_package_id"]
+            isOneToOne: false
+            referencedRelation: "hosting_packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_package_changes_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       services: {
         Row: {
           cost_price: number | null
