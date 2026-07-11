@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PortalBkashCallbackRouteImport } from './routes/portal.bkash-callback'
+import { Route as AuthenticatedWhmServersRouteImport } from './routes/_authenticated/whm-servers'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedServiceCatalogRouteImport } from './routes/_authenticated/service-catalog'
@@ -62,6 +63,11 @@ const PortalBkashCallbackRoute = PortalBkashCallbackRouteImport.update({
   id: '/bkash-callback',
   path: '/bkash-callback',
   getParentRoute: () => PortalRoute,
+} as any)
+const AuthenticatedWhmServersRoute = AuthenticatedWhmServersRouteImport.update({
+  id: '/whm-servers',
+  path: '/whm-servers',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedTeamRoute = AuthenticatedTeamRouteImport.update({
   id: '/team',
@@ -216,6 +222,7 @@ export interface FileRoutesByFullPath {
   '/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
+  '/whm-servers': typeof AuthenticatedWhmServersRoute
   '/portal/bkash-callback': typeof PortalBkashCallbackRoute
   '/customers/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
   '/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
@@ -246,6 +253,7 @@ export interface FileRoutesByTo {
   '/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
+  '/whm-servers': typeof AuthenticatedWhmServersRoute
   '/portal/bkash-callback': typeof PortalBkashCallbackRoute
   '/customers/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
   '/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
@@ -278,6 +286,7 @@ export interface FileRoutesById {
   '/_authenticated/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/team': typeof AuthenticatedTeamRoute
+  '/_authenticated/whm-servers': typeof AuthenticatedWhmServersRoute
   '/portal/bkash-callback': typeof PortalBkashCallbackRoute
   '/_authenticated/customers_/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
   '/_authenticated/domains_/$domainId': typeof AuthenticatedDomainsDomainIdRoute
@@ -310,6 +319,7 @@ export interface FileRouteTypes {
     | '/service-catalog'
     | '/settings'
     | '/team'
+    | '/whm-servers'
     | '/portal/bkash-callback'
     | '/customers/$customerId'
     | '/domains/$domainId'
@@ -340,6 +350,7 @@ export interface FileRouteTypes {
     | '/service-catalog'
     | '/settings'
     | '/team'
+    | '/whm-servers'
     | '/portal/bkash-callback'
     | '/customers/$customerId'
     | '/domains/$domainId'
@@ -371,6 +382,7 @@ export interface FileRouteTypes {
     | '/_authenticated/service-catalog'
     | '/_authenticated/settings'
     | '/_authenticated/team'
+    | '/_authenticated/whm-servers'
     | '/portal/bkash-callback'
     | '/_authenticated/customers_/$customerId'
     | '/_authenticated/domains_/$domainId'
@@ -428,6 +440,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal/bkash-callback'
       preLoaderRoute: typeof PortalBkashCallbackRouteImport
       parentRoute: typeof PortalRoute
+    }
+    '/_authenticated/whm-servers': {
+      id: '/_authenticated/whm-servers'
+      path: '/whm-servers'
+      fullPath: '/whm-servers'
+      preLoaderRoute: typeof AuthenticatedWhmServersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/team': {
       id: '/_authenticated/team'
@@ -615,6 +634,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedServiceCatalogRoute: typeof AuthenticatedServiceCatalogRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
+  AuthenticatedWhmServersRoute: typeof AuthenticatedWhmServersRoute
   AuthenticatedCustomersCustomerIdRoute: typeof AuthenticatedCustomersCustomerIdRoute
   AuthenticatedDomainsDomainIdRoute: typeof AuthenticatedDomainsDomainIdRoute
   AuthenticatedExpensesExpenseIdRoute: typeof AuthenticatedExpensesExpenseIdRoute
@@ -641,6 +661,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedServiceCatalogRoute: AuthenticatedServiceCatalogRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
+  AuthenticatedWhmServersRoute: AuthenticatedWhmServersRoute,
   AuthenticatedCustomersCustomerIdRoute: AuthenticatedCustomersCustomerIdRoute,
   AuthenticatedDomainsDomainIdRoute: AuthenticatedDomainsDomainIdRoute,
   AuthenticatedExpensesExpenseIdRoute: AuthenticatedExpensesExpenseIdRoute,
