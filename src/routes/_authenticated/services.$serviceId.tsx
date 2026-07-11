@@ -9,10 +9,45 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate, daysUntil } from "@/lib/format";
 import { generateInvoiceDraft } from "@/lib/generate-invoice";
+import { useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/services/$serviceId")({
   component: ServiceDetailPage,
 });
+
+function cpanelLogin(url: string, user: string, pass: string) {
+  try {
+    const base = url.replace(/\/+$/, "");
+    const action = /\/login\/?$/i.test(base) ? base : `${base}/login/`;
+    const win = window.open("about:blank", "_blank");
+    if (!win) { toast.error("Popup blocked — allow popups to auto-login"); return; }
+    const form = win.document.createElement("form");
+    form.method = "POST";
+    form.action = action;
+    form.enctype = "application/x-www-form-urlencoded";
+    for (const [k, v] of Object.entries({ user, pass, goto_uri: "/" })) {
+      const input = win.document.createElement("input");
+      input.type = "hidden"; input.name = k; input.value = v;
+      form.appendChild(input);
+    }
+    win.document.body.appendChild(form);
+    form.submit();
+  } catch (e: any) {
+    toast.error(e?.message ?? "Failed to open cPanel");
+  }
+}
+
+function PasswordReveal({ value }: { value: string }) {
+  const [show, setShow] = useState(false);
+  return (
+    <>
+      <span className="font-mono">{show ? value : "•".repeat(Math.min(value.length, 12))}</span>
+      <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => setShow((s) => !s)}>{show ? "Hide" : "Show"}</Button>
+      <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => { navigator.clipboard.writeText(value); toast.success("Copied"); }}><Copy className="h-3 w-3" /></Button>
+    </>
+  );
+}
+
 
 function ServiceDetailPage() {
   const { serviceId } = Route.useParams();
