@@ -151,12 +151,12 @@ export const bkashExecutePayment = createServerFn({ method: "POST" })
         await supabaseAdmin.from("invoices").update({ amount_paid: newPaid, status }).eq("id", inv.id);
         await supabaseAdmin.from("payments").insert({
           invoice_id: inv.id,
-          customer_id: inv.customer_id,
           amount: txn.amount,
           method: "bkash",
           reference: body.trxID ?? data.paymentID,
           paid_at: new Date().toISOString(),
         });
+
       }
     }
 
