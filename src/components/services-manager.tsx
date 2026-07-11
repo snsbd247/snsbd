@@ -267,7 +267,18 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
             <input type="checkbox" checked={!!f.renewable} onChange={(e) => setF({ ...f, renewable: e.target.checked })} />
             Renewable — auto-generate a draft invoice 10 days before expiry
           </label>
+          {f.type === "hosting" && (
+            <div className="grid gap-3 rounded-md border p-3 bg-muted/30">
+              <div className="text-xs font-semibold uppercase text-muted-foreground">cPanel login</div>
+              <div><Label>cPanel URL</Label><Input value={f.cpanel_url} onChange={(e) => setF({ ...f, cpanel_url: e.target.value })} placeholder="https://server.example.com:2083" /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Username</Label><Input value={f.cpanel_username} onChange={(e) => setF({ ...f, cpanel_username: e.target.value })} autoComplete="off" /></div>
+                <div><Label>Password</Label><Input type="password" value={f.cpanel_password} onChange={(e) => setF({ ...f, cpanel_password: e.target.value })} autoComplete="new-password" /></div>
+              </div>
+            </div>
+          )}
           <div><Label>Notes</Label><Textarea value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} /></div>
+
         </div>
         <DialogFooter><Button onClick={() => save.mutate()} disabled={save.isPending || !f.customer_id || !f.name}>Save</Button></DialogFooter>
       </DialogContent>
