@@ -421,3 +421,58 @@ function ServiceOrder({ uid, catalog, onSubmitted }: { uid: string; catalog: any
     </>
   );
 }
+
+function CpanelActions({ service }: { service: any }) {
+  const [open, setOpen] = useState(false);
+  const [pw, setPw] = useState("");
+  const [pw2, setPw2] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [ssoBusy, setSsoBusy] = useState(false);
+
+  async function openCpanel() {
+    setSsoBusy(true);
+    try {
+      const { cpanelSsoUrl } = await import("@/lib/whm.functions");
+      const res = await cpanelSsoUrl({ data: { service_id: service.id } });
+      window.open(res.url, "_blank", "noopener");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Login failed");
+    } finally { setSsoBusy(false); }
+  }
+
+  async function submit() {
+    if (pw.length < 8) return toast.error("Password must be at least 8 characters");
+    if (pw !== pw2) return toast.error("Passwords do not match");
+    setBusy(true);
+    try {
+      const { cpanelChangePassword } = await import("@/lib/whm.functions");
+      await cpanelChangePassword({ data: { service_id: service.id, new_password: pw } });
+      toast.success("cPanel password updated");
+      setOpen(false); setPw(""); setPw2("");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed");
+    } finally { setBusy(false); }
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <Button size="sm" variant="outline" onClick={openCpanel} disabled={ssoBusy}>
+        {ssoBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Open cPanel"}
+      </Button>
+      <Button size="sm" variant="ghost" onClick={() => setOpen(true)}>Change password</Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Change cPanel password</DialogTitle>
+            <DialogDescription>{service.name}</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-3">
+            <div><Label>New password</Label><Input type="password" value={pw} onChange={(e) => setPw(e.target.value)} autoComplete="new-password" /></div>
+            <div><Label>Confirm</Label><Input type="password" value={pw2} onChange={(e) => setPw2(e.target.value)} autoComplete="new-password" /></div>
+          </div>
+          <DialogFooter><Button onClick={submit} disabled={busy}>{busy ? "Updating…" : "Update"}</Button></DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
