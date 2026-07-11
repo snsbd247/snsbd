@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Printer, Loader2, Trash2 } from "lucide-react";
+import { ArrowLeft, Printer, Loader2, Trash2, Receipt as ReceiptIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
+import { useCompanySettings } from "@/lib/company-settings";
 import { formatBDT, formatDate } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/invoices/$invoiceId")({
