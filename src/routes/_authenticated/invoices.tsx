@@ -85,7 +85,7 @@ function InvoicesPage() {
               {!isLoading && (invoices ?? []).length === 0 && <TableRow><TableCell colSpan={8} className="py-8 text-center text-sm text-muted-foreground">No invoices.</TableCell></TableRow>}
               {(invoices ?? []).map((i: any) => (
                 <TableRow key={i.id}>
-                  <TableCell className="font-mono text-xs"><Link to="/invoices/$invoiceId" params={{ invoiceId: i.id }} className="hover:underline">{i.invoice_number}</Link></TableCell>
+                  <TableCell className="font-mono text-xs"><Link to="/invoices/$invoiceId" params={{ invoiceId: i.id }} className="text-primary hover:underline">{i.invoice_number}</Link></TableCell>
                   {role === "admin" && <TableCell>{i.profiles?.full_name ?? i.profiles?.email ?? "—"}</TableCell>}
                   <TableCell>{formatDate(i.issue_date)}</TableCell>
                   <TableCell>{formatDate(i.due_date)}</TableCell>

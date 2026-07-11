@@ -160,7 +160,7 @@ function ReceiptPage() {
       </div>
 
       <div className="text-xs text-muted-foreground text-center print:hidden">
-        <Link to="/invoices/$invoiceId" params={{ invoiceId: pay.invoice_id }} className="hover:underline">View linked invoice →</Link>
+        <Link to="/invoices/$invoiceId" params={{ invoiceId: pay.invoice_id }} className="text-primary hover:underline">View linked invoice →</Link>
       </div>
 
       <style>{`
