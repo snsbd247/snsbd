@@ -276,6 +276,35 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
             Renewable — auto-generate a draft invoice 10 days before expiry
           </label>
           {f.type === "hosting" && (
+            <div>
+              <Label>Hosting package (optional)</Label>
+              <Select
+                value={f.hosting_package_id || "none"}
+                onValueChange={(v) => {
+                  if (v === "none") { setF({ ...f, hosting_package_id: "" }); return; }
+                  const pkg = (packages ?? []).find((p: any) => p.id === v);
+                  setF({
+                    ...f,
+                    hosting_package_id: v,
+                    name: f.name || (pkg?.name ?? ""),
+                    details: f.details || [pkg?.disk_space, pkg?.bandwidth].filter(Boolean).join(" / "),
+                    sale_price: (!f.sale_price || f.sale_price === "0") ? String(pkg?.price ?? "0") : f.sale_price,
+                  });
+                }}
+              >
+                <SelectTrigger><SelectValue placeholder="Select a package" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">— None (custom) —</SelectItem>
+                  {(packages ?? []).map((p: any) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name} — {formatBDT(p.price)}/{p.billing_cycle}{!p.is_active ? " (hidden)" : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          {f.type === "hosting" && (
             <div className="grid gap-3 rounded-md border p-3 bg-muted/30">
               <div className="text-xs font-semibold uppercase text-muted-foreground">cPanel login</div>
               <div><Label>cPanel URL</Label><Input value={f.cpanel_url} onChange={(e) => setF({ ...f, cpanel_url: e.target.value })} placeholder="https://server.example.com:2083" /></div>
