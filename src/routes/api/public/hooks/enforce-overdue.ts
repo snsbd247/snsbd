@@ -34,7 +34,12 @@ export const Route = createFileRoute("/api/public/hooks/enforce-overdue")({
         for (const inv of overdueInvs ?? []) {
           const balance = Number(inv.total) - Number(inv.amount_paid);
           if (balance <= 0) continue;
-          const patch: Record<string, unknown> = {};
+          const patch: {
+            late_fee?: number;
+            total?: number;
+            late_fee_applied_at?: string;
+            status?: "overdue";
+          } = {};
           if (!inv.late_fee_applied_at && feePct > 0) {
             const fee = Math.round(Number(inv.subtotal) * feePct) / 100;
             patch.late_fee = Number(inv.late_fee ?? 0) + fee;
