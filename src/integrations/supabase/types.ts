@@ -959,6 +959,7 @@ export type Database = {
       whm_servers: {
         Row: {
           api_token: string
+          auth_type: string
           created_at: string
           hostname: string
           id: string
@@ -972,6 +973,7 @@ export type Database = {
         }
         Insert: {
           api_token: string
+          auth_type?: string
           created_at?: string
           hostname: string
           id?: string
@@ -985,6 +987,7 @@ export type Database = {
         }
         Update: {
           api_token?: string
+          auth_type?: string
           created_at?: string
           hostname?: string
           id?: string
