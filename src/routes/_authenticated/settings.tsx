@@ -193,6 +193,19 @@ function SettingsPage() {
         </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader>
+          <CardTitle>Billing</CardTitle>
+          <CardDescription>Automation for overdue invoices. A daily job marks unpaid invoices past their due date as overdue, adds this late fee once, suspends the linked hosting, and deactivates the linked domain.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="max-w-xs">
+            <Label>Late fee (% of subtotal)</Label>
+            <Input type="number" min="0" step="0.1" value={f.late_fee_percent} onChange={(e) => setF({ ...f, late_fee_percent: e.target.value })} />
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="flex justify-end">
         <Button onClick={() => save.mutate()} disabled={save.isPending}>
           {save.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
