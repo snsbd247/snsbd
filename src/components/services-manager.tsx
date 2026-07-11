@@ -319,3 +319,45 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
     </Dialog>
   );
 }
+
+function PackageCombobox({ packages, value, onChange }: { packages: any[]; value: string; onChange: (id: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const selected = packages.find((p) => p.id === value);
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" role="combobox" className={cn("w-full justify-between font-normal", !selected && "text-muted-foreground")}>
+          {selected ? `${selected.name} — ${formatBDT(selected.price)}/${selected.billing_cycle}` : "Search & select a package…"}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Search by package name…" />
+          <CommandList>
+            <CommandEmpty>No package found.</CommandEmpty>
+            <CommandGroup>
+              <CommandItem value="__none__" onSelect={() => { onChange(""); setOpen(false); }}>
+                <Check className={cn("mr-2 h-4 w-4", !value ? "opacity-100" : "opacity-0")} />
+                — None (custom) —
+              </CommandItem>
+              {packages.map((p) => (
+                <CommandItem
+                  key={p.id}
+                  value={`${p.name} ${p.disk_space ?? ""} ${p.bandwidth ?? ""}`}
+                  onSelect={() => { onChange(p.id); setOpen(false); }}
+                >
+                  <Check className={cn("mr-2 h-4 w-4", value === p.id ? "opacity-100" : "opacity-0")} />
+                  <div className="flex-1">
+                    <div className="text-sm">{p.name}{!p.is_active && <span className="ml-2 text-xs text-muted-foreground">(hidden)</span>}</div>
+                    <div className="text-xs text-muted-foreground">{[p.disk_space, p.bandwidth].filter(Boolean).join(" / ") || "—"} · {formatBDT(p.price)}/{p.billing_cycle}</div>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
