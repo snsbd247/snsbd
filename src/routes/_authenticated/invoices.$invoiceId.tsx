@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Printer, Loader2, Trash2 } from "lucide-react";
+import { ArrowLeft, Printer, Loader2, Trash2, Receipt as ReceiptIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
+import { useCompanySettings } from "@/lib/company-settings";
 import { formatBDT, formatDate } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/invoices/$invoiceId")({
@@ -24,6 +25,7 @@ function statusVariant(s: string) {
 function InvoiceDetailPage() {
   const { invoiceId } = Route.useParams();
   const { role } = useAuth();
+  const { data: company } = useCompanySettings();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const isAdmin = role === "admin";
@@ -121,8 +123,11 @@ function InvoiceDetailPage() {
               <Badge variant={statusVariant(inv.status)} className="capitalize mt-2">{inv.status}</Badge>
             </div>
             <div className="text-right">
-              <div className="font-semibold">Sync &amp; Solutions IT</div>
-              <div className="text-xs text-muted-foreground">Bangladesh</div>
+              {company?.logo_url && <img src={company.logo_url} alt={`${company.company_name} logo`} className="h-10 ml-auto mb-2 object-contain" />}
+              <div className="font-semibold">{company?.company_name ?? "Company"}</div>
+              {company?.address && <div className="text-xs text-muted-foreground whitespace-pre-line">{company.address}</div>}
+              {company?.phone && <div className="text-xs text-muted-foreground">{company.phone}</div>}
+              {company?.email && <div className="text-xs text-muted-foreground">{company.email}</div>}
             </div>
           </div>
 
@@ -192,6 +197,10 @@ function InvoiceDetailPage() {
               <p className="whitespace-pre-wrap">{inv.notes}</p>
             </div>
           )}
+
+          {company?.footer_copyright && (
+            <div className="text-center text-[11px] text-muted-foreground border-t pt-3">{company.footer_copyright}</div>
+          )}
         </CardContent>
       </Card>
 
@@ -200,9 +209,16 @@ function InvoiceDetailPage() {
         <CardContent className="space-y-2">
           {data.payments.length === 0 && <p className="text-sm text-muted-foreground">No payments recorded.</p>}
           {data.payments.map((p: any) => (
-            <div key={p.id} className="flex justify-between text-sm border-b py-1">
-              <span>{formatDate(p.paid_at)} · {p.method}</span>
-              <span className="font-medium">{formatBDT(p.amount)}</span>
+            <div key={p.id} className="flex items-center justify-between text-sm border-b py-1.5">
+              <span>{formatDate(p.paid_at)} · <span className="capitalize">{p.method}</span>{p.receipt_number && <span className="text-xs text-muted-foreground ml-2 font-mono">{p.receipt_number}</span>}</span>
+              <div className="flex items-center gap-2">
+                <span className="font-medium">{formatBDT(p.amount)}</span>
+                <Button asChild size="sm" variant="outline">
+                  <Link to="/receipts/$paymentId" params={{ paymentId: p.id }}>
+                    <ReceiptIcon className="mr-1 h-3.5 w-3.5" />Receipt
+                  </Link>
+                </Button>
+              </div>
             </div>
           ))}
           {isAdmin && balance > 0 && (

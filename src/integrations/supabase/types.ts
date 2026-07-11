@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      company_settings: {
+        Row: {
+          address: string | null
+          company_name: string
+          created_at: string
+          email: string | null
+          favicon_url: string | null
+          footer_copyright: string | null
+          id: boolean
+          logo_url: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          company_name?: string
+          created_at?: string
+          email?: string | null
+          favicon_url?: string | null
+          footer_copyright?: string | null
+          id?: boolean
+          logo_url?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          company_name?: string
+          created_at?: string
+          email?: string | null
+          favicon_url?: string | null
+          footer_copyright?: string | null
+          id?: boolean
+          logo_url?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       expenses: {
         Row: {
           amount: number
@@ -173,6 +212,7 @@ export type Database = {
           method: string | null
           notes: string | null
           paid_at: string
+          receipt_number: string | null
           reference: string | null
         }
         Insert: {
@@ -183,6 +223,7 @@ export type Database = {
           method?: string | null
           notes?: string | null
           paid_at?: string
+          receipt_number?: string | null
           reference?: string | null
         }
         Update: {
@@ -193,6 +234,7 @@ export type Database = {
           method?: string | null
           notes?: string | null
           paid_at?: string
+          receipt_number?: string | null
           reference?: string | null
         }
         Relationships: [

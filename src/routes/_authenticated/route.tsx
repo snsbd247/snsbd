@@ -13,6 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Settings } from "lucide-react";
+import { useCompanySettings } from "@/lib/company-settings";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -21,6 +23,7 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthedLayout() {
   const { session, loading, role, user, signOut } = useAuth();
+  const { data: company } = useCompanySettings();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,9 +46,13 @@ function AuthedLayout() {
       <Sidebar>
         <SidebarHeader className="border-b border-sidebar-border">
           <div className="flex items-center gap-2 px-2 py-2">
-            <img src="/favicon.png" alt="Sync & Solutions IT logo" className="h-8 w-8 rounded-md bg-white" />
+            <img
+              src={company?.logo_url || "/favicon.png"}
+              alt={`${company?.company_name ?? "Company"} logo`}
+              className="h-8 w-8 rounded-md bg-white object-contain"
+            />
             <div>
-              <div className="font-semibold text-sm">Sync & Solutions IT</div>
+              <div className="font-semibold text-sm">{company?.company_name ?? "Company"}</div>
               <div className="text-[10px] uppercase tracking-wider text-sidebar-foreground/60">{isAdmin ? "Admin" : "Customer"}</div>
             </div>
           </div>
@@ -73,6 +80,7 @@ function AuthedLayout() {
                   <NavItem to="/customers" icon={Users} label="Customers" />
                   <NavItem to="/team" icon={UserCog} label="Team & Salary" />
                   <NavItem to="/expenses" icon={Receipt} label="Expenses" />
+                  <NavItem to="/settings" icon={Settings} label="Settings" />
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
