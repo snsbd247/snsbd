@@ -155,6 +155,7 @@ export function ServicesManager({
 const empty = (t: ServiceType = "other") => ({
   customer_id: "", project_id: "", type: t, name: "", details: "",
   purchase_date: "", expiry_date: "", cost_price: "0", sale_price: "0", status: "active", notes: "",
+  renewable: false,
 });
 
 function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockType }: any) {
