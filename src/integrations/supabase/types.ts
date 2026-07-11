@@ -468,6 +468,7 @@ export type Database = {
           dns_notes: string | null
           expiry_date: string | null
           id: string
+          last_renewal_invoice_at: string | null
           linked_hosting_id: string | null
           name: string
           nameservers: string | null
@@ -475,6 +476,7 @@ export type Database = {
           project_id: string | null
           purchase_date: string | null
           registrar: string | null
+          renewable: boolean
           sale_price: number
           status: Database["public"]["Enums"]["service_status"]
           type: Database["public"]["Enums"]["service_type"]
@@ -488,6 +490,7 @@ export type Database = {
           dns_notes?: string | null
           expiry_date?: string | null
           id?: string
+          last_renewal_invoice_at?: string | null
           linked_hosting_id?: string | null
           name: string
           nameservers?: string | null
@@ -495,6 +498,7 @@ export type Database = {
           project_id?: string | null
           purchase_date?: string | null
           registrar?: string | null
+          renewable?: boolean
           sale_price?: number
           status?: Database["public"]["Enums"]["service_status"]
           type: Database["public"]["Enums"]["service_type"]
@@ -508,6 +512,7 @@ export type Database = {
           dns_notes?: string | null
           expiry_date?: string | null
           id?: string
+          last_renewal_invoice_at?: string | null
           linked_hosting_id?: string | null
           name?: string
           nameservers?: string | null
@@ -515,6 +520,7 @@ export type Database = {
           project_id?: string | null
           purchase_date?: string | null
           registrar?: string | null
+          renewable?: boolean
           sale_price?: number
           status?: Database["public"]["Enums"]["service_status"]
           type?: Database["public"]["Enums"]["service_type"]

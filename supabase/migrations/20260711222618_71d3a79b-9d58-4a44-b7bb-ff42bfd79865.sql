@@ -1,0 +1,4 @@
+
+ALTER TABLE public.services
+  ADD COLUMN IF NOT EXISTS renewable BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS last_renewal_invoice_at TIMESTAMPTZ;
