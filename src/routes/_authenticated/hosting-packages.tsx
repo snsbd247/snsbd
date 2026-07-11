@@ -180,13 +180,60 @@ function UsageDialog({ pkg, onClose }: { pkg: any; onClose: () => void }) {
     },
   });
 
+  const list = rows ?? [];
+
+  function exportCsv() {
+    const header = ["Hosting", "Customer", "Email", "Expiry", "Price (BDT)", "Status"];
+    const escape = (v: any) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const csvBody = list.map((r: any) => [
+      r.name, r.profiles?.full_name ?? "", r.profiles?.email ?? "",
+      r.expiry_date ?? "", r.sale_price ?? 0, r.status ?? "",
+    ].map(escape).join(","));
+    const csv = [header.map(escape).join(","), ...csvBody].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${(pkg?.name ?? "package").replace(/\s+/g, "_")}_usage.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportPdf() {
+    const w = window.open("", "_blank", "width=900,height=700");
+    if (!w) return;
+    const rowsHtml = list.map((r: any) => `
+      <tr><td>${r.name ?? ""}</td><td>${r.profiles?.full_name ?? r.profiles?.email ?? "—"}</td>
+      <td>${r.expiry_date ?? "—"}</td><td style="text-align:right">${Number(r.sale_price ?? 0).toLocaleString()}</td>
+      <td>${r.status ?? ""}</td></tr>`).join("");
+    w.document.write(`<html><head><title>${pkg?.name} usage</title>
+      <style>body{font-family:system-ui;padding:24px}h1{font-size:18px}table{width:100%;border-collapse:collapse;font-size:12px}
+      th,td{border:1px solid #ddd;padding:6px;text-align:left}th{background:#f5f5f5}</style></head>
+      <body><h1>Hostings using "${pkg?.name}"</h1>
+      <p style="color:#666;font-size:12px">Generated ${new Date().toLocaleString()}</p>
+      <table><thead><tr><th>Hosting</th><th>Customer</th><th>Expiry</th><th>Price (BDT)</th><th>Status</th></tr></thead>
+      <tbody>${rowsHtml || '<tr><td colspan="5" style="text-align:center;color:#888">No data</td></tr>'}</tbody></table>
+      <script>window.onload=()=>window.print()</script></body></html>`);
+    w.document.close();
+  }
+
   return (
     <Dialog open={!!pkg} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-2xl">
-        <DialogHeader><DialogTitle>Hostings using “{pkg?.name}”</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between gap-2">
+            <span>Hostings using “{pkg?.name}”</span>
+            {list.length > 0 && (
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" onClick={exportCsv}><Download className="mr-2 h-3.5 w-3.5" />CSV</Button>
+                <Button size="sm" variant="outline" onClick={exportPdf}><Printer className="mr-2 h-3.5 w-3.5" />PDF</Button>
+              </div>
+            )}
+          </DialogTitle>
+        </DialogHeader>
         {isLoading ? (
           <p className="text-sm text-muted-foreground py-6 text-center">Loading…</p>
-        ) : (rows ?? []).length === 0 ? (
+        ) : list.length === 0 ? (
           <p className="text-sm text-muted-foreground py-6 text-center">No hostings use this package yet.</p>
         ) : (
           <Table>
@@ -195,7 +242,7 @@ function UsageDialog({ pkg, onClose }: { pkg: any; onClose: () => void }) {
               <TableHead>Expiry</TableHead><TableHead>Price</TableHead><TableHead>Status</TableHead>
             </TableRow></TableHeader>
             <TableBody>
-              {rows!.map((r: any) => (
+              {list.map((r: any) => (
                 <TableRow key={r.id}>
                   <TableCell><Link to="/services/$serviceId" params={{ serviceId: r.id }} className="text-primary hover:underline">{r.name}</Link></TableCell>
                   <TableCell>{r.profiles?.full_name ?? r.profiles?.email ?? "—"}</TableCell>
