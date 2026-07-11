@@ -165,6 +165,11 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
   const qc = useQueryClient();
   const [f, setF] = useState<any>(empty(lockType));
 
+  const { data: packages } = useQuery({
+    queryKey: ["hosting_packages_active"],
+    queryFn: async () => (await supabase.from("hosting_packages").select("id, name, price, billing_cycle, disk_space, bandwidth, is_active").order("sort_order").order("price")).data ?? [],
+  });
+
   useEffect(() => {
     if (open) {
       if (editing) setF({
@@ -174,6 +179,7 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
         sale_price: String(editing.sale_price ?? "0"), status: editing.status, notes: editing.notes ?? "",
         renewable: !!editing.renewable,
         cpanel_url: editing.cpanel_url ?? "", cpanel_username: editing.cpanel_username ?? "", cpanel_password: editing.cpanel_password ?? "",
+        hosting_package_id: editing.hosting_package_id ?? "",
       });
 
       else setF(empty(lockType));
