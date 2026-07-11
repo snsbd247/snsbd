@@ -796,6 +796,8 @@ export type Database = {
           status: Database["public"]["Enums"]["service_status"]
           type: Database["public"]["Enums"]["service_type"]
           updated_at: string
+          whm_account_user: string | null
+          whm_server_id: string | null
         }
         Insert: {
           cost_price?: number | null
@@ -822,6 +824,8 @@ export type Database = {
           status?: Database["public"]["Enums"]["service_status"]
           type: Database["public"]["Enums"]["service_type"]
           updated_at?: string
+          whm_account_user?: string | null
+          whm_server_id?: string | null
         }
         Update: {
           cost_price?: number | null
@@ -848,6 +852,8 @@ export type Database = {
           status?: Database["public"]["Enums"]["service_status"]
           type?: Database["public"]["Enums"]["service_type"]
           updated_at?: string
+          whm_account_user?: string | null
+          whm_server_id?: string | null
         }
         Relationships: [
           {
@@ -876,6 +882,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_whm_server_id_fkey"
+            columns: ["whm_server_id"]
+            isOneToOne: false
+            referencedRelation: "whm_servers"
             referencedColumns: ["id"]
           },
         ]
@@ -940,6 +953,48 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      whm_servers: {
+        Row: {
+          api_token: string
+          created_at: string
+          hostname: string
+          id: string
+          is_active: boolean
+          last_sync_at: string | null
+          last_sync_result: string | null
+          name: string
+          port: number
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          api_token: string
+          created_at?: string
+          hostname: string
+          id?: string
+          is_active?: boolean
+          last_sync_at?: string | null
+          last_sync_result?: string | null
+          name: string
+          port?: number
+          updated_at?: string
+          username?: string
+        }
+        Update: {
+          api_token?: string
+          created_at?: string
+          hostname?: string
+          id?: string
+          is_active?: boolean
+          last_sync_at?: string | null
+          last_sync_result?: string | null
+          name?: string
+          port?: number
+          updated_at?: string
+          username?: string
         }
         Relationships: []
       }
