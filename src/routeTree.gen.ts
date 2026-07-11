@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as MarketingRouteImport } from './routes/_marketing'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as MarketingIndexRouteImport } from './routes/_marketing.index'
 import { Route as PortalBkashCallbackRouteImport } from './routes/portal.bkash-callback'
 import { Route as AuthenticatedWhmServersRouteImport } from './routes/_authenticated/whm-servers'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
@@ -50,9 +52,18 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketingRoute = MarketingRouteImport.update({
+  id: '/_marketing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
+} as any)
+const MarketingIndexRoute = MarketingIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MarketingRoute,
 } as any)
 const PortalBkashCallbackRoute = PortalBkashCallbackRouteImport.update({
   id: '/bkash-callback',
@@ -206,7 +217,7 @@ const ApiPublicHooksEnforceOverdueRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AuthenticatedRouteRouteWithChildren
+  '/': typeof MarketingIndexRoute
   '/auth': typeof AuthRoute
   '/portal': typeof PortalRouteWithChildren
   '/customers': typeof AuthenticatedCustomersRoute
@@ -238,7 +249,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof AuthenticatedRouteRouteWithChildren
+  '/': typeof MarketingIndexRoute
   '/auth': typeof AuthRoute
   '/portal': typeof PortalRouteWithChildren
   '/customers': typeof AuthenticatedCustomersRoute
@@ -272,6 +283,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_marketing': typeof MarketingRouteWithChildren
   '/auth': typeof AuthRoute
   '/portal': typeof PortalRouteWithChildren
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
@@ -290,6 +302,7 @@ export interface FileRoutesById {
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/_authenticated/whm-servers': typeof AuthenticatedWhmServersRoute
   '/portal/bkash-callback': typeof PortalBkashCallbackRoute
+  '/_marketing/': typeof MarketingIndexRoute
   '/_authenticated/customers_/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
   '/_authenticated/domains_/$domainId': typeof AuthenticatedDomainsDomainIdRoute
   '/_authenticated/expenses_/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
@@ -370,6 +383,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_authenticated'
+    | '/_marketing'
     | '/auth'
     | '/portal'
     | '/_authenticated/customers'
@@ -388,6 +402,7 @@ export interface FileRouteTypes {
     | '/_authenticated/team'
     | '/_authenticated/whm-servers'
     | '/portal/bkash-callback'
+    | '/_marketing/'
     | '/_authenticated/customers_/$customerId'
     | '/_authenticated/domains_/$domainId'
     | '/_authenticated/expenses_/$expenseId'
@@ -403,6 +418,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  MarketingRoute: typeof MarketingRouteWithChildren
   AuthRoute: typeof AuthRoute
   PortalRoute: typeof PortalRouteWithChildren
   ApiPublicHooksEnforceOverdueRoute: typeof ApiPublicHooksEnforceOverdueRoute
@@ -425,12 +441,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_marketing': {
+      id: '/_marketing'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof MarketingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_marketing/': {
+      id: '/_marketing/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof MarketingIndexRouteImport
+      parentRoute: typeof MarketingRoute
     }
     '/portal/bkash-callback': {
       id: '/portal/bkash-callback'
@@ -681,6 +711,18 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface MarketingRouteChildren {
+  MarketingIndexRoute: typeof MarketingIndexRoute
+}
+
+const MarketingRouteChildren: MarketingRouteChildren = {
+  MarketingIndexRoute: MarketingIndexRoute,
+}
+
+const MarketingRouteWithChildren = MarketingRoute._addFileChildren(
+  MarketingRouteChildren,
+)
+
 interface PortalRouteChildren {
   PortalBkashCallbackRoute: typeof PortalBkashCallbackRoute
 }
@@ -694,6 +736,7 @@ const PortalRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  MarketingRoute: MarketingRouteWithChildren,
   AuthRoute: AuthRoute,
   PortalRoute: PortalRouteWithChildren,
   ApiPublicHooksEnforceOverdueRoute: ApiPublicHooksEnforceOverdueRoute,
