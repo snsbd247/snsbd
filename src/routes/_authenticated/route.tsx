@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard, Users, Globe, HardDrive, Package, FileText, FolderKanban,
-  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart,
+  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
