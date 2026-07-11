@@ -161,31 +161,46 @@ const empty = (t: ServiceType = "other") => ({
   renewable: false,
   cpanel_url: "", cpanel_username: "", cpanel_password: "",
   hosting_package_id: "",
+  whm_server_id: "",
 });
+
 
 
 function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockType }: any) {
   const qc = useQueryClient();
   const [f, setF] = useState<any>(empty(lockType));
+  const [origPassword, setOrigPassword] = useState<string>("");
+  const [autoProvision, setAutoProvision] = useState(true);
 
   const { data: packages } = useQuery({
     queryKey: ["hosting_packages_active"],
     queryFn: async () => (await supabase.from("hosting_packages").select("id, name, price, billing_cycle, disk_space, bandwidth, is_active").order("sort_order").order("price")).data ?? [],
   });
 
+  const { data: whmServers } = useQuery({
+    queryKey: ["whm_servers_list"],
+    queryFn: async () => (await supabase.from("whm_servers").select("id, name, hostname").order("name")).data ?? [],
+  });
+
   useEffect(() => {
     if (open) {
-      if (editing) setF({
-        customer_id: editing.customer_id, project_id: editing.project_id ?? "", type: editing.type, name: editing.name,
-        details: editing.details ?? "", purchase_date: editing.purchase_date ?? "",
-        expiry_date: editing.expiry_date ?? "", cost_price: String(editing.cost_price ?? "0"),
-        sale_price: String(editing.sale_price ?? "0"), status: editing.status, notes: editing.notes ?? "",
-        renewable: !!editing.renewable,
-        cpanel_url: editing.cpanel_url ?? "", cpanel_username: editing.cpanel_username ?? "", cpanel_password: editing.cpanel_password ?? "",
-        hosting_package_id: editing.hosting_package_id ?? "",
-      });
-
-      else setF(empty(lockType));
+      if (editing) {
+        setF({
+          customer_id: editing.customer_id, project_id: editing.project_id ?? "", type: editing.type, name: editing.name,
+          details: editing.details ?? "", purchase_date: editing.purchase_date ?? "",
+          expiry_date: editing.expiry_date ?? "", cost_price: String(editing.cost_price ?? "0"),
+          sale_price: String(editing.sale_price ?? "0"), status: editing.status, notes: editing.notes ?? "",
+          renewable: !!editing.renewable,
+          cpanel_url: editing.cpanel_url ?? "", cpanel_username: editing.cpanel_username ?? "", cpanel_password: editing.cpanel_password ?? "",
+          hosting_package_id: editing.hosting_package_id ?? "",
+          whm_server_id: editing.whm_server_id ?? "",
+        });
+        setOrigPassword(editing.cpanel_password ?? "");
+      } else {
+        setF(empty(lockType));
+        setOrigPassword("");
+      }
+      setAutoProvision(true);
     }
   }, [open, editing, lockType]);
 
@@ -195,22 +210,40 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
         ...f,
         project_id: f.project_id || null,
         hosting_package_id: f.type === "hosting" ? (f.hosting_package_id || null) : null,
+        whm_server_id: f.type === "hosting" ? (f.whm_server_id || null) : null,
+        whm_account_user: f.type === "hosting" ? (f.cpanel_username || null) : null,
         cost_price: Number(f.cost_price) || 0,
         sale_price: Number(f.sale_price) || 0,
         purchase_date: f.purchase_date || null,
         expiry_date: f.expiry_date || null,
       };
+      let serviceId: string;
       if (editing) {
         const { error } = await supabase.from("services").update(payload).eq("id", editing.id);
         if (error) throw error;
+        serviceId = editing.id;
       } else {
-        const { error } = await supabase.from("services").insert(payload);
+        const { data, error } = await supabase.from("services").insert(payload).select("id").single();
         if (error) throw error;
+        serviceId = data.id;
+      }
+
+      // WHM automation for hosting rows
+      if (autoProvision && f.type === "hosting" && f.whm_server_id) {
+        const { cpanelCreateAccount, cpanelChangePassword } = await import("@/lib/whm.functions");
+        if (!editing) {
+          await cpanelCreateAccount({ data: { service_id: serviceId } });
+          toast.success("cPanel account created on WHM");
+        } else if (f.cpanel_password && f.cpanel_password !== origPassword) {
+          await cpanelChangePassword({ data: { service_id: serviceId, new_password: f.cpanel_password } });
+          toast.success("cPanel password updated on WHM");
+        }
       }
     },
     onSuccess: () => { toast.success("Saved"); qc.invalidateQueries({ queryKey: ["services"] }); onOpenChange(false); },
     onError: (e: Error) => toast.error(e.message),
   });
+
 
   const filteredProjects = (projects ?? []).filter((p: any) => !f.customer_id || p.customer_id === f.customer_id);
 
@@ -303,14 +336,38 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
           )}
           {f.type === "hosting" && (
             <div className="grid gap-3 rounded-md border p-3 bg-muted/30">
-              <div className="text-xs font-semibold uppercase text-muted-foreground">cPanel login</div>
-              <div><Label>cPanel URL</Label><Input value={f.cpanel_url} onChange={(e) => setF({ ...f, cpanel_url: e.target.value })} placeholder="https://server.example.com:2083" /></div>
+              <div className="text-xs font-semibold uppercase text-muted-foreground">cPanel / WHM</div>
+              <div>
+                <Label>WHM server</Label>
+                <Select value={f.whm_server_id || "none"} onValueChange={(v) => setF({ ...f, whm_server_id: v === "none" ? "" : v })}>
+                  <SelectTrigger><SelectValue placeholder="No WHM — manual entry" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">— None (manual) —</SelectItem>
+                    {(whmServers ?? []).map((w: any) => (
+                      <SelectItem key={w.id} value={w.id}>{w.name} ({w.hostname})</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {f.whm_server_id && (
+                  <label className="mt-2 flex items-center gap-2 text-xs">
+                    <input type="checkbox" checked={autoProvision} onChange={(e) => setAutoProvision(e.target.checked)} />
+                    {editing
+                      ? "On save, push password change to WHM (if changed)"
+                      : "On save, auto-create the cPanel account on WHM using the fields below"}
+                  </label>
+                )}
+              </div>
+              <div><Label>cPanel URL</Label><Input value={f.cpanel_url} onChange={(e) => setF({ ...f, cpanel_url: e.target.value })} placeholder="https://server.example.com:2083 (auto-filled from WHM)" /></div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Username</Label><Input value={f.cpanel_username} onChange={(e) => setF({ ...f, cpanel_username: e.target.value })} autoComplete="off" /></div>
+                <div><Label>Username</Label><Input value={f.cpanel_username} onChange={(e) => setF({ ...f, cpanel_username: e.target.value })} autoComplete="off" placeholder="cpuser (letters/digits, ≤16)" /></div>
                 <div><Label>Password</Label><Input type="password" value={f.cpanel_password} onChange={(e) => setF({ ...f, cpanel_password: e.target.value })} autoComplete="new-password" /></div>
               </div>
+              {f.whm_server_id && !editing && (
+                <p className="text-xs text-muted-foreground">Service <b>Name</b> must be the primary domain (e.g. site.com). Customer email is used as the contact email.</p>
+              )}
             </div>
           )}
+
           <div><Label>Notes</Label><Textarea value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} /></div>
 
         </div>
