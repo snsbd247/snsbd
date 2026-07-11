@@ -24,10 +24,12 @@ import { Route as AuthenticatedDomainsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects.index'
+import { Route as AuthenticatedTeamMemberIdRouteImport } from './routes/_authenticated/team.$memberId'
 import { Route as AuthenticatedServicesServiceIdRouteImport } from './routes/_authenticated/services.$serviceId'
 import { Route as AuthenticatedReceiptsPaymentIdRouteImport } from './routes/_authenticated/receipts.$paymentId'
 import { Route as AuthenticatedProjectsProjectIdRouteImport } from './routes/_authenticated/projects.$projectId'
 import { Route as AuthenticatedInvoicesInvoiceIdRouteImport } from './routes/_authenticated/invoices.$invoiceId'
+import { Route as AuthenticatedExpensesExpenseIdRouteImport } from './routes/_authenticated/expenses.$expenseId'
 import { Route as AuthenticatedDomainsDomainIdRouteImport } from './routes/_authenticated/domains.$domainId'
 import { Route as AuthenticatedCustomersCustomerIdRouteImport } from './routes/_authenticated/customers.$customerId'
 import { Route as ApiPublicHooksRenewInvoicesRouteImport } from './routes/api/public/hooks/renew-invoices'
@@ -108,6 +110,12 @@ const AuthenticatedProjectsIndexRoute =
     path: '/projects/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedTeamMemberIdRoute =
+  AuthenticatedTeamMemberIdRouteImport.update({
+    id: '/$memberId',
+    path: '/$memberId',
+    getParentRoute: () => AuthenticatedTeamRoute,
+  } as any)
 const AuthenticatedServicesServiceIdRoute =
   AuthenticatedServicesServiceIdRouteImport.update({
     id: '/services/$serviceId',
@@ -131,6 +139,12 @@ const AuthenticatedInvoicesInvoiceIdRoute =
     id: '/$invoiceId',
     path: '/$invoiceId',
     getParentRoute: () => AuthenticatedInvoicesRoute,
+  } as any)
+const AuthenticatedExpensesExpenseIdRoute =
+  AuthenticatedExpensesExpenseIdRouteImport.update({
+    id: '/$expenseId',
+    path: '/$expenseId',
+    getParentRoute: () => AuthenticatedExpensesRoute,
   } as any)
 const AuthenticatedDomainsDomainIdRoute =
   AuthenticatedDomainsDomainIdRouteImport.update({
@@ -158,19 +172,21 @@ export interface FileRoutesByFullPath {
   '/customers': typeof AuthenticatedCustomersRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/domains': typeof AuthenticatedDomainsRouteWithChildren
-  '/expenses': typeof AuthenticatedExpensesRoute
+  '/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/hosting': typeof AuthenticatedHostingRoute
   '/invoices': typeof AuthenticatedInvoicesRouteWithChildren
   '/other-services': typeof AuthenticatedOtherServicesRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/team': typeof AuthenticatedTeamRoute
+  '/team': typeof AuthenticatedTeamRouteWithChildren
   '/customers/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
   '/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
+  '/expenses/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
   '/invoices/$invoiceId': typeof AuthenticatedInvoicesInvoiceIdRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
+  '/team/$memberId': typeof AuthenticatedTeamMemberIdRoute
   '/projects/': typeof AuthenticatedProjectsIndexRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
 }
@@ -181,19 +197,21 @@ export interface FileRoutesByTo {
   '/customers': typeof AuthenticatedCustomersRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/domains': typeof AuthenticatedDomainsRouteWithChildren
-  '/expenses': typeof AuthenticatedExpensesRoute
+  '/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/hosting': typeof AuthenticatedHostingRoute
   '/invoices': typeof AuthenticatedInvoicesRouteWithChildren
   '/other-services': typeof AuthenticatedOtherServicesRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/team': typeof AuthenticatedTeamRoute
+  '/team': typeof AuthenticatedTeamRouteWithChildren
   '/customers/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
   '/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
+  '/expenses/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
   '/invoices/$invoiceId': typeof AuthenticatedInvoicesInvoiceIdRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
+  '/team/$memberId': typeof AuthenticatedTeamMemberIdRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
 }
@@ -206,19 +224,21 @@ export interface FileRoutesById {
   '/_authenticated/customers': typeof AuthenticatedCustomersRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/domains': typeof AuthenticatedDomainsRouteWithChildren
-  '/_authenticated/expenses': typeof AuthenticatedExpensesRoute
+  '/_authenticated/expenses': typeof AuthenticatedExpensesRouteWithChildren
   '/_authenticated/hosting': typeof AuthenticatedHostingRoute
   '/_authenticated/invoices': typeof AuthenticatedInvoicesRouteWithChildren
   '/_authenticated/other-services': typeof AuthenticatedOtherServicesRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
-  '/_authenticated/team': typeof AuthenticatedTeamRoute
+  '/_authenticated/team': typeof AuthenticatedTeamRouteWithChildren
   '/_authenticated/customers/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
   '/_authenticated/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
+  '/_authenticated/expenses/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
   '/_authenticated/invoices/$invoiceId': typeof AuthenticatedInvoicesInvoiceIdRoute
   '/_authenticated/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/_authenticated/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/_authenticated/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
+  '/_authenticated/team/$memberId': typeof AuthenticatedTeamMemberIdRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
 }
@@ -240,10 +260,12 @@ export interface FileRouteTypes {
     | '/team'
     | '/customers/$customerId'
     | '/domains/$domainId'
+    | '/expenses/$expenseId'
     | '/invoices/$invoiceId'
     | '/projects/$projectId'
     | '/receipts/$paymentId'
     | '/services/$serviceId'
+    | '/team/$memberId'
     | '/projects/'
     | '/api/public/hooks/renew-invoices'
   fileRoutesByTo: FileRoutesByTo
@@ -263,10 +285,12 @@ export interface FileRouteTypes {
     | '/team'
     | '/customers/$customerId'
     | '/domains/$domainId'
+    | '/expenses/$expenseId'
     | '/invoices/$invoiceId'
     | '/projects/$projectId'
     | '/receipts/$paymentId'
     | '/services/$serviceId'
+    | '/team/$memberId'
     | '/projects'
     | '/api/public/hooks/renew-invoices'
   id:
@@ -287,10 +311,12 @@ export interface FileRouteTypes {
     | '/_authenticated/team'
     | '/_authenticated/customers/$customerId'
     | '/_authenticated/domains/$domainId'
+    | '/_authenticated/expenses/$expenseId'
     | '/_authenticated/invoices/$invoiceId'
     | '/_authenticated/projects/$projectId'
     | '/_authenticated/receipts/$paymentId'
     | '/_authenticated/services/$serviceId'
+    | '/_authenticated/team/$memberId'
     | '/_authenticated/projects/'
     | '/api/public/hooks/renew-invoices'
   fileRoutesById: FileRoutesById
@@ -410,6 +436,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProjectsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/team/$memberId': {
+      id: '/_authenticated/team/$memberId'
+      path: '/$memberId'
+      fullPath: '/team/$memberId'
+      preLoaderRoute: typeof AuthenticatedTeamMemberIdRouteImport
+      parentRoute: typeof AuthenticatedTeamRoute
+    }
     '/_authenticated/services/$serviceId': {
       id: '/_authenticated/services/$serviceId'
       path: '/services/$serviceId'
@@ -437,6 +470,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/invoices/$invoiceId'
       preLoaderRoute: typeof AuthenticatedInvoicesInvoiceIdRouteImport
       parentRoute: typeof AuthenticatedInvoicesRoute
+    }
+    '/_authenticated/expenses/$expenseId': {
+      id: '/_authenticated/expenses/$expenseId'
+      path: '/$expenseId'
+      fullPath: '/expenses/$expenseId'
+      preLoaderRoute: typeof AuthenticatedExpensesExpenseIdRouteImport
+      parentRoute: typeof AuthenticatedExpensesRoute
     }
     '/_authenticated/domains/$domainId': {
       id: '/_authenticated/domains/$domainId'
@@ -488,6 +528,19 @@ const AuthenticatedDomainsRouteChildren: AuthenticatedDomainsRouteChildren = {
 const AuthenticatedDomainsRouteWithChildren =
   AuthenticatedDomainsRoute._addFileChildren(AuthenticatedDomainsRouteChildren)
 
+interface AuthenticatedExpensesRouteChildren {
+  AuthenticatedExpensesExpenseIdRoute: typeof AuthenticatedExpensesExpenseIdRoute
+}
+
+const AuthenticatedExpensesRouteChildren: AuthenticatedExpensesRouteChildren = {
+  AuthenticatedExpensesExpenseIdRoute: AuthenticatedExpensesExpenseIdRoute,
+}
+
+const AuthenticatedExpensesRouteWithChildren =
+  AuthenticatedExpensesRoute._addFileChildren(
+    AuthenticatedExpensesRouteChildren,
+  )
+
 interface AuthenticatedInvoicesRouteChildren {
   AuthenticatedInvoicesInvoiceIdRoute: typeof AuthenticatedInvoicesInvoiceIdRoute
 }
@@ -501,17 +554,28 @@ const AuthenticatedInvoicesRouteWithChildren =
     AuthenticatedInvoicesRouteChildren,
   )
 
+interface AuthenticatedTeamRouteChildren {
+  AuthenticatedTeamMemberIdRoute: typeof AuthenticatedTeamMemberIdRoute
+}
+
+const AuthenticatedTeamRouteChildren: AuthenticatedTeamRouteChildren = {
+  AuthenticatedTeamMemberIdRoute: AuthenticatedTeamMemberIdRoute,
+}
+
+const AuthenticatedTeamRouteWithChildren =
+  AuthenticatedTeamRoute._addFileChildren(AuthenticatedTeamRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDomainsRoute: typeof AuthenticatedDomainsRouteWithChildren
-  AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRoute
+  AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRouteWithChildren
   AuthenticatedHostingRoute: typeof AuthenticatedHostingRoute
   AuthenticatedInvoicesRoute: typeof AuthenticatedInvoicesRouteWithChildren
   AuthenticatedOtherServicesRoute: typeof AuthenticatedOtherServicesRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
-  AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
+  AuthenticatedTeamRoute: typeof AuthenticatedTeamRouteWithChildren
   AuthenticatedProjectsProjectIdRoute: typeof AuthenticatedProjectsProjectIdRoute
   AuthenticatedReceiptsPaymentIdRoute: typeof AuthenticatedReceiptsPaymentIdRoute
   AuthenticatedServicesServiceIdRoute: typeof AuthenticatedServicesServiceIdRoute
@@ -522,13 +586,13 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCustomersRoute: AuthenticatedCustomersRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDomainsRoute: AuthenticatedDomainsRouteWithChildren,
-  AuthenticatedExpensesRoute: AuthenticatedExpensesRoute,
+  AuthenticatedExpensesRoute: AuthenticatedExpensesRouteWithChildren,
   AuthenticatedHostingRoute: AuthenticatedHostingRoute,
   AuthenticatedInvoicesRoute: AuthenticatedInvoicesRouteWithChildren,
   AuthenticatedOtherServicesRoute: AuthenticatedOtherServicesRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
-  AuthenticatedTeamRoute: AuthenticatedTeamRoute,
+  AuthenticatedTeamRoute: AuthenticatedTeamRouteWithChildren,
   AuthenticatedProjectsProjectIdRoute: AuthenticatedProjectsProjectIdRoute,
   AuthenticatedReceiptsPaymentIdRoute: AuthenticatedReceiptsPaymentIdRoute,
   AuthenticatedServicesServiceIdRoute: AuthenticatedServicesServiceIdRoute,
@@ -548,13 +612,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
