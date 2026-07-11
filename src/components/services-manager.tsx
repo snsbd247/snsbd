@@ -259,6 +259,10 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
             <div><Label>Cost (৳)</Label><Input type="number" step="0.01" value={f.cost_price} onChange={(e) => setF({ ...f, cost_price: e.target.value })} /></div>
             <div><Label>Sale price (৳)</Label><Input type="number" step="0.01" value={f.sale_price} onChange={(e) => setF({ ...f, sale_price: e.target.value })} /></div>
           </div>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={!!f.renewable} onChange={(e) => setF({ ...f, renewable: e.target.checked })} />
+            Renewable — auto-generate a draft invoice 10 days before expiry
+          </label>
           <div><Label>Notes</Label><Textarea value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} /></div>
         </div>
         <DialogFooter><Button onClick={() => save.mutate()} disabled={save.isPending || !f.customer_id || !f.name}>Save</Button></DialogFooter>
