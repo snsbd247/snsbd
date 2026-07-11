@@ -190,3 +190,49 @@ export const whmTest = createServerFn({ method: "POST" })
     const body = await whmGet(server, "/json-api/version");
     return { ok: true, version: body?.data?.version ?? "unknown" };
   });
+
+/** Admin: create a cPanel account on WHM for an existing hosting service row. */
+export const cpanelCreateAccount = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { service_id: string }) => data)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { data: svc, error } = await context.supabase
+      .from("services")
+      .select("id, customer_id, type, name, cpanel_username, cpanel_password, whm_server_id, whm_account_user, hosting_package_id, hosting_packages(name)")
+      .eq("id", data.service_id)
+      .maybeSingle();
+    if (error || !svc) throw new Error("Service not found");
+    if (svc.type !== "hosting") throw new Error("Not a hosting service");
+    if (!svc.whm_server_id) throw new Error("Pick a WHM server on the hosting first");
+    const user = (svc.whm_account_user || svc.cpanel_username || "").trim();
+    if (!user) throw new Error("cPanel username missing");
+    if (!svc.cpanel_password) throw new Error("cPanel password missing");
+    const domain = (svc.name || "").trim();
+    if (!domain || !domain.includes(".")) throw new Error("Service name must be a domain (e.g. site.com)");
+
+    const server = await loadServer(context.supabase, svc.whm_server_id);
+
+    // Fetch contact email from customer profile
+    const { data: prof } = await context.supabase
+      .from("profiles").select("email").eq("id", svc.customer_id).maybeSingle();
+
+    const params = new URLSearchParams({
+      username: user,
+      domain,
+      password: svc.cpanel_password,
+      contactemail: prof?.email ?? "",
+    });
+    const planName = (svc as any).hosting_packages?.name as string | undefined;
+    if (planName) params.set("plan", planName);
+
+    await whmGet(server, `/json-api/createacct?${params.toString()}`);
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("services")
+      .update({ whm_account_user: user, cpanel_url: whmBase(server), status: "active" })
+      .eq("id", svc.id);
+
+    return { ok: true };
+  });
+
