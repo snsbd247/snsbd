@@ -89,6 +89,51 @@ export type Database = {
         }
         Relationships: []
       }
+      hosting_packages: {
+        Row: {
+          bandwidth: string | null
+          billing_cycle: string
+          created_at: string
+          description: string | null
+          disk_space: string | null
+          features: Json
+          id: string
+          is_active: boolean
+          name: string
+          price: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          bandwidth?: string | null
+          billing_cycle?: string
+          created_at?: string
+          description?: string | null
+          disk_space?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean
+          name: string
+          price?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          bandwidth?: string | null
+          billing_cycle?: string
+          created_at?: string
+          description?: string | null
+          disk_space?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean
+          name?: string
+          price?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invoice_items: {
         Row: {
           created_at: string
@@ -458,6 +503,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      service_catalog: {
+        Row: {
+          billing_cycle: string
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          price: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          billing_cycle?: string
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          price?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          billing_cycle?: string
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          price?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       services: {
         Row: {
