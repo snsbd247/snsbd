@@ -318,6 +318,108 @@ export type Database = {
           },
         ]
       }
+      payment_gateways: {
+        Row: {
+          app_key: string | null
+          app_secret: string | null
+          created_at: string
+          extra: Json
+          id: string
+          is_active: boolean
+          merchant_number: string | null
+          mode: Database["public"]["Enums"]["gateway_mode"]
+          password: string | null
+          provider: Database["public"]["Enums"]["payment_provider"]
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          app_key?: string | null
+          app_secret?: string | null
+          created_at?: string
+          extra?: Json
+          id?: string
+          is_active?: boolean
+          merchant_number?: string | null
+          mode?: Database["public"]["Enums"]["gateway_mode"]
+          password?: string | null
+          provider: Database["public"]["Enums"]["payment_provider"]
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          app_key?: string | null
+          app_secret?: string | null
+          created_at?: string
+          extra?: Json
+          id?: string
+          is_active?: boolean
+          merchant_number?: string | null
+          mode?: Database["public"]["Enums"]["gateway_mode"]
+          password?: string | null
+          provider?: Database["public"]["Enums"]["payment_provider"]
+          updated_at?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      payment_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          customer_id: string
+          id: string
+          invoice_id: string
+          provider: Database["public"]["Enums"]["payment_provider"]
+          provider_payment_id: string | null
+          provider_trx_id: string | null
+          raw_response: Json | null
+          status: Database["public"]["Enums"]["gateway_txn_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          customer_id: string
+          id?: string
+          invoice_id: string
+          provider: Database["public"]["Enums"]["payment_provider"]
+          provider_payment_id?: string | null
+          provider_trx_id?: string | null
+          raw_response?: Json | null
+          status?: Database["public"]["Enums"]["gateway_txn_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          customer_id?: string
+          id?: string
+          invoice_id?: string
+          provider?: Database["public"]["Enums"]["payment_provider"]
+          provider_payment_id?: string | null
+          provider_trx_id?: string | null
+          raw_response?: Json | null
+          status?: Database["public"]["Enums"]["gateway_txn_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_transactions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_transactions_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number
@@ -802,6 +904,13 @@ export type Database = {
       customer_order_type: "hosting" | "service" | "domain"
       domain_action: "register" | "transfer" | "use_existing" | "renew"
       expense_category: "office" | "server" | "utility" | "marketing" | "other"
+      gateway_mode: "sandbox" | "live"
+      gateway_txn_status:
+        | "initiated"
+        | "pending"
+        | "completed"
+        | "failed"
+        | "cancelled"
       invoice_status:
         | "draft"
         | "sent"
@@ -809,6 +918,7 @@ export type Database = {
         | "partial"
         | "overdue"
         | "cancelled"
+      payment_provider: "bkash" | "nagad"
       project_status:
         | "planning"
         | "in_progress"
@@ -955,6 +1065,14 @@ export const Constants = {
       customer_order_type: ["hosting", "service", "domain"],
       domain_action: ["register", "transfer", "use_existing", "renew"],
       expense_category: ["office", "server", "utility", "marketing", "other"],
+      gateway_mode: ["sandbox", "live"],
+      gateway_txn_status: [
+        "initiated",
+        "pending",
+        "completed",
+        "failed",
+        "cancelled",
+      ],
       invoice_status: [
         "draft",
         "sent",
@@ -963,6 +1081,7 @@ export const Constants = {
         "overdue",
         "cancelled",
       ],
+      payment_provider: ["bkash", "nagad"],
       project_status: [
         "planning",
         "in_progress",
