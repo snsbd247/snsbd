@@ -10,7 +10,56 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Upload, X } from "lucide-react";
+
+function ImageUpload({
+  value, onChange, previewClass, maxKB,
+}: { value: string; onChange: (v: string) => void; previewClass: string; maxKB: number }) {
+  async function onFile(file: File) {
+    if (!file.type.startsWith("image/")) return toast.error("Please choose an image file");
+    if (file.size > maxKB * 1024) return toast.error(`Image must be under ${maxKB} KB`);
+    const reader = new FileReader();
+    reader.onload = () => onChange(String(reader.result));
+    reader.onerror = () => toast.error("Failed to read image");
+    reader.readAsDataURL(file);
+  }
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-3">
+        {value ? (
+          <img src={value} alt="Preview" className={`${previewClass} object-contain rounded border bg-white p-1`} />
+        ) : (
+          <div className={`${previewClass} rounded border bg-muted flex items-center justify-center text-[10px] text-muted-foreground`}>No image</div>
+        )}
+        <div className="flex gap-2">
+          <Button asChild type="button" variant="outline" size="sm">
+            <label className="cursor-pointer">
+              <Upload className="mr-2 h-4 w-4" />
+              {value ? "Change" : "Upload"}
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/svg+xml,image/x-icon,image/gif"
+                className="hidden"
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); e.target.value = ""; }}
+              />
+            </label>
+          </Button>
+          {value && (
+            <Button type="button" variant="ghost" size="sm" onClick={() => onChange("")}>
+              <X className="mr-1 h-4 w-4" />Remove
+            </Button>
+          )}
+        </div>
+      </div>
+      <Input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="Or paste an image URL"
+        className="text-xs"
+      />
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
