@@ -46,9 +46,13 @@ function AuthedLayout() {
       <Sidebar>
         <SidebarHeader className="border-b border-sidebar-border">
           <div className="flex items-center gap-2 px-2 py-2">
-            <img src="/favicon.png" alt="Sync & Solutions IT logo" className="h-8 w-8 rounded-md bg-white" />
+            <img
+              src={company?.logo_url || "/favicon.png"}
+              alt={`${company?.company_name ?? "Company"} logo`}
+              className="h-8 w-8 rounded-md bg-white object-contain"
+            />
             <div>
-              <div className="font-semibold text-sm">Sync & Solutions IT</div>
+              <div className="font-semibold text-sm">{company?.company_name ?? "Company"}</div>
               <div className="text-[10px] uppercase tracking-wider text-sidebar-foreground/60">{isAdmin ? "Admin" : "Customer"}</div>
             </div>
           </div>
