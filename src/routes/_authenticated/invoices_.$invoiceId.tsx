@@ -14,7 +14,7 @@ import { useAuth } from "@/lib/auth";
 import { useCompanySettings } from "@/lib/company-settings";
 import { formatBDT, formatDate } from "@/lib/format";
 
-export const Route = createFileRoute("/_authenticated/invoices/$invoiceId")({
+export const Route = createFileRoute("/_authenticated/invoices_/$invoiceId")({
   component: InvoiceDetailPage,
 });
 

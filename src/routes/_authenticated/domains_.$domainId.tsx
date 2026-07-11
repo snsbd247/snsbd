@@ -15,7 +15,7 @@ import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate, daysUntil } from "@/lib/format";
 import { generateInvoiceDraft } from "@/lib/generate-invoice";
 
-export const Route = createFileRoute("/_authenticated/domains/$domainId")({
+export const Route = createFileRoute("/_authenticated/domains_/$domainId")({
   component: DomainDetailPage,
 });
 
