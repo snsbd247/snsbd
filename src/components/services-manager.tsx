@@ -157,6 +157,7 @@ const empty = (t: ServiceType = "other") => ({
   purchase_date: "", expiry_date: "", cost_price: "0", sale_price: "0", status: "active", notes: "",
   renewable: false,
   cpanel_url: "", cpanel_username: "", cpanel_password: "",
+  hosting_package_id: "",
 });
 
 
