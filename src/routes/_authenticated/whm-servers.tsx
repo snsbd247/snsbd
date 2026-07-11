@@ -38,10 +38,13 @@ function WhmServersPage() {
     if (open) {
       setF(editing ? {
         name: editing.name, hostname: editing.hostname, port: String(editing.port),
-        username: editing.username, api_token: editing.api_token, is_active: editing.is_active,
+        username: editing.username, api_token: editing.api_token,
+        auth_type: (editing.auth_type ?? "token") as "token" | "password",
+        is_active: editing.is_active,
       } : empty);
     }
   }, [open, editing]);
+
 
   const save = useMutation({
     mutationFn: async () => {
