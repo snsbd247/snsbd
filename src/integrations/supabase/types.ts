@@ -462,6 +462,9 @@ export type Database = {
       services: {
         Row: {
           cost_price: number | null
+          cpanel_password: string | null
+          cpanel_url: string | null
+          cpanel_username: string | null
           created_at: string
           customer_id: string
           details: string | null
@@ -484,6 +487,9 @@ export type Database = {
         }
         Insert: {
           cost_price?: number | null
+          cpanel_password?: string | null
+          cpanel_url?: string | null
+          cpanel_username?: string | null
           created_at?: string
           customer_id: string
           details?: string | null
@@ -506,6 +512,9 @@ export type Database = {
         }
         Update: {
           cost_price?: number | null
+          cpanel_password?: string | null
+          cpanel_url?: string | null
+          cpanel_username?: string | null
           created_at?: string
           customer_id?: string
           details?: string | null
