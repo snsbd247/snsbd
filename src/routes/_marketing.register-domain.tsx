@@ -4,15 +4,15 @@ import { SectionHeading } from "@/components/marketing/section";
 import { tlds } from "@/content/plans";
 import { Globe, Search } from "lucide-react";
 
-export const Route = createFileRoute("/_marketing/domains")({
+export const Route = createFileRoute("/_marketing/register-domain")({
   head: () => ({
     meta: [
       { title: "Register Domain Names — .com from ৳1,150 — Sync & Solutions IT" },
       { name: "description", content: "Register or transfer domains at competitive prices. Free DNS management, WHOIS privacy and email forwarding." },
       { property: "og:title", content: "Domain Names — Sync & Solutions IT" },
-      { property: "og:url", content: "https://snsbd.lovable.app/domains" },
+      { property: "og:url", content: "https://snsbd.lovable.app/register-domain" },
     ],
-    links: [{ rel: "canonical", href: "https://snsbd.lovable.app/domains" }],
+    links: [{ rel: "canonical", href: "https://snsbd.lovable.app/register-domain" }],
   }),
   component: Page,
 });

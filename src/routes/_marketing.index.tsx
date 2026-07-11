@@ -51,7 +51,7 @@ function Home() {
                 <Link to="/web-hosting">See Hosting Plans <ArrowRight className="ml-2 h-4 w-4" /></Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-white/20 bg-white/5 text-white hover:bg-white/10 hover:text-white">
-                <Link to="/domains">Search Domain</Link>
+                <Link to="/register-domain">Search Domain</Link>
               </Button>
             </div>
             <div className="mt-8 flex flex-wrap items-center gap-6 text-sm text-white/60">

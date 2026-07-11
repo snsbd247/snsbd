@@ -15,6 +15,18 @@ import { Route as MarketingRouteImport } from './routes/_marketing'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as MarketingIndexRouteImport } from './routes/_marketing.index'
 import { Route as PortalBkashCallbackRouteImport } from './routes/portal.bkash-callback'
+import { Route as MarketingWebHostingRouteImport } from './routes/_marketing.web-hosting'
+import { Route as MarketingVpsRouteImport } from './routes/_marketing.vps'
+import { Route as MarketingTermsRouteImport } from './routes/_marketing.terms'
+import { Route as MarketingSupportRouteImport } from './routes/_marketing.support'
+import { Route as MarketingResellerHostingRouteImport } from './routes/_marketing.reseller-hosting'
+import { Route as MarketingRegisterDomainRouteImport } from './routes/_marketing.register-domain'
+import { Route as MarketingRefundRouteImport } from './routes/_marketing.refund'
+import { Route as MarketingPrivacyRouteImport } from './routes/_marketing.privacy'
+import { Route as MarketingEmailHostingRouteImport } from './routes/_marketing.email-hosting'
+import { Route as MarketingContactRouteImport } from './routes/_marketing.contact'
+import { Route as MarketingBdixHostingRouteImport } from './routes/_marketing.bdix-hosting'
+import { Route as MarketingAboutRouteImport } from './routes/_marketing.about'
 import { Route as AuthenticatedWhmServersRouteImport } from './routes/_authenticated/whm-servers'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
@@ -69,6 +81,67 @@ const PortalBkashCallbackRoute = PortalBkashCallbackRouteImport.update({
   id: '/bkash-callback',
   path: '/bkash-callback',
   getParentRoute: () => PortalRoute,
+} as any)
+const MarketingWebHostingRoute = MarketingWebHostingRouteImport.update({
+  id: '/web-hosting',
+  path: '/web-hosting',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingVpsRoute = MarketingVpsRouteImport.update({
+  id: '/vps',
+  path: '/vps',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingTermsRoute = MarketingTermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingSupportRoute = MarketingSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingResellerHostingRoute =
+  MarketingResellerHostingRouteImport.update({
+    id: '/reseller-hosting',
+    path: '/reseller-hosting',
+    getParentRoute: () => MarketingRoute,
+  } as any)
+const MarketingRegisterDomainRoute = MarketingRegisterDomainRouteImport.update({
+  id: '/register-domain',
+  path: '/register-domain',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingRefundRoute = MarketingRefundRouteImport.update({
+  id: '/refund',
+  path: '/refund',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingPrivacyRoute = MarketingPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingEmailHostingRoute = MarketingEmailHostingRouteImport.update({
+  id: '/email-hosting',
+  path: '/email-hosting',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingContactRoute = MarketingContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingBdixHostingRoute = MarketingBdixHostingRouteImport.update({
+  id: '/bdix-hosting',
+  path: '/bdix-hosting',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingAboutRoute = MarketingAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => MarketingRoute,
 } as any)
 const AuthenticatedWhmServersRoute = AuthenticatedWhmServersRouteImport.update({
   id: '/whm-servers',
@@ -235,6 +308,18 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
   '/whm-servers': typeof AuthenticatedWhmServersRoute
+  '/about': typeof MarketingAboutRoute
+  '/bdix-hosting': typeof MarketingBdixHostingRoute
+  '/contact': typeof MarketingContactRoute
+  '/email-hosting': typeof MarketingEmailHostingRoute
+  '/privacy': typeof MarketingPrivacyRoute
+  '/refund': typeof MarketingRefundRoute
+  '/register-domain': typeof MarketingRegisterDomainRoute
+  '/reseller-hosting': typeof MarketingResellerHostingRoute
+  '/support': typeof MarketingSupportRoute
+  '/terms': typeof MarketingTermsRoute
+  '/vps': typeof MarketingVpsRoute
+  '/web-hosting': typeof MarketingWebHostingRoute
   '/portal/bkash-callback': typeof PortalBkashCallbackRoute
   '/customers/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
   '/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
@@ -267,6 +352,18 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
   '/whm-servers': typeof AuthenticatedWhmServersRoute
+  '/about': typeof MarketingAboutRoute
+  '/bdix-hosting': typeof MarketingBdixHostingRoute
+  '/contact': typeof MarketingContactRoute
+  '/email-hosting': typeof MarketingEmailHostingRoute
+  '/privacy': typeof MarketingPrivacyRoute
+  '/refund': typeof MarketingRefundRoute
+  '/register-domain': typeof MarketingRegisterDomainRoute
+  '/reseller-hosting': typeof MarketingResellerHostingRoute
+  '/support': typeof MarketingSupportRoute
+  '/terms': typeof MarketingTermsRoute
+  '/vps': typeof MarketingVpsRoute
+  '/web-hosting': typeof MarketingWebHostingRoute
   '/portal/bkash-callback': typeof PortalBkashCallbackRoute
   '/customers/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
   '/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
@@ -301,6 +398,18 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/_authenticated/whm-servers': typeof AuthenticatedWhmServersRoute
+  '/_marketing/about': typeof MarketingAboutRoute
+  '/_marketing/bdix-hosting': typeof MarketingBdixHostingRoute
+  '/_marketing/contact': typeof MarketingContactRoute
+  '/_marketing/email-hosting': typeof MarketingEmailHostingRoute
+  '/_marketing/privacy': typeof MarketingPrivacyRoute
+  '/_marketing/refund': typeof MarketingRefundRoute
+  '/_marketing/register-domain': typeof MarketingRegisterDomainRoute
+  '/_marketing/reseller-hosting': typeof MarketingResellerHostingRoute
+  '/_marketing/support': typeof MarketingSupportRoute
+  '/_marketing/terms': typeof MarketingTermsRoute
+  '/_marketing/vps': typeof MarketingVpsRoute
+  '/_marketing/web-hosting': typeof MarketingWebHostingRoute
   '/portal/bkash-callback': typeof PortalBkashCallbackRoute
   '/_marketing/': typeof MarketingIndexRoute
   '/_authenticated/customers_/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
@@ -336,6 +445,18 @@ export interface FileRouteTypes {
     | '/settings'
     | '/team'
     | '/whm-servers'
+    | '/about'
+    | '/bdix-hosting'
+    | '/contact'
+    | '/email-hosting'
+    | '/privacy'
+    | '/refund'
+    | '/register-domain'
+    | '/reseller-hosting'
+    | '/support'
+    | '/terms'
+    | '/vps'
+    | '/web-hosting'
     | '/portal/bkash-callback'
     | '/customers/$customerId'
     | '/domains/$domainId'
@@ -368,6 +489,18 @@ export interface FileRouteTypes {
     | '/settings'
     | '/team'
     | '/whm-servers'
+    | '/about'
+    | '/bdix-hosting'
+    | '/contact'
+    | '/email-hosting'
+    | '/privacy'
+    | '/refund'
+    | '/register-domain'
+    | '/reseller-hosting'
+    | '/support'
+    | '/terms'
+    | '/vps'
+    | '/web-hosting'
     | '/portal/bkash-callback'
     | '/customers/$customerId'
     | '/domains/$domainId'
@@ -401,6 +534,18 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/team'
     | '/_authenticated/whm-servers'
+    | '/_marketing/about'
+    | '/_marketing/bdix-hosting'
+    | '/_marketing/contact'
+    | '/_marketing/email-hosting'
+    | '/_marketing/privacy'
+    | '/_marketing/refund'
+    | '/_marketing/register-domain'
+    | '/_marketing/reseller-hosting'
+    | '/_marketing/support'
+    | '/_marketing/terms'
+    | '/_marketing/vps'
+    | '/_marketing/web-hosting'
     | '/portal/bkash-callback'
     | '/_marketing/'
     | '/_authenticated/customers_/$customerId'
@@ -468,6 +613,90 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal/bkash-callback'
       preLoaderRoute: typeof PortalBkashCallbackRouteImport
       parentRoute: typeof PortalRoute
+    }
+    '/_marketing/web-hosting': {
+      id: '/_marketing/web-hosting'
+      path: '/web-hosting'
+      fullPath: '/web-hosting'
+      preLoaderRoute: typeof MarketingWebHostingRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/vps': {
+      id: '/_marketing/vps'
+      path: '/vps'
+      fullPath: '/vps'
+      preLoaderRoute: typeof MarketingVpsRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/terms': {
+      id: '/_marketing/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof MarketingTermsRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/support': {
+      id: '/_marketing/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof MarketingSupportRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/reseller-hosting': {
+      id: '/_marketing/reseller-hosting'
+      path: '/reseller-hosting'
+      fullPath: '/reseller-hosting'
+      preLoaderRoute: typeof MarketingResellerHostingRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/register-domain': {
+      id: '/_marketing/register-domain'
+      path: '/register-domain'
+      fullPath: '/register-domain'
+      preLoaderRoute: typeof MarketingRegisterDomainRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/refund': {
+      id: '/_marketing/refund'
+      path: '/refund'
+      fullPath: '/refund'
+      preLoaderRoute: typeof MarketingRefundRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/privacy': {
+      id: '/_marketing/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof MarketingPrivacyRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/email-hosting': {
+      id: '/_marketing/email-hosting'
+      path: '/email-hosting'
+      fullPath: '/email-hosting'
+      preLoaderRoute: typeof MarketingEmailHostingRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/contact': {
+      id: '/_marketing/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof MarketingContactRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/bdix-hosting': {
+      id: '/_marketing/bdix-hosting'
+      path: '/bdix-hosting'
+      fullPath: '/bdix-hosting'
+      preLoaderRoute: typeof MarketingBdixHostingRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/about': {
+      id: '/_marketing/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof MarketingAboutRouteImport
+      parentRoute: typeof MarketingRoute
     }
     '/_authenticated/whm-servers': {
       id: '/_authenticated/whm-servers'
@@ -712,10 +941,34 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface MarketingRouteChildren {
+  MarketingAboutRoute: typeof MarketingAboutRoute
+  MarketingBdixHostingRoute: typeof MarketingBdixHostingRoute
+  MarketingContactRoute: typeof MarketingContactRoute
+  MarketingEmailHostingRoute: typeof MarketingEmailHostingRoute
+  MarketingPrivacyRoute: typeof MarketingPrivacyRoute
+  MarketingRefundRoute: typeof MarketingRefundRoute
+  MarketingRegisterDomainRoute: typeof MarketingRegisterDomainRoute
+  MarketingResellerHostingRoute: typeof MarketingResellerHostingRoute
+  MarketingSupportRoute: typeof MarketingSupportRoute
+  MarketingTermsRoute: typeof MarketingTermsRoute
+  MarketingVpsRoute: typeof MarketingVpsRoute
+  MarketingWebHostingRoute: typeof MarketingWebHostingRoute
   MarketingIndexRoute: typeof MarketingIndexRoute
 }
 
 const MarketingRouteChildren: MarketingRouteChildren = {
+  MarketingAboutRoute: MarketingAboutRoute,
+  MarketingBdixHostingRoute: MarketingBdixHostingRoute,
+  MarketingContactRoute: MarketingContactRoute,
+  MarketingEmailHostingRoute: MarketingEmailHostingRoute,
+  MarketingPrivacyRoute: MarketingPrivacyRoute,
+  MarketingRefundRoute: MarketingRefundRoute,
+  MarketingRegisterDomainRoute: MarketingRegisterDomainRoute,
+  MarketingResellerHostingRoute: MarketingResellerHostingRoute,
+  MarketingSupportRoute: MarketingSupportRoute,
+  MarketingTermsRoute: MarketingTermsRoute,
+  MarketingVpsRoute: MarketingVpsRoute,
+  MarketingWebHostingRoute: MarketingWebHostingRoute,
   MarketingIndexRoute: MarketingIndexRoute,
 }
 
