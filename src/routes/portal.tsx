@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatBDT, formatDate } from "@/lib/format";
+import { SiteFooter } from "@/components/site-footer";
+
 
 export const Route = createFileRoute("/portal")({
   ssr: false,
@@ -120,6 +122,8 @@ function PortalPage() {
           ))}
         </CardContent>
       </Card>
+      <SiteFooter className="mt-8" />
     </div>
   );
 }
+

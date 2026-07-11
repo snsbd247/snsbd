@@ -15,6 +15,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Settings } from "lucide-react";
 import { useCompanySettings } from "@/lib/company-settings";
+import { SiteFooter } from "@/components/site-footer";
+
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -122,7 +124,9 @@ function AuthedLayout() {
         <main className="p-6">
           <Outlet />
         </main>
+        <SiteFooter />
       </SidebarInset>
+
     </SidebarProvider>
   );
 }

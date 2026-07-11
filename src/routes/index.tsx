@@ -2,6 +2,8 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { Building2, Users, FileText, Server, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { SiteFooter } from "@/components/site-footer";
+
 
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {
@@ -66,6 +68,8 @@ function Landing() {
           ))}
         </div>
       </main>
+      <SiteFooter />
     </div>
   );
 }
+
