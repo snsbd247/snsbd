@@ -191,6 +191,7 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
       const payload: any = {
         ...f,
         project_id: f.project_id || null,
+        hosting_package_id: f.type === "hosting" ? (f.hosting_package_id || null) : null,
         cost_price: Number(f.cost_price) || 0,
         sale_price: Number(f.sale_price) || 0,
         purchase_date: f.purchase_date || null,
