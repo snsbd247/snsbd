@@ -28,6 +28,7 @@ import { Route as AuthenticatedReceiptsPaymentIdRouteImport } from './routes/_au
 import { Route as AuthenticatedProjectsProjectIdRouteImport } from './routes/_authenticated/projects.$projectId'
 import { Route as AuthenticatedInvoicesInvoiceIdRouteImport } from './routes/_authenticated/invoices.$invoiceId'
 import { Route as AuthenticatedDomainsDomainIdRouteImport } from './routes/_authenticated/domains.$domainId'
+import { Route as AuthenticatedCustomersCustomerIdRouteImport } from './routes/_authenticated/customers.$customerId'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -130,11 +131,17 @@ const AuthenticatedDomainsDomainIdRoute =
     path: '/$domainId',
     getParentRoute: () => AuthenticatedDomainsRoute,
   } as any)
+const AuthenticatedCustomersCustomerIdRoute =
+  AuthenticatedCustomersCustomerIdRouteImport.update({
+    id: '/$customerId',
+    path: '/$customerId',
+    getParentRoute: () => AuthenticatedCustomersRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/customers': typeof AuthenticatedCustomersRoute
+  '/customers': typeof AuthenticatedCustomersRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/domains': typeof AuthenticatedDomainsRouteWithChildren
   '/expenses': typeof AuthenticatedExpensesRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
+  '/customers/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
   '/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
   '/invoices/$invoiceId': typeof AuthenticatedInvoicesInvoiceIdRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
@@ -154,7 +162,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/customers': typeof AuthenticatedCustomersRoute
+  '/customers': typeof AuthenticatedCustomersRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/domains': typeof AuthenticatedDomainsRouteWithChildren
   '/expenses': typeof AuthenticatedExpensesRoute
@@ -164,6 +172,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
+  '/customers/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
   '/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
   '/invoices/$invoiceId': typeof AuthenticatedInvoicesInvoiceIdRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
@@ -176,7 +185,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/_authenticated/customers': typeof AuthenticatedCustomersRoute
+  '/_authenticated/customers': typeof AuthenticatedCustomersRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/domains': typeof AuthenticatedDomainsRouteWithChildren
   '/_authenticated/expenses': typeof AuthenticatedExpensesRoute
@@ -186,6 +195,7 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/team': typeof AuthenticatedTeamRoute
+  '/_authenticated/customers/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
   '/_authenticated/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
   '/_authenticated/invoices/$invoiceId': typeof AuthenticatedInvoicesInvoiceIdRoute
   '/_authenticated/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
@@ -208,6 +218,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/settings'
     | '/team'
+    | '/customers/$customerId'
     | '/domains/$domainId'
     | '/invoices/$invoiceId'
     | '/projects/$projectId'
@@ -228,6 +239,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/settings'
     | '/team'
+    | '/customers/$customerId'
     | '/domains/$domainId'
     | '/invoices/$invoiceId'
     | '/projects/$projectId'
@@ -249,6 +261,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/settings'
     | '/_authenticated/team'
+    | '/_authenticated/customers/$customerId'
     | '/_authenticated/domains/$domainId'
     | '/_authenticated/invoices/$invoiceId'
     | '/_authenticated/projects/$projectId'
@@ -398,8 +411,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDomainsDomainIdRouteImport
       parentRoute: typeof AuthenticatedDomainsRoute
     }
+    '/_authenticated/customers/$customerId': {
+      id: '/_authenticated/customers/$customerId'
+      path: '/$customerId'
+      fullPath: '/customers/$customerId'
+      preLoaderRoute: typeof AuthenticatedCustomersCustomerIdRouteImport
+      parentRoute: typeof AuthenticatedCustomersRoute
+    }
   }
 }
+
+interface AuthenticatedCustomersRouteChildren {
+  AuthenticatedCustomersCustomerIdRoute: typeof AuthenticatedCustomersCustomerIdRoute
+}
+
+const AuthenticatedCustomersRouteChildren: AuthenticatedCustomersRouteChildren =
+  {
+    AuthenticatedCustomersCustomerIdRoute:
+      AuthenticatedCustomersCustomerIdRoute,
+  }
+
+const AuthenticatedCustomersRouteWithChildren =
+  AuthenticatedCustomersRoute._addFileChildren(
+    AuthenticatedCustomersRouteChildren,
+  )
 
 interface AuthenticatedDomainsRouteChildren {
   AuthenticatedDomainsDomainIdRoute: typeof AuthenticatedDomainsDomainIdRoute
@@ -426,7 +461,7 @@ const AuthenticatedInvoicesRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
+  AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDomainsRoute: typeof AuthenticatedDomainsRouteWithChildren
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRoute
@@ -443,7 +478,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
+  AuthenticatedCustomersRoute: AuthenticatedCustomersRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDomainsRoute: AuthenticatedDomainsRouteWithChildren,
   AuthenticatedExpensesRoute: AuthenticatedExpensesRoute,
