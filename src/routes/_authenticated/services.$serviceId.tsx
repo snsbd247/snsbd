@@ -120,9 +120,35 @@ function ServiceDetailPage() {
         <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Sale price</div><div className="text-sm font-medium mt-1">{formatBDT(service.sale_price)}</div></CardContent></Card>
       </div>
 
+      {service.type === "hosting" && (service.cpanel_url || service.cpanel_username || service.cpanel_password) && (
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-base">cPanel access</CardTitle>
+            {service.cpanel_url && service.cpanel_username && service.cpanel_password && (
+              <Button size="sm" onClick={() => cpanelLogin(service.cpanel_url!, service.cpanel_username!, service.cpanel_password!)}>
+                <LogIn className="mr-2 h-4 w-4" />Login to cPanel
+              </Button>
+            )}
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <div className="flex items-center gap-2"><span className="text-muted-foreground w-24">URL</span><span className="font-mono">{service.cpanel_url || "—"}</span></div>
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground w-24">Username</span>
+              <span className="font-mono">{service.cpanel_username || "—"}</span>
+              {service.cpanel_username && <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => { navigator.clipboard.writeText(service.cpanel_username!); toast.success("Copied"); }}><Copy className="h-3 w-3" /></Button>}
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground w-24">Password</span>
+              <PasswordReveal value={service.cpanel_password || ""} />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {service.notes && (
         <Card><CardHeader><CardTitle className="text-base">Notes</CardTitle></CardHeader><CardContent><p className="text-sm whitespace-pre-wrap">{service.notes}</p></CardContent></Card>
       )}
+
 
       <Card>
         <CardHeader><CardTitle className="text-base">Invoices</CardTitle></CardHeader>
