@@ -1,0 +1,1 @@
+ALTER TABLE public.services ADD COLUMN IF NOT EXISTS hosting_package_id uuid REFERENCES public.hosting_packages(id) ON DELETE SET NULL; CREATE INDEX IF NOT EXISTS services_hosting_package_id_idx ON public.services(hosting_package_id);
