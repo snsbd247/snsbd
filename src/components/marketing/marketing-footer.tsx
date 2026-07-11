@@ -52,11 +52,11 @@ export function MarketingFooter() {
               Reliable web hosting, domains and cloud services trusted by businesses and creators across Bangladesh.
             </p>
             <div className="mt-5 space-y-2 text-sm">
-              {data?.support_email && (
-                <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-emerald-400" /> {data.support_email}</div>
+              {data?.email && (
+                <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-emerald-400" /> {data.email}</div>
               )}
-              {data?.support_phone && (
-                <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-emerald-400" /> {data.support_phone}</div>
+              {data?.phone && (
+                <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-emerald-400" /> {data.phone}</div>
               )}
               {data?.address && (
                 <div className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-emerald-400" /> {data.address}</div>
