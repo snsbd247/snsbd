@@ -132,9 +132,12 @@ function PortalPage() {
               <CardContent className="space-y-2 text-sm">
                 {services.length === 0 && <div className="text-muted-foreground">No services yet.</div>}
                 {services.map((s) => (
-                  <div key={s.id} className="flex justify-between border-b py-2">
-                    <span className="font-medium">{s.name}</span>
-                    <span className="text-xs text-muted-foreground">{s.type} · expires {formatDate(s.expiry_date)}</span>
+                  <div key={s.id} className="flex flex-wrap items-center justify-between gap-2 border-b py-2">
+                    <div>
+                      <div className="font-medium">{s.name}</div>
+                      <div className="text-xs text-muted-foreground">{s.type} · expires {formatDate(s.expiry_date)}</div>
+                    </div>
+                    {s.type === "hosting" && s.whm_server_id && <CpanelActions service={s} />}
                   </div>
                 ))}
               </CardContent>
