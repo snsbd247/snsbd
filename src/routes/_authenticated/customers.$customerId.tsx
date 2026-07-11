@@ -6,9 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Loader2, Globe, HardDrive, Package, FolderKanban, FileText } from "lucide-react";
+import { ArrowLeft, Loader2, Globe, HardDrive, Package, FolderKanban, FileText, LogIn } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate, daysUntil } from "@/lib/format";
+import { useServerFn } from "@tanstack/react-start";
+import { createPortalSession } from "@/lib/customers.functions";
+import { toast } from "sonner";
+import { useState } from "react";
+
 
 export const Route = createFileRoute("/_authenticated/customers/$customerId")({
   component: CustomerDetailPage,
