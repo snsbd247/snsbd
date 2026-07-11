@@ -122,6 +122,8 @@ function PortalPage() {
           ))}
         </CardContent>
       </Card>
+      <SiteFooter className="mt-8" />
     </div>
   );
 }
+
