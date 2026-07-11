@@ -90,7 +90,7 @@ function CustomersPage() {
               {(data ?? []).map((c: any) => (
                 <TableRow key={c.id}>
                   <TableCell className="font-medium">
-                    {c.full_name ?? "—"}
+                    <Link to="/customers/$customerId" params={{ customerId: c.id }} className="hover:underline">{c.full_name ?? "—"}</Link>
                     {c.roles?.includes("admin") && <Badge variant="outline" className="ml-2">admin</Badge>}
                   </TableCell>
                   <TableCell>{c.email ?? "—"}</TableCell>
