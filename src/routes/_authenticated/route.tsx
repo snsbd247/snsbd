@@ -13,6 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Settings } from "lucide-react";
+import { useCompanySettings } from "@/lib/company-settings";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
