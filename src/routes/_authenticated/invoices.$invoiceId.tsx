@@ -123,8 +123,11 @@ function InvoiceDetailPage() {
               <Badge variant={statusVariant(inv.status)} className="capitalize mt-2">{inv.status}</Badge>
             </div>
             <div className="text-right">
-              <div className="font-semibold">Sync &amp; Solutions IT</div>
-              <div className="text-xs text-muted-foreground">Bangladesh</div>
+              {company?.logo_url && <img src={company.logo_url} alt={`${company.company_name} logo`} className="h-10 ml-auto mb-2 object-contain" />}
+              <div className="font-semibold">{company?.company_name ?? "Company"}</div>
+              {company?.address && <div className="text-xs text-muted-foreground whitespace-pre-line">{company.address}</div>}
+              {company?.phone && <div className="text-xs text-muted-foreground">{company.phone}</div>}
+              {company?.email && <div className="text-xs text-muted-foreground">{company.email}</div>}
             </div>
           </div>
 
