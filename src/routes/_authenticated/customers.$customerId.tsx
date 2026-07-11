@@ -6,9 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Loader2, Globe, HardDrive, Package, FolderKanban, FileText } from "lucide-react";
+import { ArrowLeft, Loader2, Globe, HardDrive, Package, FolderKanban, FileText, LogIn } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate, daysUntil } from "@/lib/format";
+import { useServerFn } from "@tanstack/react-start";
+import { createPortalSession } from "@/lib/customers.functions";
+import { toast } from "sonner";
+import { useState } from "react";
+
 
 export const Route = createFileRoute("/_authenticated/customers/$customerId")({
   component: CustomerDetailPage,
@@ -68,10 +73,14 @@ function CustomerDetailPage() {
             {p.address && <div className="whitespace-pre-line">{p.address}</div>}
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={() => navigate({ to: "/customers" })}>
-          <ArrowLeft className="mr-2 h-4 w-4" />Back
-        </Button>
+        <div className="flex gap-2">
+          <LoginAsCustomerButton customerId={customerId} />
+          <Button variant="outline" size="sm" onClick={() => navigate({ to: "/customers" })}>
+            <ArrowLeft className="mr-2 h-4 w-4" />Back
+          </Button>
+        </div>
       </div>
+
 
       <div className="grid gap-4 md:grid-cols-4">
         <StatCard icon={FolderKanban} label="Projects" value={data.projects.length} />
@@ -170,5 +179,28 @@ function ServiceSection({ title, icon, rows, kind }: { title: string; icon: any;
         </Table>
       )}
     </Section>
+  );
+}
+
+function LoginAsCustomerButton({ customerId }: { customerId: string }) {
+  const fn = useServerFn(createPortalSession);
+  const [loading, setLoading] = useState(false);
+  const onClick = async () => {
+    setLoading(true);
+    try {
+      const res = await fn({ data: { customer_id: customerId } });
+      const url = `${window.location.origin}/portal#at=${encodeURIComponent(res.access_token)}&rt=${encodeURIComponent(res.refresh_token)}`;
+      const win = window.open(url, "_blank", "noopener");
+      if (!win) toast.error("Popup blocked — allow popups to open the portal");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to open portal");
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <Button size="sm" onClick={onClick} disabled={loading}>
+      <LogIn className="mr-2 h-4 w-4" />{loading ? "Opening…" : "Login as customer"}
+    </Button>
   );
 }
