@@ -159,6 +159,55 @@ function PackagesPage() {
           <DialogFooter><Button onClick={() => save.mutate()} disabled={!f.name || save.isPending}>Save</Button></DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <UsageDialog pkg={usageFor} onClose={() => setUsageFor(null)} />
     </div>
+  );
+}
+
+function UsageDialog({ pkg, onClose }: { pkg: any; onClose: () => void }) {
+  const { data: rows, isLoading } = useQuery({
+    queryKey: ["hosting_package_usage", pkg?.id],
+    enabled: !!pkg?.id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("services")
+        .select("id, name, status, expiry_date, sale_price, profiles(id, full_name, email)")
+        .eq("hosting_package_id", pkg.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  return (
+    <Dialog open={!!pkg} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader><DialogTitle>Hostings using “{pkg?.name}”</DialogTitle></DialogHeader>
+        {isLoading ? (
+          <p className="text-sm text-muted-foreground py-6 text-center">Loading…</p>
+        ) : (rows ?? []).length === 0 ? (
+          <p className="text-sm text-muted-foreground py-6 text-center">No hostings use this package yet.</p>
+        ) : (
+          <Table>
+            <TableHeader><TableRow>
+              <TableHead>Hosting</TableHead><TableHead>Customer</TableHead>
+              <TableHead>Expiry</TableHead><TableHead>Price</TableHead><TableHead>Status</TableHead>
+            </TableRow></TableHeader>
+            <TableBody>
+              {rows!.map((r: any) => (
+                <TableRow key={r.id}>
+                  <TableCell><Link to="/services/$serviceId" params={{ serviceId: r.id }} className="text-primary hover:underline">{r.name}</Link></TableCell>
+                  <TableCell>{r.profiles?.full_name ?? r.profiles?.email ?? "—"}</TableCell>
+                  <TableCell className="text-xs">{r.expiry_date ?? "—"}</TableCell>
+                  <TableCell>{formatBDT(r.sale_price)}</TableCell>
+                  <TableCell><Badge variant={r.status === "active" ? "default" : "secondary"} className="capitalize">{r.status}</Badge></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
