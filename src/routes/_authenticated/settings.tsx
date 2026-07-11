@@ -96,6 +96,7 @@ function SettingsPage() {
         phone: data.phone ?? "",
         address: data.address ?? "",
         footer_copyright: data.footer_copyright ?? "",
+        late_fee_percent: String(data.late_fee_percent ?? 2),
       });
     }
   }, [data]);
@@ -111,6 +112,7 @@ function SettingsPage() {
         phone: f.phone.trim() || null,
         address: f.address.trim() || null,
         footer_copyright: f.footer_copyright.trim() || null,
+        late_fee_percent: Math.max(0, Number(f.late_fee_percent) || 0),
       };
       const { error } = await supabase.from("company_settings").upsert(payload);
       if (error) throw error;
