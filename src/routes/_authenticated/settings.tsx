@@ -83,6 +83,7 @@ function SettingsPage() {
     phone: "",
     address: "",
     footer_copyright: "",
+    late_fee_percent: "2",
   });
 
   useEffect(() => {
