@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -14,6 +14,8 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatDate } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
+import { useServerFn } from "@tanstack/react-start";
+import { createCustomer } from "@/lib/customers.functions";
 
 export const Route = createFileRoute("/_authenticated/customers")({
   component: CustomersPage,
@@ -88,7 +90,7 @@ function CustomersPage() {
               {(data ?? []).map((c: any) => (
                 <TableRow key={c.id}>
                   <TableCell className="font-medium">
-                    {c.full_name ?? "—"}
+                    <Link to="/customers/$customerId" params={{ customerId: c.id }} className="hover:underline">{c.full_name ?? "—"}</Link>
                     {c.roles?.includes("admin") && <Badge variant="outline" className="ml-2">admin</Badge>}
                   </TableCell>
                   <TableCell>{c.email ?? "—"}</TableCell>
@@ -113,56 +115,55 @@ function CustomersPage() {
 
 function CustomerDialog({ open, onOpenChange, editing }: { open: boolean; onOpenChange: (o: boolean) => void; editing: Customer | null }) {
   const qc = useQueryClient();
+  const create = useServerFn(createCustomer);
   const [form, setForm] = useState({ full_name: "", email: "", phone: "", company: "", address: "" });
 
-  // reset on open
-  useState(() => {
+  useEffect(() => {
+    if (!open) return;
     if (editing) setForm({
       full_name: editing.full_name ?? "", email: editing.email ?? "", phone: editing.phone ?? "",
-      company: editing.company ?? "", address: editing.address ?? ""
+      company: editing.company ?? "", address: editing.address ?? "",
     });
-  });
+    else setForm({ full_name: "", email: "", phone: "", company: "", address: "" });
+  }, [open, editing]);
 
   const save = useMutation({
     mutationFn: async () => {
-      if (!editing) throw new Error("Use the Sign up flow to create new customer accounts.");
-      const { error } = await supabase.from("profiles").update(form).eq("id", editing.id);
-      if (error) throw error;
+      if (editing) {
+        const { error } = await supabase.from("profiles").update(form).eq("id", editing.id);
+        if (error) throw error;
+      } else {
+        if (!form.email) throw new Error("Email is required");
+        await create({ data: form });
+      }
     },
-    onSuccess: () => { toast.success("Saved"); qc.invalidateQueries({ queryKey: ["customers-with-roles"] }); onOpenChange(false); },
+    onSuccess: () => {
+      toast.success(editing ? "Saved" : "Customer added");
+      qc.invalidateQueries({ queryKey: ["customers-with-roles"] });
+      onOpenChange(false);
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
   return (
-    <Dialog open={open} onOpenChange={(o) => {
-      onOpenChange(o);
-      if (o && editing) setForm({
-        full_name: editing.full_name ?? "", email: editing.email ?? "", phone: editing.phone ?? "",
-        company: editing.company ?? "", address: editing.address ?? ""
-      });
-      if (o && !editing) setForm({ full_name: "", email: "", phone: "", company: "", address: "" });
-    }}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader><DialogTitle>{editing ? "Edit customer" : "Add customer"}</DialogTitle></DialogHeader>
-        {!editing && (
-          <p className="text-sm text-muted-foreground">
-            To onboard a new customer, share the sign-up link. Their profile is created automatically.
-            You can then edit their details from this page.
-          </p>
-        )}
-        {editing && (
-          <div className="grid gap-3">
-            <div><Label>Full name</Label><Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} /></div>
-            <div><Label>Email</Label><Input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
-            <div><Label>Phone</Label><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
-            <div><Label>Company</Label><Input value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} /></div>
-            <div><Label>Address</Label><Textarea value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></div>
-          </div>
-        )}
+        <div className="grid gap-3">
+          <div><Label>Full name</Label><Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} /></div>
+          <div><Label>Email {!editing && <span className="text-destructive">*</span>}</Label><Input type="email" disabled={!!editing} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="customer@example.com" /></div>
+          <div><Label>Phone</Label><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
+          <div><Label>Company</Label><Input value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} /></div>
+          <div><Label>Address</Label><Textarea value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></div>
+          {!editing && <p className="text-xs text-muted-foreground">A login account is created for this customer. They can sign in later using password reset on the sign-in page.</p>}
+        </div>
         <DialogFooter>
-          {editing && <Button onClick={() => save.mutate()} disabled={save.isPending}>Save</Button>}
+          <Button onClick={() => save.mutate()} disabled={save.isPending}>{editing ? "Save" : "Add customer"}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
+
+// silence unused
+void DialogTrigger;

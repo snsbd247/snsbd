@@ -155,6 +155,7 @@ export function ServicesManager({
 const empty = (t: ServiceType = "other") => ({
   customer_id: "", project_id: "", type: t, name: "", details: "",
   purchase_date: "", expiry_date: "", cost_price: "0", sale_price: "0", status: "active", notes: "",
+  renewable: false,
 });
 
 function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockType }: any) {
@@ -168,6 +169,7 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
         details: editing.details ?? "", purchase_date: editing.purchase_date ?? "",
         expiry_date: editing.expiry_date ?? "", cost_price: String(editing.cost_price ?? "0"),
         sale_price: String(editing.sale_price ?? "0"), status: editing.status, notes: editing.notes ?? "",
+        renewable: !!editing.renewable,
       });
       else setF(empty(lockType));
     }
@@ -257,6 +259,10 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
             <div><Label>Cost (৳)</Label><Input type="number" step="0.01" value={f.cost_price} onChange={(e) => setF({ ...f, cost_price: e.target.value })} /></div>
             <div><Label>Sale price (৳)</Label><Input type="number" step="0.01" value={f.sale_price} onChange={(e) => setF({ ...f, sale_price: e.target.value })} /></div>
           </div>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={!!f.renewable} onChange={(e) => setF({ ...f, renewable: e.target.checked })} />
+            Renewable — auto-generate a draft invoice 10 days before expiry
+          </label>
           <div><Label>Notes</Label><Textarea value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} /></div>
         </div>
         <DialogFooter><Button onClick={() => save.mutate()} disabled={save.isPending || !f.customer_id || !f.name}>Save</Button></DialogFooter>
