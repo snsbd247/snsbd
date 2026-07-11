@@ -77,6 +77,18 @@ function ServiceDetailPage() {
     },
   });
 
+  const { data: packageChanges } = useQuery({
+    queryKey: ["service-package-changes", serviceId],
+    enabled: !!service && service.type === "hosting",
+    queryFn: async () => {
+      const { data } = await (supabase as any).from("service_package_changes")
+        .select("id, old_package_name, new_package_name, actor_id, created_at, profiles:actor_id(full_name, email)")
+        .eq("service_id", serviceId)
+        .order("created_at", { ascending: false });
+      return data ?? [];
+    },
+  });
+
   const generate = useMutation({
     mutationFn: async () => {
       if (!service) throw new Error("No service");
