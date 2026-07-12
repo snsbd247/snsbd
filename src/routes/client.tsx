@@ -337,11 +337,12 @@ function HostingOrder({ uid, packages, onSubmitted }: { uid: string; packages: a
 
   const submit = async () => {
     if (!open) return;
-    if (!domainName.trim()) return toast.error("Enter your domain name");
+    const v = validateDomain(domainName);
+    if (!v.ok) return toast.error(v.error);
     setSubmitting(true);
     const { error } = await getPortalClient().from("customer_orders").insert({
       customer_id: uid, order_type: "hosting", hosting_package_id: open.id,
-      domain_name: domainName.trim(),
+      domain_name: v.value,
       domain_action: domainOption === "new" ? "register" : domainOption === "transfer" ? "transfer" : "use_existing",
       quoted_price: open.price, customer_notes: notes || null,
     });
