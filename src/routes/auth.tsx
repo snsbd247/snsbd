@@ -135,6 +135,7 @@ function SignUpForm() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
+  const { redirect } = Route.useSearch();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -153,15 +154,17 @@ function SignUpForm() {
       email: finalEmail,
       password,
       options: {
-        emailRedirectTo: window.location.origin + "/dashboard",
+        emailRedirectTo: window.location.origin + (redirect ?? "/dashboard"),
         data: { full_name: fullName || username, username: username.trim().toLowerCase() },
       },
     });
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Account created");
-    navigate({ to: "/dashboard" });
+    if (redirect) window.location.assign(redirect);
+    else navigate({ to: "/dashboard" });
   }
+
 
   return (
     <form onSubmit={onSubmit} className="mt-4 space-y-4">
