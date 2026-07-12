@@ -38,13 +38,14 @@ export async function updateCompanySettings(
   }
   const { data, error } = await supabase
     .from('company_settings')
-    .update(patch)
+    .update(patch as never)
     .eq('id', true)
     .select()
     .single();
   if (error) throw error;
   return data as CompanySettings;
 }
+
 
 /** Upload logo/favicon file — Laravel only (Supabase mode uses direct URL input). */
 export async function uploadCompanyLogo(
