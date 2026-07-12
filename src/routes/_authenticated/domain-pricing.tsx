@@ -83,6 +83,8 @@ function Page() {
 
   if (role !== "admin") return <p className="text-sm text-muted-foreground">Admin only.</p>;
 
+  const pg = usePagination((rows ?? []) as Row[]);
+
   return (
     <div className="space-y-6">
       <div>
