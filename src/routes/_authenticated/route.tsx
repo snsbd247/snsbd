@@ -83,23 +83,50 @@ function AuthedLayout() {
           </SidebarGroup>
 
           {isAdmin && (
-            <SidebarGroup>
-              <SidebarGroupLabel>Management</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  <NavItem to="/customers" icon={Users} label="Customers" />
-                  <NavItem to="/orders" icon={ShoppingCart} label="Customer Orders" />
-                  <NavItem to="/hosting-packages" icon={HardDrive} label="Hosting Packages" />
-                  <NavItem to="/domain-pricing" icon={Globe} label="Domain Pricing" />
-                  <NavItem to="/service-catalog" icon={Package} label="Service Catalog" />
-                  <NavItem to="/team" icon={UserCog} label="Team & Salary" />
-                  <NavItem to="/expenses" icon={Receipt} label="Expenses" />
-                  <NavItem to="/whm-servers" icon={Server} label="WHM Servers" />
-                  <NavItem to="/payment-settings" icon={Settings} label="Payment Gateways" />
-                  <NavItem to="/settings" icon={Settings} label="Settings" />
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
+            <>
+              <SidebarSeparator />
+              <SidebarGroup>
+                <SidebarGroupLabel>Management</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    <NavGroup
+                      icon={Users}
+                      label="People"
+                      items={[
+                        { to: "/customers", label: "Customers" },
+                        { to: "/team", label: "Team & Salary" },
+                      ]}
+                    />
+                    <NavGroup
+                      icon={ShoppingCart}
+                      label="Operations"
+                      items={[
+                        { to: "/orders", label: "Customer Orders" },
+                        { to: "/expenses", label: "Expenses" },
+                        { to: "/whm-servers", label: "WHM Servers" },
+                      ]}
+                    />
+                    <NavGroup
+                      icon={Package}
+                      label="Catalog & Pricing"
+                      items={[
+                        { to: "/hosting-packages", label: "Hosting Packages" },
+                        { to: "/domain-pricing", label: "Domain Pricing" },
+                        { to: "/service-catalog", label: "Service Catalog" },
+                      ]}
+                    />
+                    <NavGroup
+                      icon={Settings}
+                      label="Configuration"
+                      items={[
+                        { to: "/payment-settings", label: "Payment Gateways" },
+                        { to: "/settings", label: "Settings" },
+                      ]}
+                    />
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </>
           )}
         </SidebarContent>
         <SidebarFooter className="border-t">
