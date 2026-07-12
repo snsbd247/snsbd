@@ -10,7 +10,7 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   LayoutDashboard, Users, Globe, HardDrive, Package, FileText, FolderKanban,
-  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server, ChevronRight, LifeBuoy, RefreshCw, BarChart3, BookOpen, Bell, KeyRound, Webhook, Store,
+  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server, ChevronRight, LifeBuoy, RefreshCw, BarChart3, BookOpen, Bell, KeyRound, Webhook, Store, Palette, Tag, Puzzle,
 } from "lucide-react";
 import { NotificationsBell } from "@/components/notifications-bell";
 import { useI18n } from "@/lib/i18n";
