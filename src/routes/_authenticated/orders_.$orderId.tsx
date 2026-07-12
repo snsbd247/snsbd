@@ -96,6 +96,36 @@ function OrderDetailsPage() {
     onError: (e: any) => toast.error(e.message),
   });
 
+  const domainMut = useMutation({
+    mutationFn: async (domain_name: string) => updateOrderDomain({ data: { order_id: orderId, domain_name } }),
+    onSuccess: (r: any) => {
+      toast.success(r.changed ? "Domain updated & logged" : "No change");
+      setEditingDomain(false);
+      qc.invalidateQueries({ queryKey: ["customer_order", orderId] });
+      qc.invalidateQueries({ queryKey: ["customer_orders"] });
+      qc.invalidateQueries({ queryKey: ["order_domain_changes", orderId] });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const { data: domainHistory } = useQuery({
+    queryKey: ["order_domain_changes", orderId],
+    queryFn: async () => {
+      const { data } = await db.from("order_domain_changes")
+        .select("id, old_domain, new_domain, actor_id, created_at")
+        .eq("order_id", orderId)
+        .order("created_at", { ascending: false });
+      const rows = (data ?? []) as any[];
+      const actorIds = Array.from(new Set(rows.map((r) => r.actor_id).filter(Boolean)));
+      if (actorIds.length) {
+        const { data: profs } = await db.from("profiles").select("id, full_name, email").in("id", actorIds);
+        const map = new Map((profs ?? []).map((p: any) => [p.id, p]));
+        return rows.map((r) => ({ ...r, actor: map.get(r.actor_id) ?? null }));
+      }
+      return rows.map((r) => ({ ...r, actor: null }));
+    },
+  });
+
   const activateMut = useMutation({
     mutationFn: async () => activateHostingOrder({ data: { order_id: orderId, whm_server_id: whmServerId || null } }),
     onSuccess: (r: any) => {
