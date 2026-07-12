@@ -9,7 +9,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, ListChecks, Check, Circle, ChevronUp, ChevronDown, Activity } from "lucide-react";
+import { Plus, Pencil, Trash2, ListChecks, Check, Circle, ChevronUp, ChevronDown, Activity, Eye } from "lucide-react";
+import { ClickableRow, StopClick } from "@/components/ui/clickable-row";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
@@ -88,9 +90,9 @@ function ProjectsPage() {
               {isLoading && <TableRow><TableCell colSpan={role === "admin" ? 7 : 6} className="py-8 text-center text-sm text-muted-foreground">Loading…</TableCell></TableRow>}
               {!isLoading && (projects ?? []).length === 0 && <TableRow><TableCell colSpan={role === "admin" ? 7 : 6} className="py-8 text-center text-sm text-muted-foreground">No projects.</TableCell></TableRow>}
               {(projects ?? []).map((p: any) => (
-                <TableRow key={p.id}>
+                <ClickableRow key={p.id} to="/projects/$projectId" params={{ projectId: p.id }}>
                   <TableCell className="font-medium">
-                    <Link to="/projects/$projectId" params={{ projectId: p.id }} className="hover:underline text-primary">{p.name}</Link>
+                    <span className="text-primary font-semibold">{p.name}</span>
                     <div className="text-xs text-muted-foreground line-clamp-1">{p.description}</div>
                   </TableCell>
                   {role === "admin" && <TableCell>{p.profiles?.full_name ?? p.profiles?.email ?? "—"}</TableCell>}
@@ -99,16 +101,20 @@ function ProjectsPage() {
                   <TableCell>{formatBDT(p.budget)}</TableCell>
                   <TableCell><ProgressCell stats={progressByProject[p.id]} /></TableCell>
                   <TableCell className="text-right">
-                    <Button size="icon" variant="ghost" title="Timeline" onClick={() => setTimelineFor(p)}><ListChecks className="h-4 w-4" /></Button>
-                    {role === "admin" && (
-                      <>
-                        <Button size="icon" variant="ghost" onClick={() => { setEditing(p); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
-                        <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete?")) del.mutate(p.id); }}><Trash2 className="h-4 w-4" /></Button>
-                      </>
-                    )}
+                    <StopClick>
+                      <Button size="sm" variant="outline" asChild className="mr-1"><Link to="/projects/$projectId" params={{ projectId: p.id }}><Eye className="mr-1 h-3.5 w-3.5" />View</Link></Button>
+                      <Button size="icon" variant="ghost" title="Timeline" onClick={() => setTimelineFor(p)}><ListChecks className="h-4 w-4" /></Button>
+                      {role === "admin" && (
+                        <>
+                          <Button size="icon" variant="ghost" onClick={() => { setEditing(p); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
+                          <Button size="icon" variant="ghost" className="hover:bg-rose-100 hover:text-rose-700" onClick={() => { if (confirm("Delete?")) del.mutate(p.id); }}><Trash2 className="h-4 w-4" /></Button>
+                        </>
+                      )}
+                    </StopClick>
                   </TableCell>
-                </TableRow>
+                </ClickableRow>
               ))}
+
             </TableBody>
           </Table>
         </CardContent>
