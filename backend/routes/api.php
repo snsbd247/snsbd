@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanySettingsController;
 use App\Http\Controllers\CustomerOrderController;
+use App\Http\Controllers\DbController;
 use App\Http\Controllers\DomainPricingController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\HostingPackageController;
