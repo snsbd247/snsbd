@@ -80,7 +80,7 @@ export const updateSupportTicket = createServerFn({ method: "POST" })
       patch.assigned_to = data.assigned_to;
     }
     if (!Object.keys(patch).length) return { ok: true };
-    const { error } = await context.supabase.from("support_tickets").update(patch).eq("id", data.ticket_id);
+    const { error } = await context.supabase.from("support_tickets").update(patch as any).eq("id", data.ticket_id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
