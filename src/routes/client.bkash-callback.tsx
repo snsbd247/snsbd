@@ -5,7 +5,7 @@ import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getPortalClient } from "@/integrations/supabase/portal-client";
 
-export const Route = createFileRoute("/portal/bkash-callback")({
+export const Route = createFileRoute("/client/bkash-callback")({
   ssr: false,
   component: Callback,
 });

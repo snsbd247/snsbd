@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { formatBDT, formatDate } from "@/lib/format";
 import { SiteFooter } from "@/components/site-footer";
 
-export const Route = createFileRoute("/portal")({
+export const Route = createFileRoute("/client")({
   ssr: false,
   component: PortalPage,
 });

@@ -10,12 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as PortalRouteImport } from './routes/portal'
+import { Route as ClientRouteImport } from './routes/client'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as MarketingRouteImport } from './routes/_marketing'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as MarketingIndexRouteImport } from './routes/_marketing.index'
-import { Route as PortalBkashCallbackRouteImport } from './routes/portal.bkash-callback'
+import { Route as ClientBkashCallbackRouteImport } from './routes/client.bkash-callback'
 import { Route as MarketingWebHostingRouteImport } from './routes/_marketing.web-hosting'
 import { Route as MarketingVpsRouteImport } from './routes/_marketing.vps'
 import { Route as MarketingTermsRouteImport } from './routes/_marketing.terms'
@@ -65,9 +65,9 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PortalRoute = PortalRouteImport.update({
-  id: '/portal',
-  path: '/portal',
+const ClientRoute = ClientRouteImport.update({
+  id: '/client',
+  path: '/client',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -88,10 +88,10 @@ const MarketingIndexRoute = MarketingIndexRouteImport.update({
   path: '/',
   getParentRoute: () => MarketingRoute,
 } as any)
-const PortalBkashCallbackRoute = PortalBkashCallbackRouteImport.update({
+const ClientBkashCallbackRoute = ClientBkashCallbackRouteImport.update({
   id: '/bkash-callback',
   path: '/bkash-callback',
-  getParentRoute: () => PortalRoute,
+  getParentRoute: () => ClientRoute,
 } as any)
 const MarketingWebHostingRoute = MarketingWebHostingRouteImport.update({
   id: '/web-hosting',
@@ -332,7 +332,7 @@ const AuthenticatedOrderHostingPackageIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof MarketingIndexRoute
   '/auth': typeof AuthRoute
-  '/portal': typeof PortalRouteWithChildren
+  '/client': typeof ClientRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -363,7 +363,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof MarketingTermsRoute
   '/vps': typeof MarketingVpsRoute
   '/web-hosting': typeof MarketingWebHostingRoute
-  '/portal/bkash-callback': typeof PortalBkashCallbackRoute
+  '/client/bkash-callback': typeof ClientBkashCallbackRoute
   '/customers/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
   '/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
   '/expenses/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
@@ -382,7 +382,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof MarketingIndexRoute
   '/auth': typeof AuthRoute
-  '/portal': typeof PortalRouteWithChildren
+  '/client': typeof ClientRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -413,7 +413,7 @@ export interface FileRoutesByTo {
   '/terms': typeof MarketingTermsRoute
   '/vps': typeof MarketingVpsRoute
   '/web-hosting': typeof MarketingWebHostingRoute
-  '/portal/bkash-callback': typeof PortalBkashCallbackRoute
+  '/client/bkash-callback': typeof ClientBkashCallbackRoute
   '/customers/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
   '/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
   '/expenses/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
@@ -434,7 +434,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_marketing': typeof MarketingRouteWithChildren
   '/auth': typeof AuthRoute
-  '/portal': typeof PortalRouteWithChildren
+  '/client': typeof ClientRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -465,7 +465,7 @@ export interface FileRoutesById {
   '/_marketing/terms': typeof MarketingTermsRoute
   '/_marketing/vps': typeof MarketingVpsRoute
   '/_marketing/web-hosting': typeof MarketingWebHostingRoute
-  '/portal/bkash-callback': typeof PortalBkashCallbackRoute
+  '/client/bkash-callback': typeof ClientBkashCallbackRoute
   '/_marketing/': typeof MarketingIndexRoute
   '/_authenticated/customers_/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
   '/_authenticated/domains_/$domainId': typeof AuthenticatedDomainsDomainIdRoute
@@ -487,7 +487,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/portal'
+    | '/client'
     | '/sitemap.xml'
     | '/customers'
     | '/dashboard'
@@ -518,7 +518,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/vps'
     | '/web-hosting'
-    | '/portal/bkash-callback'
+    | '/client/bkash-callback'
     | '/customers/$customerId'
     | '/domains/$domainId'
     | '/expenses/$expenseId'
@@ -537,7 +537,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/portal'
+    | '/client'
     | '/sitemap.xml'
     | '/customers'
     | '/dashboard'
@@ -568,7 +568,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/vps'
     | '/web-hosting'
-    | '/portal/bkash-callback'
+    | '/client/bkash-callback'
     | '/customers/$customerId'
     | '/domains/$domainId'
     | '/expenses/$expenseId'
@@ -588,7 +588,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/_marketing'
     | '/auth'
-    | '/portal'
+    | '/client'
     | '/sitemap.xml'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
@@ -619,7 +619,7 @@ export interface FileRouteTypes {
     | '/_marketing/terms'
     | '/_marketing/vps'
     | '/_marketing/web-hosting'
-    | '/portal/bkash-callback'
+    | '/client/bkash-callback'
     | '/_marketing/'
     | '/_authenticated/customers_/$customerId'
     | '/_authenticated/domains_/$domainId'
@@ -641,7 +641,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   MarketingRoute: typeof MarketingRouteWithChildren
   AuthRoute: typeof AuthRoute
-  PortalRoute: typeof PortalRouteWithChildren
+  ClientRoute: typeof ClientRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiPublicHooksEnforceOverdueRoute: typeof ApiPublicHooksEnforceOverdueRoute
   ApiPublicHooksNotifyLeadRoute: typeof ApiPublicHooksNotifyLeadRoute
@@ -657,11 +657,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/portal': {
-      id: '/portal'
-      path: '/portal'
-      fullPath: '/portal'
-      preLoaderRoute: typeof PortalRouteImport
+    '/client': {
+      id: '/client'
+      path: '/client'
+      fullPath: '/client'
+      preLoaderRoute: typeof ClientRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -692,12 +692,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketingIndexRouteImport
       parentRoute: typeof MarketingRoute
     }
-    '/portal/bkash-callback': {
-      id: '/portal/bkash-callback'
+    '/client/bkash-callback': {
+      id: '/client/bkash-callback'
       path: '/bkash-callback'
-      fullPath: '/portal/bkash-callback'
-      preLoaderRoute: typeof PortalBkashCallbackRouteImport
-      parentRoute: typeof PortalRoute
+      fullPath: '/client/bkash-callback'
+      preLoaderRoute: typeof ClientBkashCallbackRouteImport
+      parentRoute: typeof ClientRoute
     }
     '/_marketing/web-hosting': {
       id: '/_marketing/web-hosting'
@@ -1105,22 +1105,22 @@ const MarketingRouteWithChildren = MarketingRoute._addFileChildren(
   MarketingRouteChildren,
 )
 
-interface PortalRouteChildren {
-  PortalBkashCallbackRoute: typeof PortalBkashCallbackRoute
+interface ClientRouteChildren {
+  ClientBkashCallbackRoute: typeof ClientBkashCallbackRoute
 }
 
-const PortalRouteChildren: PortalRouteChildren = {
-  PortalBkashCallbackRoute: PortalBkashCallbackRoute,
+const ClientRouteChildren: ClientRouteChildren = {
+  ClientBkashCallbackRoute: ClientBkashCallbackRoute,
 }
 
-const PortalRouteWithChildren =
-  PortalRoute._addFileChildren(PortalRouteChildren)
+const ClientRouteWithChildren =
+  ClientRoute._addFileChildren(ClientRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   MarketingRoute: MarketingRouteWithChildren,
   AuthRoute: AuthRoute,
-  PortalRoute: PortalRouteWithChildren,
+  ClientRoute: ClientRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiPublicHooksEnforceOverdueRoute: ApiPublicHooksEnforceOverdueRoute,
   ApiPublicHooksNotifyLeadRoute: ApiPublicHooksNotifyLeadRoute,
