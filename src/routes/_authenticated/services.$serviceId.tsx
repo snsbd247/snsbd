@@ -1,6 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -82,7 +81,7 @@ function ServiceDetailPage() {
     queryKey: ["service-package-changes", serviceId],
     enabled: !!service && service.type === "hosting",
     queryFn: async () => {
-      const { data } = await (supabase as any).from("service_package_changes")
+      const { data } = await db.from("service_package_changes")
         .select("id, old_package_name, new_package_name, actor_id, created_at, profiles:actor_id(full_name, email)")
         .eq("service_id", serviceId)
         .order("created_at", { ascending: false });

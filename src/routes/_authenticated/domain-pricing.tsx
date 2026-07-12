@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { Plus, Trash2, Save } from "lucide-react";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/domain-pricing")({
   component: Page,
@@ -34,7 +34,7 @@ function Page() {
   const { data: rows } = useQuery({
     queryKey: ["domain_pricing_admin"],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).from("domain_pricing").select("*").order("sort_order");
+      const { data, error } = await db.from("domain_pricing").select("*").order("sort_order");
       if (error) throw error;
       return (data ?? []) as Row[];
     },
@@ -42,7 +42,7 @@ function Page() {
 
   const update = useMutation({
     mutationFn: async (r: Partial<Row> & { id: string }) => {
-      const { error } = await (supabase as any).from("domain_pricing").update(r).eq("id", r.id);
+      const { error } = await db.from("domain_pricing").update(r).eq("id", r.id);
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Saved"); qc.invalidateQueries({ queryKey: ["domain_pricing_admin"] }); qc.invalidateQueries({ queryKey: ["domain_pricing"] }); },
@@ -51,7 +51,7 @@ function Page() {
 
   const remove = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase as any).from("domain_pricing").delete().eq("id", id);
+      const { error } = await db.from("domain_pricing").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["domain_pricing_admin"] }); qc.invalidateQueries({ queryKey: ["domain_pricing"] }); },
@@ -63,7 +63,7 @@ function Page() {
       const tld = newTld.tld.trim().toLowerCase();
       if (!tld) throw new Error("TLD required");
       const t = tld.startsWith(".") ? tld : `.${tld}`;
-      const { error } = await (supabase as any).from("domain_pricing").insert({
+      const { error } = await db.from("domain_pricing").insert({
         tld: t,
         register_price: Number(newTld.register_price) || 0,
         renew_price: Number(newTld.renew_price) || 0,
