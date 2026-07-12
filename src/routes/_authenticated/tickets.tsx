@@ -18,7 +18,7 @@ import { formatDate } from "@/lib/format";
 import { createSupportTicket } from "@/lib/support.functions";
 import { Loader2, Plus } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/support")({
+export const Route = createFileRoute("/_authenticated/tickets")({
   component: SupportListPage,
 });
 
@@ -91,9 +91,9 @@ function SupportListPage() {
                 <TableRow><TableCell colSpan={isAdmin ? 5 : 4} className="text-center text-sm text-muted-foreground py-8">No tickets yet.</TableCell></TableRow>
               ) : (
                 (tickets ?? []).map((t: any) => (
-                  <TableRow key={t.id} className="cursor-pointer" onClick={() => (window.location.href = `/support/${t.id}`)}>
+                  <TableRow key={t.id} className="cursor-pointer" onClick={() => (window.location.href = `/tickets/${t.id}`)}>
                     <TableCell className="font-medium">
-                      <Link to="/support/$ticketId" params={{ ticketId: t.id }} className="hover:underline">{t.subject}</Link>
+                      <Link to="/tickets/$ticketId" params={{ ticketId: t.id }} className="hover:underline">{t.subject}</Link>
                     </TableCell>
                     {isAdmin && <TableCell className="text-sm">{t.profiles?.full_name ?? t.profiles?.email ?? "—"}</TableCell>}
                     <TableCell><Badge variant="outline" className="capitalize">{t.priority}</Badge></TableCell>
@@ -126,7 +126,7 @@ function NewTicketDialog() {
       qc.invalidateQueries({ queryKey: ["support-tickets"] });
       setOpen(false);
       setSubject(""); setBody(""); setPriority("normal");
-      navigate({ to: "/support/$ticketId", params: { ticketId: r.ticket_id } });
+      navigate({ to: "/tickets/$ticketId", params: { ticketId: r.ticket_id } });
     },
     onError: (e: any) => toast.error(e?.message ?? "Failed"),
   });
