@@ -335,6 +335,11 @@ function OrderDetailsPage() {
 
           {!creds && (
             <div className="space-y-3">
+              <div className="rounded-md border p-3 text-sm space-y-1">
+                <div><span className="text-muted-foreground">Customer:</span> {o.profiles?.full_name ?? o.profiles?.email ?? "—"}</div>
+                <div><span className="text-muted-foreground">Domain:</span> <span className="font-mono">{o.domain_name}</span></div>
+                <div><span className="text-muted-foreground">Plan:</span> {o.hosting_packages?.name ?? "—"} · <span className="font-medium">{formatBDT(o.quoted_price)}</span></div>
+              </div>
               {o.manual_trx_id && (
                 <div className="rounded-md bg-muted p-3 text-sm">
                   <div><span className="text-muted-foreground">TRX:</span> <span className="font-mono">{o.manual_trx_id}</span></div>
@@ -348,6 +353,10 @@ function OrderDetailsPage() {
                   <SelectContent>{(whmServers ?? []).map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
+              <label className="flex items-start gap-2 rounded-md border p-3 text-sm cursor-pointer">
+                <input type="checkbox" checked={confirmActivate} onChange={(e) => setConfirmActivate(e.target.checked)} className="mt-0.5" />
+                <span>আমি নিশ্চিত করছি যে পেমেন্ট যাচাই হয়েছে এবং ডোমেইন <span className="font-mono">{o.domain_name}</span> সঠিক। এখন এই অর্ডার Activate করা হবে।</span>
+              </label>
             </div>
           )}
 
