@@ -78,6 +78,7 @@ function AuthedLayout() {
                 <NavItem to="/hosting" icon={HardDrive} label={isAdmin ? "Hosting" : "My Hosting"} />
                 <NavItem to="/other-services" icon={Package} label={isAdmin ? "Other Services" : "My Services"} />
                 <NavItem to="/invoices" icon={FileText} label={isAdmin ? "Invoices" : "My Invoices"} />
+                <NavItem to="/tickets" icon={LifeBuoy} label={isAdmin ? "Support Tickets" : "Support"} />
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
