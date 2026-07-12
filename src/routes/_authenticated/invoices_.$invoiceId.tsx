@@ -134,23 +134,47 @@ function InvoiceDetailPage() {
         />
 
         {/* TOP BAR — dark with red angular clip on left */}
-        <div className="relative h-[72px] w-full" style={{ background: "#1f1f1f" }}>
+        <div className="relative h-[84px] w-full" style={{ background: "#1f1f1f" }}>
           <div
             className="absolute inset-y-0 left-0 flex items-center pl-6"
-            style={{ width: "34%", background: "#c0392b", clipPath: "polygon(0 0, 100% 0, 82% 100%, 0 100%)" }}
+            style={{ width: "32%", background: "#c0392b", clipPath: "polygon(0 0, 100% 0, 78% 100%, 0 100%)" }}
           >
             {company?.logo_url ? (
-              <img src={company.logo_url} alt={`${company.company_name} logo`} className="h-12 object-contain" />
+              <img src={company.logo_url} alt={`${company.company_name} logo`} className="h-14 object-contain" />
             ) : (
               <div className="text-white">
-                <div className="text-2xl font-black leading-none">SN</div>
-                <div className="text-[10px] font-semibold tracking-[0.25em]">SOFTWARE Inc</div>
+                <div className="text-3xl font-black leading-none tracking-tight">SN</div>
+                <div className="text-[10px] font-semibold tracking-[0.3em] mt-1">SOFTWARE Inc</div>
               </div>
             )}
           </div>
-          <div className="absolute inset-y-0 right-6 flex items-center gap-6 text-white text-[12px]">
-            {company?.phone && <span className="flex items-center gap-1.5"><span className="inline-block h-4 w-4 rounded-full border border-white/70 text-center leading-[14px] text-[10px]">☎</span>{company.phone}</span>}
-            {company?.email && <span className="flex items-center gap-1.5"><span className="inline-block h-4 w-4 rounded-full border border-white/70 text-center leading-[14px] text-[10px]">@</span>{company.email}</span>}
+          <div
+            className="absolute inset-y-0 right-6 grid grid-cols-2 gap-x-8 gap-y-1 text-white text-[12px] content-center"
+          >
+            {company?.phone && (
+              <span className="flex items-center gap-2">
+                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/70 text-[9px]">☎</span>
+                {company.phone}
+              </span>
+            )}
+            {company?.email && (
+              <span className="flex items-center gap-2">
+                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/70 text-[9px]">@</span>
+                {company.email}
+              </span>
+            )}
+            {(company as any)?.facebook_url && (
+              <span className="flex items-center gap-2">
+                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/70 text-[9px]">f</span>
+                {String((company as any).facebook_url).replace(/^https?:\/\//, "")}
+              </span>
+            )}
+            {(company as any)?.website && (
+              <span className="flex items-center gap-2">
+                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/70 text-[9px]">⌾</span>
+                {String((company as any).website).replace(/^https?:\/\//, "")}
+              </span>
+            )}
           </div>
         </div>
 
