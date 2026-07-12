@@ -9,9 +9,9 @@ export const Route = createFileRoute("/_marketing/support")({
       { title: "Support Center — Sync & Solutions IT" },
       { name: "description", content: "Knowledge base, tutorials, live chat and 24/7 ticket support to help you succeed." },
       { property: "og:title", content: "Support — Sync & Solutions IT" },
-      { property: "og:url", content: "https://snsbd.lovable.app/support" },
+      { property: "og:url", content: "/support" },
     ],
-    links: [{ rel: "canonical", href: "https://snsbd.lovable.app/support" }],
+    links: [{ rel: "canonical", href: "/support" }],
   }),
   component: Page,
 });

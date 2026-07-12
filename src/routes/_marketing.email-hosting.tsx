@@ -16,9 +16,9 @@ export const Route = createFileRoute("/_marketing/email-hosting")({
       { title: "Business Email Hosting — you@yourdomain.com" },
       { name: "description", content: "Professional email hosting with webmail, IMAP/POP, spam filtering and calendar support." },
       { property: "og:title", content: "Email Hosting — Sync & Solutions IT" },
-      { property: "og:url", content: "https://snsbd.lovable.app/email-hosting" },
+      { property: "og:url", content: "/email-hosting" },
     ],
-    links: [{ rel: "canonical", href: "https://snsbd.lovable.app/email-hosting" }],
+    links: [{ rel: "canonical", href: "/email-hosting" }],
   }),
   component: Page,
 });

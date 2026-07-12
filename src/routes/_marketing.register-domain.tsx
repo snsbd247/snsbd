@@ -10,9 +10,9 @@ export const Route = createFileRoute("/_marketing/register-domain")({
       { title: "Register Domain Names — .com from ৳1,150 — Sync & Solutions IT" },
       { name: "description", content: "Register or transfer domains at competitive prices. Free DNS management, WHOIS privacy and email forwarding." },
       { property: "og:title", content: "Domain Names — Sync & Solutions IT" },
-      { property: "og:url", content: "https://snsbd.lovable.app/register-domain" },
+      { property: "og:url", content: "/register-domain" },
     ],
-    links: [{ rel: "canonical", href: "https://snsbd.lovable.app/register-domain" }],
+    links: [{ rel: "canonical", href: "/register-domain" }],
   }),
   component: Page,
 });

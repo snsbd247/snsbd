@@ -9,9 +9,9 @@ export const Route = createFileRoute("/_marketing/about")({
       { title: "About Us — Sync & Solutions IT" },
       { name: "description", content: "Learn about our mission to power Bangladesh's digital economy with reliable hosting and honest service." },
       { property: "og:title", content: "About — Sync & Solutions IT" },
-      { property: "og:url", content: "https://snsbd.lovable.app/about" },
+      { property: "og:url", content: "/about" },
     ],
-    links: [{ rel: "canonical", href: "https://snsbd.lovable.app/about" }],
+    links: [{ rel: "canonical", href: "/about" }],
   }),
   component: Page,
 });

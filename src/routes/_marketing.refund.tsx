@@ -13,9 +13,9 @@ export const Route = createFileRoute("/_marketing/refund")({
     meta: [
       { title: "Refund Policy — Sync & Solutions IT" },
       { name: "description", content: "Our 30-day money-back guarantee and refund terms explained." },
-      { property: "og:url", content: "https://snsbd.lovable.app/refund" },
+      { property: "og:url", content: "/refund" },
     ],
-    links: [{ rel: "canonical", href: "https://snsbd.lovable.app/refund" }],
+    links: [{ rel: "canonical", href: "/refund" }],
   }),
   component: LegalPage,
 });

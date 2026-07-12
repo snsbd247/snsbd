@@ -12,9 +12,9 @@ export const Route = createFileRoute("/_marketing/bdix-hosting")({
       { title: "BDIX Hosting Bangladesh — Ultra Fast for Local Traffic" },
       { name: "description", content: "BDIX-optimized hosting with NVMe SSD, LiteSpeed and 24/7 support. Deliver sub-second page loads to Bangladesh visitors." },
       { property: "og:title", content: "BDIX Hosting — Sync & Solutions IT" },
-      { property: "og:url", content: "https://snsbd.lovable.app/bdix-hosting" },
+      { property: "og:url", content: "/bdix-hosting" },
     ],
-    links: [{ rel: "canonical", href: "https://snsbd.lovable.app/bdix-hosting" }],
+    links: [{ rel: "canonical", href: "/bdix-hosting" }],
   }),
   component: Page,
 });

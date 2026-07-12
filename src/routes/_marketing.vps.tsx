@@ -10,9 +10,9 @@ export const Route = createFileRoute("/_marketing/vps")({
       { title: "Cloud VPS Hosting with Root Access — Sync & Solutions IT" },
       { name: "description", content: "KVM-based cloud VPS with NVMe storage, root access, and dedicated resources. Deploy in minutes." },
       { property: "og:title", content: "VPS Hosting — Sync & Solutions IT" },
-      { property: "og:url", content: "https://snsbd.lovable.app/vps" },
+      { property: "og:url", content: "/vps" },
     ],
-    links: [{ rel: "canonical", href: "https://snsbd.lovable.app/vps" }],
+    links: [{ rel: "canonical", href: "/vps" }],
   }),
   component: Page,
 });

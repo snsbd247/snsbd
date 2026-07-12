@@ -16,9 +16,9 @@ export const Route = createFileRoute("/_marketing/terms")({
     meta: [
       { title: "Terms of Service — Sync & Solutions IT" },
       { name: "description", content: "Our terms of service, acceptable use policy and service level agreement." },
-      { property: "og:url", content: "https://snsbd.lovable.app/terms" },
+      { property: "og:url", content: "/terms" },
     ],
-    links: [{ rel: "canonical", href: "https://snsbd.lovable.app/terms" }],
+    links: [{ rel: "canonical", href: "/terms" }],
   }),
   component: LegalPage,
 });

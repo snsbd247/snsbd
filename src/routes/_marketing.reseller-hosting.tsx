@@ -11,9 +11,9 @@ export const Route = createFileRoute("/_marketing/reseller-hosting")({
       { title: "Reseller Hosting with WHM & Free WHMCS — Sync & Solutions IT" },
       { name: "description", content: "Start your own hosting business with white-label WHM/cPanel, free WHMCS module and unlimited bandwidth." },
       { property: "og:title", content: "Reseller Hosting — Sync & Solutions IT" },
-      { property: "og:url", content: "https://snsbd.lovable.app/reseller-hosting" },
+      { property: "og:url", content: "/reseller-hosting" },
     ],
-    links: [{ rel: "canonical", href: "https://snsbd.lovable.app/reseller-hosting" }],
+    links: [{ rel: "canonical", href: "/reseller-hosting" }],
   }),
   component: Page,
 });
