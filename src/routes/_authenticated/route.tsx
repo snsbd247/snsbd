@@ -86,6 +86,7 @@ function AuthedLayout() {
                 <NavItem to="/tickets" icon={LifeBuoy} label={isAdmin ? "Support Tickets" : "Support"} />
                 <NavItem to="/api-keys" icon={KeyRound} label="API Keys" />
                 <NavItem to="/webhooks" icon={Webhook} label="Webhooks" />
+                <NavItem to="/branding" icon={Palette} label="Branding" />
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
