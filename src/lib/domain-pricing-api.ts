@@ -6,13 +6,13 @@ import { isLaravelMode, laravelApi } from '@/lib/laravel-auth';
 
 export interface DomainPricing {
   id: number | string;
-  extension: string;
+  tld: string;
   register_price?: number | string | null;
   renew_price?: number | string | null;
   transfer_price?: number | string | null;
   currency?: string | null;
   is_active?: boolean;
-  is_popular?: boolean;
+  featured?: boolean;
   sort_order?: number | null;
   [k: string]: unknown;
 }
