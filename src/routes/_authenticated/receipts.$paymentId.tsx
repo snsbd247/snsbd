@@ -3,7 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Printer, Loader2 } from "lucide-react";
+import { ArrowLeft, Download, Loader2 } from "lucide-react";
+import { downloadElementAsPdf } from "@/lib/pdf";
 import { useCompanySettings, amountInWords } from "@/lib/company-settings";
 import { formatBDT, formatDate } from "@/lib/format";
 
