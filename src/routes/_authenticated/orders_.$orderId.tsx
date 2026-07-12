@@ -373,7 +373,7 @@ function OrderDetailsPage() {
             {!creds ? (
               <>
                 <Button variant="outline" onClick={() => setActivateOpen(false)}>Cancel</Button>
-                <Button onClick={() => activateMut.mutate()} disabled={activateMut.isPending}>
+                <Button onClick={() => activateMut.mutate()} disabled={activateMut.isPending || !confirmActivate || !validateDomain(o.domain_name ?? "").ok}>
                   {activateMut.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Activate
                 </Button>
               </>
