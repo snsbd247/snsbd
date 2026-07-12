@@ -12,9 +12,9 @@ export const Route = createFileRoute("/_marketing/web-hosting")({
       { title: "Fast Web Hosting Plans in Bangladesh — Sync & Solutions IT" },
       { name: "description", content: "Reliable LiteSpeed web hosting from ৳99/mo with free SSL, daily backup and cPanel. 30-day money back guarantee." },
       { property: "og:title", content: "Web Hosting — Sync & Solutions IT" },
-      { property: "og:url", content: "https://snsbd.lovable.app/web-hosting" },
+      { property: "og:url", content: "/web-hosting" },
     ],
-    links: [{ rel: "canonical", href: "https://snsbd.lovable.app/web-hosting" }],
+    links: [{ rel: "canonical", href: "/web-hosting" }],
   }),
   component: Page,
 });

@@ -12,9 +12,9 @@ export const Route = createFileRoute("/_marketing/")({
       { name: "description", content: "Blazing fast BDIX & international hosting, cheap domains, VPS and reseller plans with 24/7 support. Trusted by 5,000+ customers." },
       { property: "og:title", content: "Sync & Solutions IT — Web Hosting & Domains" },
       { property: "og:description", content: "Blazing fast BDIX & international hosting, cheap domains, VPS and reseller plans with 24/7 support." },
-      { property: "og:url", content: "https://snsbd.lovable.app/" },
+      { property: "og:url", content: "/" },
     ],
-    links: [{ rel: "canonical", href: "https://snsbd.lovable.app/" }],
+    links: [{ rel: "canonical", href: "/" }],
   }),
   component: Home,
 });

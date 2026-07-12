@@ -15,10 +15,10 @@ export const Route = createFileRoute("/_marketing/domain-search")({
       { name: "description", content: "Check domain availability instantly across .com, .net, .org and 500+ extensions. Register or transfer in minutes." },
       { property: "og:title", content: "Domain Search — Sync & Solutions IT" },
       { property: "og:description", content: "Check domain availability instantly and register or transfer with free WHOIS privacy." },
-      { property: "og:url", content: "https://snsbd.lovable.app/domain-search" },
+      { property: "og:url", content: "/domain-search" },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://snsbd.lovable.app/domain-search" }],
+    links: [{ rel: "canonical", href: "/domain-search" }],
   }),
   component: Page,
 });

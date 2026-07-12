@@ -13,9 +13,9 @@ export const Route = createFileRoute("/_marketing/contact")({
       { title: "Contact Us — Sync & Solutions IT" },
       { name: "description", content: "Get in touch with our sales and support team. We respond within minutes, 24/7." },
       { property: "og:title", content: "Contact — Sync & Solutions IT" },
-      { property: "og:url", content: "https://snsbd.lovable.app/contact" },
+      { property: "og:url", content: "/contact" },
     ],
-    links: [{ rel: "canonical", href: "https://snsbd.lovable.app/contact" }],
+    links: [{ rel: "canonical", href: "/contact" }],
   }),
   component: Page,
 });

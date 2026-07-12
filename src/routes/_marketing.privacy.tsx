@@ -14,9 +14,9 @@ export const Route = createFileRoute("/_marketing/privacy")({
     meta: [
       { title: "Privacy Policy — Sync & Solutions IT" },
       { name: "description", content: "How we collect, use and protect your personal data." },
-      { property: "og:url", content: "https://snsbd.lovable.app/privacy" },
+      { property: "og:url", content: "/privacy" },
     ],
-    links: [{ rel: "canonical", href: "https://snsbd.lovable.app/privacy" }],
+    links: [{ rel: "canonical", href: "/privacy" }],
   }),
   component: LegalPage,
 });
