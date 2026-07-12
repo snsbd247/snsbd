@@ -177,16 +177,8 @@ function AuthedLayout() {
             </DropdownMenuContent>
           </DropdownMenu>
           </div>
+        </header>
 
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild><Link to="/profile"><UserIcon className="mr-2 h-4 w-4" />Profile</Link></DropdownMenuItem>
-              <DropdownMenuItem onClick={async () => { await signOut(); navigate({ to: "/auth" }); }}>
-                <LogOut className="mr-2 h-4 w-4" />Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </header>
         <main className="p-6 min-h-[calc(100vh-3.5rem)]">
           <Outlet />
