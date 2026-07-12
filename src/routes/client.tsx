@@ -268,6 +268,23 @@ function BkashPayButton({ invoiceId, amount }: { invoiceId: string; amount: numb
   return <Button size="sm" onClick={pay} disabled={busy}>{busy ? "Redirecting…" : `Pay ${formatBDT(amount)} with bKash`}</Button>;
 }
 
+function SslczPayButton({ invoiceId, amount }: { invoiceId: string; amount: number }) {
+  const [busy, setBusy] = useState(false);
+  const pay = async () => {
+    setBusy(true);
+    try {
+      const { sslczCreatePayment } = await import("@/lib/sslcommerz.functions");
+      const callback_url = `${window.location.origin}/client/sslcz-callback`;
+      const res = await sslczCreatePayment({ data: { invoice_id: invoiceId, amount, callback_url } });
+      window.location.href = res.gatewayURL;
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to start SSLCommerz payment");
+      setBusy(false);
+    }
+  };
+  return <Button size="sm" variant="outline" onClick={pay} disabled={busy}>{busy ? "Redirecting…" : `Pay ${formatBDT(amount)} (Cards/Nagad)`}</Button>;
+}
+
 
 /* ---------- Domain ---------- */
 function DomainOrder({ uid, onSubmitted }: { uid: string; onSubmitted: () => void }) {
