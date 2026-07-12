@@ -16,12 +16,13 @@ export const createHostingOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: CreateHostingOrderInput) => {
     if (!data.package_id) throw new Error("Package is required");
-    if (!data.domain_name?.trim() || !data.domain_name.includes(".")) throw new Error("Valid domain required");
+    const dom = validateDomain(data.domain_name ?? "");
+    if (!dom.ok) throw new Error(dom.error);
     if (!data.payment_method) throw new Error("Payment method required");
     if (data.payment_method === "manual_bkash" && !data.manual_trx_id?.trim()) {
       throw new Error("bKash transaction ID required");
     }
-    return data;
+    return { ...data, domain_name: dom.value };
   })
   .handler(async ({ data, context }) => {
     const { data: pkg, error: pErr } = await context.supabase
