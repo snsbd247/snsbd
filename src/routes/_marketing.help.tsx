@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { listPublicKb } from "@/lib/kb.functions";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Section } from "@/components/marketing/section";
+const Section = ({ children }: { children: React.ReactNode }) => <section className="container mx-auto px-4 py-16">{children}</section>;
 import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
