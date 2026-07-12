@@ -71,6 +71,7 @@ export function ServicesManager({
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["services"] }); },
     onError: (e: Error) => toast.error(e.message),
   });
+  const pg = usePagination((services ?? []) as any[]);
 
   return (
     <div className="space-y-6">
