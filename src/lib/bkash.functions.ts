@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { db } from "@/lib/db-shim";
 
 const BKASH_HOSTS = {
   sandbox: "https://tokenized.sandbox.bka.sh/v1.2.0-beta",
@@ -87,7 +88,7 @@ export const bkashCreatePayment = createServerFn({ method: "POST" })
       throw new Error(body.statusMessage || body.errorMessage || "bKash create failed");
     }
 
-    await context.supabase.from("payment_transactions").insert({
+    await context.db.from("payment_transactions").insert({
       invoice_id: inv.id,
       customer_id: context.userId,
       provider: "bkash",

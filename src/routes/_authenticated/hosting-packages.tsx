@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/hosting-packages")({
   component: PackagesPage,
@@ -54,7 +55,7 @@ function PackagesPage() {
 
   const { data: rows } = useQuery({
     queryKey: ["hosting_packages"],
-    queryFn: async () => (await supabase.from("hosting_packages").select("*").order("sort_order").order("price")).data ?? [],
+    queryFn: async () => (await db.from("hosting_packages").select("*").order("sort_order").order("price")).data ?? [],
   });
 
   const save = useMutation({
@@ -71,8 +72,8 @@ function PackagesPage() {
         sort_order: Number(f.sort_order) || 0,
       };
       const q = editing
-        ? supabase.from("hosting_packages").update(payload).eq("id", editing.id)
-        : supabase.from("hosting_packages").insert(payload);
+        ? db.from("hosting_packages").update(payload).eq("id", editing.id)
+        : db.from("hosting_packages").insert(payload);
       const { error } = await q;
       if (error) throw error;
     },
@@ -85,7 +86,7 @@ function PackagesPage() {
   });
 
   const del = useMutation({
-    mutationFn: async (id: string) => { const { error } = await supabase.from("hosting_packages").delete().eq("id", id); if (error) throw error; },
+    mutationFn: async (id: string) => { const { error } = await db.from("hosting_packages").delete().eq("id", id); if (error) throw error; },
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["hosting_packages"] }); },
   });
 

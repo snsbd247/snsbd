@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/invoices")({
   component: InvoicesPage,
@@ -33,7 +34,7 @@ function InvoicesPage() {
   const { data: invoices, isLoading } = useQuery({
     queryKey: ["invoices"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("invoices")
+      const { data, error } = await db.from("invoices")
         .select("*, profiles(full_name, email)")
         .order("issue_date", { ascending: false });
       if (error) throw error;
@@ -44,12 +45,12 @@ function InvoicesPage() {
   const { data: customers } = useQuery({
     queryKey: ["customer-list"],
     enabled: role === "admin",
-    queryFn: async () => (await supabase.from("profiles").select("id, full_name, email").order("full_name")).data ?? [],
+    queryFn: async () => (await db.from("profiles").select("id, full_name, email").order("full_name")).data ?? [],
   });
 
   const del = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("invoices").delete().eq("id", id);
+      const { error } = await db.from("invoices").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["invoices"] }); },
@@ -127,7 +128,7 @@ function InvoiceCreateDialog({ open, onOpenChange, customers }: any) {
   const create = useMutation({
     mutationFn: async () => {
       const invoiceNumber = "INV-" + Date.now().toString().slice(-8);
-      const { data: inv, error } = await supabase.from("invoices").insert({
+      const { data: inv, error } = await db.from("invoices").insert({
         customer_id: customerId, invoice_number: invoiceNumber,
         due_date: dueDate || null, subtotal, tax: 0, total: subtotal, notes, status: "sent",
       }).select().single();
@@ -138,7 +139,7 @@ function InvoiceCreateDialog({ open, onOpenChange, customers }: any) {
         total: Number(i.quantity) * Number(i.unit_price),
       }));
       if (rows.length) {
-        const { error: e2 } = await supabase.from("invoice_items").insert(rows);
+        const { error: e2 } = await db.from("invoice_items").insert(rows);
         if (e2) throw e2;
       }
     },
@@ -190,9 +191,9 @@ function InvoiceViewDialog({ invoiceId, onClose }: { invoiceId: string; onClose:
   const { data } = useQuery({
     queryKey: ["invoice", invoiceId],
     queryFn: async () => {
-      const { data: inv } = await supabase.from("invoices").select("*, profiles(full_name, email, company, address)").eq("id", invoiceId).single();
-      const { data: items } = await supabase.from("invoice_items").select("*").eq("invoice_id", invoiceId);
-      const { data: payments } = await supabase.from("payments").select("*").eq("invoice_id", invoiceId).order("paid_at", { ascending: false });
+      const { data: inv } = await db.from("invoices").select("*, profiles(full_name, email, company, address)").eq("id", invoiceId).single();
+      const { data: items } = await db.from("invoice_items").select("*").eq("invoice_id", invoiceId);
+      const { data: payments } = await db.from("payments").select("*").eq("invoice_id", invoiceId).order("paid_at", { ascending: false });
       return { inv, items: items ?? [], payments: payments ?? [] };
     },
   });
@@ -204,12 +205,12 @@ function InvoiceViewDialog({ invoiceId, onClose }: { invoiceId: string; onClose:
     mutationFn: async () => {
       const amount = Number(payAmount);
       if (!amount) throw new Error("Enter amount");
-      const { error } = await supabase.from("payments").insert({ invoice_id: invoiceId, amount, method: payMethod });
+      const { error } = await db.from("payments").insert({ invoice_id: invoiceId, amount, method: payMethod });
       if (error) throw error;
       // update invoice totals
       const newPaid = Number(data!.inv!.amount_paid) + amount;
       const newStatus = newPaid >= Number(data!.inv!.total) ? "paid" : newPaid > 0 ? "partial" : data!.inv!.status;
-      await supabase.from("invoices").update({ amount_paid: newPaid, status: newStatus }).eq("id", invoiceId);
+      await db.from("invoices").update({ amount_paid: newPaid, status: newStatus }).eq("id", invoiceId);
     },
     onSuccess: () => {
       toast.success("Payment recorded");

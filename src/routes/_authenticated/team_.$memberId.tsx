@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/team_/$memberId")({
   component: TeamMemberDetail,
@@ -27,7 +28,7 @@ function TeamMemberDetail() {
   const { data: member, isLoading } = useQuery({
     queryKey: ["team-member", memberId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("team_members").select("*").eq("id", memberId).single();
+      const { data, error } = await db.from("team_members").select("*").eq("id", memberId).single();
       if (error) throw error;
       return data;
     },
@@ -35,7 +36,7 @@ function TeamMemberDetail() {
 
   const { data: payments } = useQuery({
     queryKey: ["team-member-payments", memberId],
-    queryFn: async () => (await supabase.from("salary_payments").select("*").eq("team_member_id", memberId).order("paid_at", { ascending: false })).data ?? [],
+    queryFn: async () => (await db.from("salary_payments").select("*").eq("team_member_id", memberId).order("paid_at", { ascending: false })).data ?? [],
   });
 
   const [f, setF] = useState<any>(null);
@@ -50,7 +51,7 @@ function TeamMemberDetail() {
   const save = useMutation({
     mutationFn: async () => {
       const payload = { ...f, monthly_salary: Number(f.monthly_salary) || 0, joined_at: f.joined_at || null };
-      const { error } = await supabase.from("team_members").update(payload).eq("id", memberId);
+      const { error } = await db.from("team_members").update(payload).eq("id", memberId);
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Saved"); qc.invalidateQueries({ queryKey: ["team-member", memberId] }); qc.invalidateQueries({ queryKey: ["team"] }); },
@@ -58,7 +59,7 @@ function TeamMemberDetail() {
   });
 
   const del = useMutation({
-    mutationFn: async () => { const { error } = await supabase.from("team_members").delete().eq("id", memberId); if (error) throw error; },
+    mutationFn: async () => { const { error } = await db.from("team_members").delete().eq("id", memberId); if (error) throw error; },
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["team"] }); navigate({ to: "/team" }); },
   });
 
@@ -69,7 +70,7 @@ function TeamMemberDetail() {
     mutationFn: async () => {
       const amt = Number(payAmt);
       if (!amt) throw new Error("Enter amount");
-      const { error } = await supabase.from("salary_payments").insert({ team_member_id: memberId, amount: amt, pay_period: payPeriod, notes: payNotes });
+      const { error } = await db.from("salary_payments").insert({ team_member_id: memberId, amount: amt, pay_period: payPeriod, notes: payNotes });
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Payment recorded"); setPayAmt(""); setPayNotes(""); qc.invalidateQueries({ queryKey: ["team-member-payments", memberId] }); qc.invalidateQueries({ queryKey: ["salary-payments"] }); },

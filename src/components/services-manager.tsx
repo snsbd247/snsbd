@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate, daysUntil } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
+import { db } from "@/lib/db-shim";
 
 type ServiceType = "domain" | "hosting" | "software" | "other";
 
@@ -40,7 +41,7 @@ export function ServicesManager({
   const { data: services, isLoading } = useQuery({
     queryKey: ["services", filterType ?? "all"],
     queryFn: async () => {
-      let q = supabase.from("services").select("*, profiles(full_name, email), projects(id, name)").order("created_at", { ascending: false });
+      let q = db.from("services").select("*, profiles(full_name, email), projects(id, name)").order("created_at", { ascending: false });
       if (filterType) q = q.eq("type", filterType);
       const { data, error } = await q;
       if (error) throw error;
@@ -51,18 +52,18 @@ export function ServicesManager({
   const { data: customers } = useQuery({
     queryKey: ["customer-list"],
     enabled: role === "admin",
-    queryFn: async () => (await supabase.from("profiles").select("id, full_name, email").order("full_name")).data ?? [],
+    queryFn: async () => (await db.from("profiles").select("id, full_name, email").order("full_name")).data ?? [],
   });
 
   const { data: projects } = useQuery({
     queryKey: ["project-list"],
     enabled: role === "admin",
-    queryFn: async () => (await supabase.from("projects").select("id, name, customer_id").order("name")).data ?? [],
+    queryFn: async () => (await db.from("projects").select("id, name, customer_id").order("name")).data ?? [],
   });
 
   const del = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("services").delete().eq("id", id);
+      const { error } = await db.from("services").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["services"] }); },
@@ -174,12 +175,12 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
 
   const { data: packages } = useQuery({
     queryKey: ["hosting_packages_active"],
-    queryFn: async () => (await supabase.from("hosting_packages").select("id, name, price, billing_cycle, disk_space, bandwidth, is_active").order("sort_order").order("price")).data ?? [],
+    queryFn: async () => (await db.from("hosting_packages").select("id, name, price, billing_cycle, disk_space, bandwidth, is_active").order("sort_order").order("price")).data ?? [],
   });
 
   const { data: whmServers } = useQuery({
     queryKey: ["whm_servers_list"],
-    queryFn: async () => (await supabase.from("whm_servers").select("id, name, hostname").order("name")).data ?? [],
+    queryFn: async () => (await db.from("whm_servers").select("id, name, hostname").order("name")).data ?? [],
   });
 
   useEffect(() => {
@@ -219,11 +220,11 @@ function ServiceDialog({ open, onOpenChange, editing, customers, projects, lockT
       };
       let serviceId: string;
       if (editing) {
-        const { error } = await supabase.from("services").update(payload).eq("id", editing.id);
+        const { error } = await db.from("services").update(payload).eq("id", editing.id);
         if (error) throw error;
         serviceId = editing.id;
       } else {
-        const { data, error } = await supabase.from("services").insert(payload).select("id").single();
+        const { data, error } = await db.from("services").insert(payload).select("id").single();
         if (error) throw error;
         serviceId = data.id;
       }

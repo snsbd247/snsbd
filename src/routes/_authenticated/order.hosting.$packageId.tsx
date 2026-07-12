@@ -15,6 +15,7 @@ import { createHostingOrder } from "@/lib/orders.functions";
 import { bkashCreatePayment } from "@/lib/bkash.functions";
 import { useCompanySettings } from "@/lib/company-settings";
 import { Loader2, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/order/hosting/$packageId")({
   component: OrderPage,
@@ -27,13 +28,13 @@ function OrderPage() {
 
   const { data: pkg, isLoading } = useQuery({
     queryKey: ["hosting_package", packageId],
-    queryFn: async () => (await supabase.from("hosting_packages").select("*").eq("id", packageId).maybeSingle()).data,
+    queryFn: async () => (await db.from("hosting_packages").select("*").eq("id", packageId).maybeSingle()).data,
   });
 
   const { data: bkashGw } = useQuery({
     queryKey: ["bkash_gw_public"],
     queryFn: async () =>
-      (await supabase.from("payment_gateways").select("merchant_number, is_active").eq("provider", "bkash").maybeSingle()).data,
+      (await db.from("payment_gateways").select("merchant_number, is_active").eq("provider", "bkash").maybeSingle()).data,
   });
 
   const [domain, setDomain] = useState("");

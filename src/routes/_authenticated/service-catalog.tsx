@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/service-catalog")({
   component: CatalogPage,
@@ -51,7 +52,7 @@ function CatalogPage() {
 
   const { data: rows } = useQuery({
     queryKey: ["service_catalog"],
-    queryFn: async () => (await supabase.from("service_catalog").select("*").order("sort_order").order("name")).data ?? [],
+    queryFn: async () => (await db.from("service_catalog").select("*").order("sort_order").order("name")).data ?? [],
   });
 
   const save = useMutation({
@@ -66,8 +67,8 @@ function CatalogPage() {
         sort_order: Number(f.sort_order) || 0,
       };
       const q = editing
-        ? supabase.from("service_catalog").update(payload).eq("id", editing.id)
-        : supabase.from("service_catalog").insert(payload);
+        ? db.from("service_catalog").update(payload).eq("id", editing.id)
+        : db.from("service_catalog").insert(payload);
       const { error } = await q;
       if (error) throw error;
     },
@@ -80,7 +81,7 @@ function CatalogPage() {
   });
 
   const del = useMutation({
-    mutationFn: async (id: string) => { const { error } = await supabase.from("service_catalog").delete().eq("id", id); if (error) throw error; },
+    mutationFn: async (id: string) => { const { error } = await db.from("service_catalog").delete().eq("id", id); if (error) throw error; },
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["service_catalog"] }); },
   });
 

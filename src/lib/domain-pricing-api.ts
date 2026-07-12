@@ -3,6 +3,7 @@
  */
 import { supabase } from '@/integrations/supabase/client';
 import { isLaravelMode, laravelApi } from '@/lib/laravel-auth';
+import { db } from "@/lib/db-shim";
 
 export interface DomainPricing {
   id: number | string;
@@ -33,7 +34,7 @@ export async function createDomainPricing(payload: Partial<DomainPricing>): Prom
   if (isLaravelMode()) {
     return await laravelApi<DomainPricing>('/domain-pricing', { method: 'POST', body: payload });
   }
-  const { data, error } = await supabase.from('domain_pricing').insert(payload as never).select().single();
+  const { data, error } = await db.from('domain_pricing').insert(payload as never).select().single();
   if (error) throw error;
   return data as DomainPricing;
 }
@@ -60,6 +61,6 @@ export async function deleteDomainPricing(id: number | string): Promise<void> {
     await laravelApi(`/domain-pricing/${id}`, { method: 'DELETE' });
     return;
   }
-  const { error } = await supabase.from('domain_pricing').delete().eq('id', id as never);
+  const { error } = await db.from('domain_pricing').delete().eq('id', id as never);
   if (error) throw error;
 }

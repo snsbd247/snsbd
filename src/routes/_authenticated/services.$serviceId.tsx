@@ -10,6 +10,7 @@ import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate, daysUntil } from "@/lib/format";
 import { generateInvoiceDraft } from "@/lib/generate-invoice";
 import { useState } from "react";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/services/$serviceId")({
   component: ServiceDetailPage,
@@ -59,7 +60,7 @@ function ServiceDetailPage() {
   const { data: service, isLoading } = useQuery({
     queryKey: ["service", serviceId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("services")
+      const { data, error } = await db.from("services")
         .select("*, profiles(id, full_name, email, company), projects(id, name)")
         .eq("id", serviceId).single();
       if (error) throw error;
@@ -70,7 +71,7 @@ function ServiceDetailPage() {
   const { data: invoices } = useQuery({
     queryKey: ["service-invoices", serviceId],
     queryFn: async () => {
-      const { data } = await supabase.from("invoice_items")
+      const { data } = await db.from("invoice_items")
         .select("invoice_id, total, invoices(id, invoice_number, status, issue_date, total)")
         .eq("service_id", serviceId);
       return data ?? [];

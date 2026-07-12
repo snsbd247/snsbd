@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/lib/db-shim";
 
 export type CompanySettings = {
   id: boolean;
@@ -34,7 +35,7 @@ export function useCompanySettings() {
     queryKey: ["company_settings"],
     staleTime: 5 * 60 * 1000,
     queryFn: async (): Promise<CompanySettings> => {
-      const { data } = await supabase.from("company_settings").select("*").maybeSingle();
+      const { data } = await db.from("company_settings").select("*").maybeSingle();
       return (data as CompanySettings) ?? COMPANY_DEFAULTS;
     },
   });

@@ -3,6 +3,7 @@
  */
 import { supabase } from '@/integrations/supabase/client';
 import { isLaravelMode, laravelApi } from '@/lib/laravel-auth';
+import { db } from "@/lib/db-shim";
 
 export interface HostingPackage {
   id: number | string;
@@ -39,7 +40,7 @@ export async function getHostingPackage(id: number | string): Promise<HostingPac
   if (isLaravelMode()) {
     return await laravelApi<HostingPackage>(`/hosting-packages/${id}`, { auth: false });
   }
-  const { data, error } = await supabase.from('hosting_packages').select('*').eq('id', id as never).maybeSingle();
+  const { data, error } = await db.from('hosting_packages').select('*').eq('id', id as never).maybeSingle();
   if (error) throw error;
   return data as HostingPackage | null;
 }
@@ -48,7 +49,7 @@ export async function createHostingPackage(payload: Partial<HostingPackage>): Pr
   if (isLaravelMode()) {
     return await laravelApi<HostingPackage>('/hosting-packages', { method: 'POST', body: payload });
   }
-  const { data, error } = await supabase.from('hosting_packages').insert(payload as never).select().single();
+  const { data, error } = await db.from('hosting_packages').insert(payload as never).select().single();
   if (error) throw error;
   return data as HostingPackage;
 }
@@ -75,6 +76,6 @@ export async function deleteHostingPackage(id: number | string): Promise<void> {
     await laravelApi(`/hosting-packages/${id}`, { method: 'DELETE' });
     return;
   }
-  const { error } = await supabase.from('hosting_packages').delete().eq('id', id as never);
+  const { error } = await db.from('hosting_packages').delete().eq('id', id as never);
   if (error) throw error;
 }

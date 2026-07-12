@@ -7,6 +7,7 @@ import { ArrowLeft, Download, Printer, Loader2 } from "lucide-react";
 import { downloadElementAsPdf, printElementAsPdf } from "@/lib/pdf";
 import { useCompanySettings, amountInWords } from "@/lib/company-settings";
 import { formatBDT, formatDate } from "@/lib/format";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/receipts/$paymentId")({
   component: ReceiptPage,
@@ -25,9 +26,9 @@ function ReceiptPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["payment-receipt", paymentId],
     queryFn: async () => {
-      const { data: pay, error } = await supabase.from("payments").select("*").eq("id", paymentId).single();
+      const { data: pay, error } = await db.from("payments").select("*").eq("id", paymentId).single();
       if (error) throw error;
-      const { data: inv } = await supabase.from("invoices")
+      const { data: inv } = await db.from("invoices")
         .select("*, profiles(full_name, company, email), projects(name)")
         .eq("id", pay.invoice_id).single();
       return { pay, inv };
@@ -39,7 +40,7 @@ function ReceiptPage() {
       const d = new Date();
       const seq = Date.now().toString().slice(-3);
       const rn = `SNS-${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${seq}`;
-      await supabase.from("payments").update({ receipt_number: rn }).eq("id", paymentId);
+      await db.from("payments").update({ receipt_number: rn }).eq("id", paymentId);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["payment-receipt", paymentId] }),
   });

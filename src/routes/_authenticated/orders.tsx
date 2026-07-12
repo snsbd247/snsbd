@@ -14,6 +14,7 @@ import { formatBDT, formatDate } from "@/lib/format";
 import { activateHostingOrder } from "@/lib/orders.functions";
 import { useState } from "react";
 import { CheckCircle2, Copy, Loader2 } from "lucide-react";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/orders")({
   component: OrdersPage,
@@ -30,7 +31,7 @@ function OrdersPage() {
 
   const { data: rows } = useQuery({
     queryKey: ["customer_orders"],
-    queryFn: async () => (await supabase.from("customer_orders")
+    queryFn: async () => (await db.from("customer_orders")
       .select("*, hosting_packages(name), service_catalog(name), profiles!customer_orders_customer_id_fkey(full_name, email)")
       .order("created_at", { ascending: false })).data ?? [],
   });
@@ -38,12 +39,12 @@ function OrdersPage() {
   const { data: whmServers } = useQuery({
     queryKey: ["whm_servers"],
     enabled: role === "admin",
-    queryFn: async () => (await supabase.from("whm_servers").select("id, name").order("name")).data ?? [],
+    queryFn: async () => (await db.from("whm_servers").select("id, name").order("name")).data ?? [],
   });
 
   const update = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase.from("customer_orders").update({ status: status as any }).eq("id", id);
+      const { error } = await db.from("customer_orders").update({ status: status as any }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Updated"); qc.invalidateQueries({ queryKey: ["customer_orders"] }); },

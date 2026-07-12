@@ -16,6 +16,7 @@ import { formatDate } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { useServerFn } from "@tanstack/react-start";
 import { createCustomer } from "@/lib/customers.functions";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/customers")({
   component: CustomersPage,
@@ -36,8 +37,8 @@ function CustomersPage() {
     queryKey: ["customers-with-roles"],
     queryFn: async () => {
       const [profiles, roles] = await Promise.all([
-        supabase.from("profiles").select("*").order("created_at", { ascending: false }),
-        supabase.from("user_roles").select("user_id, role"),
+        db.from("profiles").select("*").order("created_at", { ascending: false }),
+        db.from("user_roles").select("user_id, role"),
       ]);
       const roleMap = new Map<string, string[]>();
       (roles.data ?? []).forEach((r) => {
@@ -52,7 +53,7 @@ function CustomersPage() {
 
   const del = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("profiles").delete().eq("id", id);
+      const { error } = await db.from("profiles").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["customers-with-roles"] }); },
@@ -130,7 +131,7 @@ function CustomerDialog({ open, onOpenChange, editing }: { open: boolean; onOpen
   const save = useMutation({
     mutationFn: async () => {
       if (editing) {
-        const { error } = await supabase.from("profiles").update(form).eq("id", editing.id);
+        const { error } = await db.from("profiles").update(form).eq("id", editing.id);
         if (error) throw error;
       } else {
         if (!form.email) throw new Error("Email is required");

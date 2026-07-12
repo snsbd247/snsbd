@@ -13,6 +13,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { createPortalSession } from "@/lib/customers.functions";
 import { toast } from "sonner";
 import { useState } from "react";
+import { db } from "@/lib/db-shim";
 
 
 export const Route = createFileRoute("/_authenticated/customers_/$customerId")({
@@ -28,10 +29,10 @@ function CustomerDetailPage() {
     queryKey: ["customer-detail", customerId],
     queryFn: async () => {
       const [profile, projects, services, invoices] = await Promise.all([
-        supabase.from("profiles").select("*").eq("id", customerId).maybeSingle(),
-        supabase.from("projects").select("*").eq("customer_id", customerId).order("created_at", { ascending: false }),
-        supabase.from("services").select("*").eq("customer_id", customerId).order("created_at", { ascending: false }),
-        supabase.from("invoices").select("id, invoice_number, status, issue_date, total, amount_paid").eq("customer_id", customerId).order("issue_date", { ascending: false }),
+        db.from("profiles").select("*").eq("id", customerId).maybeSingle(),
+        db.from("projects").select("*").eq("customer_id", customerId).order("created_at", { ascending: false }),
+        db.from("services").select("*").eq("customer_id", customerId).order("created_at", { ascending: false }),
+        db.from("invoices").select("id, invoice_number, status, issue_date, total, amount_paid").eq("customer_id", customerId).order("issue_date", { ascending: false }),
       ]);
       return {
         profile: profile.data,

@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   component: ProfilePage,
@@ -20,7 +21,7 @@ function ProfilePage() {
   const { data } = useQuery({
     queryKey: ["profile", user?.id],
     enabled: !!user?.id,
-    queryFn: async () => (await supabase.from("profiles").select("*").eq("id", user!.id).single()).data,
+    queryFn: async () => (await db.from("profiles").select("*").eq("id", user!.id).single()).data,
   });
   const [f, setF] = useState({ full_name: "", phone: "", company: "", address: "" });
   useEffect(() => {
@@ -29,7 +30,7 @@ function ProfilePage() {
 
   const save = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("profiles").update(f).eq("id", user!.id);
+      const { error } = await db.from("profiles").update(f).eq("id", user!.id);
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Profile updated"); qc.invalidateQueries({ queryKey: ["profile"] }); },
