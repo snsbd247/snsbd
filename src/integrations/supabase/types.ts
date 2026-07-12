@@ -463,6 +463,41 @@ export type Database = {
         }
         Relationships: []
       }
+      order_domain_changes: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          id: string
+          new_domain: string | null
+          old_domain: string | null
+          order_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          new_domain?: string | null
+          old_domain?: string | null
+          order_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          new_domain?: string | null
+          old_domain?: string | null
+          order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_domain_changes_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_gateways: {
         Row: {
           app_key: string | null
