@@ -63,7 +63,10 @@ function ReceiptPage() {
         <Button variant="outline" size="sm" onClick={() => (inv ? navigate({ to: "/invoices/$invoiceId", params: { invoiceId: inv.id } }) : navigate({ to: "/invoices" }))}>
           <ArrowLeft className="mr-2 h-4 w-4" />Back to invoice
         </Button>
-        <Button onClick={() => downloadElementAsPdf("receipt-pdf", `${pay.receipt_number ?? "receipt"}.pdf`, "a5", "l")}><Download className="mr-2 h-4 w-4" />Download PDF</Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4" />Print</Button>
+          <Button onClick={() => downloadElementAsPdf("receipt-pdf", `${pay.receipt_number ?? "receipt"}.pdf`, "a5", "l")}><Download className="mr-2 h-4 w-4" />Download PDF</Button>
+        </div>
       </div>
 
       <div id="receipt-pdf" className="receipt bg-white text-slate-900 mx-auto" style={{ width: "100%", maxWidth: 1080 }}>
