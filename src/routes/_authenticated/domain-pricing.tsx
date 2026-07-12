@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { Plus, Trash2, Save } from "lucide-react";
 import { db } from "@/lib/db-shim";
+import { usePagination, PaginationControls } from "@/components/ui/pagination-controls";
 
 export const Route = createFileRoute("/_authenticated/domain-pricing")({
   component: Page,
