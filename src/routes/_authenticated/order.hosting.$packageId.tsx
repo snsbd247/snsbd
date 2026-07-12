@@ -14,7 +14,9 @@ import { createHostingOrder } from "@/lib/orders.functions";
 import { validateDomain } from "@/lib/domain-validate";
 import { bkashCreatePayment } from "@/lib/bkash.functions";
 import { useCompanySettings } from "@/lib/company-settings";
-import { Loader2, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { validateCoupon, listAddons } from "@/lib/addons-coupons.functions";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Loader2, ArrowLeft, CheckCircle2, Tag } from "lucide-react";
 import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/order/hosting/$packageId")({
@@ -44,6 +46,27 @@ function OrderPage() {
   const [sender, setSender] = useState("");
   const [notes, setNotes] = useState("");
   const [done, setDone] = useState<string | null>(null);
+  const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
+  const [couponInput, setCouponInput] = useState("");
+  const [couponResult, setCouponResult] = useState<{ valid: boolean; discount?: number; reason?: string; code?: string } | null>(null);
+
+  const { data: addonsData } = useQuery({
+    queryKey: ["addons_public", packageId],
+    queryFn: async () => (await listAddons()).items.filter((a: any) => !a.hosting_package_id || a.hosting_package_id === packageId),
+  });
+  const addons = addonsData ?? [];
+  const addonTotal = addons.filter((a: any) => selectedAddons.includes(a.id)).reduce((s: number, a: any) => s + Number(a.price || 0), 0);
+  const subtotal = Number(pkg?.price ?? 0) + addonTotal;
+  const discount = couponResult?.valid ? Number(couponResult.discount ?? 0) : 0;
+  const total = Math.max(0, subtotal - discount);
+
+  async function applyCoupon() {
+    if (!couponInput.trim()) return;
+    const r = await validateCoupon({ data: { code: couponInput, subtotal } });
+    setCouponResult(r);
+    if (r.valid) toast.success(`Coupon applied: -${formatBDT(r.discount ?? 0)}`);
+    else toast.error(r.reason ?? "Invalid coupon");
+  }
 
   const submit = useMutation({
     mutationFn: async () => {
@@ -56,6 +79,8 @@ function OrderPage() {
           manual_trx_id: trxId,
           manual_sender: sender,
           customer_notes: notes,
+          addon_ids: selectedAddons,
+          coupon_code: couponResult?.valid ? couponResult.code : undefined,
         },
       });
       if (method === "bkash_online") {
@@ -141,6 +166,46 @@ function OrderPage() {
           </div>
         </CardContent>
       </Card>
+
+      {addons.length > 0 && (
+        <Card>
+          <CardHeader><CardTitle>Add-ons</CardTitle></CardHeader>
+          <CardContent className="space-y-2">
+            {addons.map((a: any) => (
+              <label key={a.id} className="flex items-center justify-between gap-3 rounded-md border p-3 cursor-pointer hover:bg-accent">
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    checked={selectedAddons.includes(a.id)}
+                    onCheckedChange={(v) => setSelectedAddons((s) => v ? [...s, a.id] : s.filter((x) => x !== a.id))}
+                  />
+                  <div>
+                    <div className="text-sm font-medium">{a.name}</div>
+                    {a.description && <div className="text-xs text-muted-foreground">{a.description}</div>}
+                  </div>
+                </div>
+                <div className="text-sm font-semibold">{formatBDT(a.price)}</div>
+              </label>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      <Card>
+        <CardHeader><CardTitle className="flex items-center gap-2"><Tag className="h-4 w-4" />Coupon & total</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex gap-2">
+            <Input placeholder="Coupon code" value={couponInput} onChange={(e) => setCouponInput(e.target.value)} />
+            <Button type="button" variant="outline" onClick={applyCoupon}>Apply</Button>
+          </div>
+          {couponResult?.valid && <p className="text-xs text-emerald-600">Coupon {couponResult.code} applied.</p>}
+          <div className="border-t pt-3 space-y-1 text-sm">
+            <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatBDT(subtotal)}</span></div>
+            {discount > 0 && <div className="flex justify-between text-emerald-600"><span>Discount</span><span>-{formatBDT(discount)}</span></div>}
+            <div className="flex justify-between font-bold text-base pt-1 border-t"><span>Total</span><span>{formatBDT(total)}</span></div>
+          </div>
+        </CardContent>
+      </Card>
+
 
       <Card>
         <CardHeader><CardTitle>Payment</CardTitle></CardHeader>

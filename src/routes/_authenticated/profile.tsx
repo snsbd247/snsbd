@@ -11,6 +11,7 @@ import { useAuth } from "@/lib/auth";
 import { db } from "@/lib/db-shim";
 import { MfaSettings } from "@/components/mfa-settings";
 import { ReferralPanel } from "@/components/referral-panel";
+import { PushSettings } from "@/components/push-settings";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   component: ProfilePage,
@@ -53,6 +54,7 @@ function ProfilePage() {
         </CardContent>
       </Card>
       <MfaSettings />
+      <PushSettings />
       <ReferralPanel />
     </div>
   );
