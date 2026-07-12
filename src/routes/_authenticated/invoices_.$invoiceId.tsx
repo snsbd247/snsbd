@@ -111,7 +111,7 @@ function InvoiceDetailPage() {
               </SelectContent>
             </Select>
           )}
-          <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4" />Print</Button>
+          <Button variant="outline" onClick={() => printElementAsPdf("invoice-pdf", "a4", "p")}><Printer className="mr-2 h-4 w-4" />Print</Button>
           <Button onClick={() => downloadElementAsPdf("invoice-pdf", `${inv.invoice_number}.pdf`, "a4", "p")}><Download className="mr-2 h-4 w-4" />Download PDF</Button>
         </div>
       </div>
