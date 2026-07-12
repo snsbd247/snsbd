@@ -127,6 +127,7 @@ function OrdersPage() {
             {rows && rows.length === 0 && <TableRow><TableCell colSpan={8} className="text-center text-sm text-muted-foreground py-8">No orders yet.</TableCell></TableRow>}
           </TableBody>
         </Table>
+        <PaginationControls {...pg} />
       </CardContent></Card>
 
       <Dialog open={!!activate} onOpenChange={(v) => { if (!v) { setActivate(null); setResult(null); } }}>
