@@ -61,21 +61,62 @@ function CustomersPage() {
 
   if (role !== "admin") return <p className="text-sm text-muted-foreground">Admin only.</p>;
 
+  const customers = (data ?? []) as any[];
+  const total = customers.length;
+  const withCompany = customers.filter((c) => c.company).length;
+  const withPhone = customers.filter((c) => c.phone).length;
+
+  const gradients = [
+    "from-fuchsia-500 to-pink-500",
+    "from-sky-500 to-indigo-500",
+    "from-emerald-500 to-teal-500",
+    "from-amber-500 to-orange-500",
+    "from-violet-500 to-purple-500",
+    "from-rose-500 to-red-500",
+  ];
+  const initials = (name: string | null, email: string | null) => {
+    const src = (name || email || "?").trim();
+    const parts = src.split(/\s+/);
+    return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase() || src[0]?.toUpperCase() || "?";
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Customers</h1>
-          <p className="text-sm text-muted-foreground">Manage your customer records.</p>
+      {/* Colorful gradient header */}
+      <div className="relative overflow-hidden rounded-2xl p-6 sm:p-8 text-white shadow-lg bg-gradient-to-br from-indigo-600 via-fuchsia-600 to-pink-500">
+        <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
+        <div className="absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-extrabold tracking-tight">Customers</h1>
+            <p className="text-sm text-white/80 mt-1">Manage your customer records with style.</p>
+          </div>
+          <Button
+            onClick={() => { setEditing(null); setOpen(true); }}
+            className="bg-white text-indigo-700 hover:bg-white/90 shadow-md font-semibold"
+          >
+            <Plus className="mr-2 h-4 w-4" />Add customer
+          </Button>
         </div>
-        <Button onClick={() => { setEditing(null); setOpen(true); }}><Plus className="mr-2 h-4 w-4" />Add customer</Button>
+        <div className="relative mt-6 grid grid-cols-3 gap-3">
+          {[
+            { label: "Total", value: total, tone: "bg-white/15" },
+            { label: "With company", value: withCompany, tone: "bg-white/15" },
+            { label: "With phone", value: withPhone, tone: "bg-white/15" },
+          ].map((s) => (
+            <div key={s.label} className={`${s.tone} backdrop-blur-sm rounded-xl px-4 py-3 border border-white/20`}>
+              <div className="text-2xl font-bold leading-none">{s.value}</div>
+              <div className="text-[11px] uppercase tracking-wider text-white/80 mt-1">{s.label}</div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <Card>
+      <Card className="border-0 shadow-md overflow-hidden">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="bg-gradient-to-r from-slate-50 to-slate-100 hover:bg-slate-100 dark:from-slate-900 dark:to-slate-800">
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Phone</TableHead>
@@ -86,23 +127,43 @@ function CustomersPage() {
             </TableHeader>
             <TableBody>
               {isLoading && <TableRow><TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-8">Loading…</TableCell></TableRow>}
-              {!isLoading && (data ?? []).length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-8">No customers yet.</TableCell></TableRow>}
-              {(data ?? []).map((c: any) => (
-                <TableRow key={c.id}>
-                  <TableCell className="font-medium">
-                    <Link to="/customers/$customerId" params={{ customerId: c.id }} className="text-primary hover:underline">{c.full_name ?? "—"}</Link>
-                    {c.roles?.includes("admin") && <Badge variant="outline" className="ml-2">admin</Badge>}
-                  </TableCell>
-                  <TableCell>{c.email ?? "—"}</TableCell>
-                  <TableCell>{c.phone ?? "—"}</TableCell>
-                  <TableCell>{c.company ?? "—"}</TableCell>
-                  <TableCell>{formatDate(c.created_at)}</TableCell>
-                  <TableCell className="text-right">
-                    <Button size="icon" variant="ghost" onClick={() => { setEditing(c); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
-                    <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete this customer? Their auth user remains.")) del.mutate(c.id); }}><Trash2 className="h-4 w-4" /></Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {!isLoading && customers.length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-12">No customers yet. Add your first one! ✨</TableCell></TableRow>}
+              {customers.map((c: any, i: number) => {
+                const grad = gradients[i % gradients.length];
+                return (
+                  <TableRow key={c.id} className="group transition-colors hover:bg-gradient-to-r hover:from-indigo-50/60 hover:to-fuchsia-50/60 dark:hover:from-indigo-950/30 dark:hover:to-fuchsia-950/30">
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-3">
+                        <div className={`h-9 w-9 shrink-0 rounded-full bg-gradient-to-br ${grad} text-white flex items-center justify-center text-xs font-bold shadow-sm ring-2 ring-white dark:ring-slate-900`}>
+                          {initials(c.full_name, c.email)}
+                        </div>
+                        <div className="min-w-0">
+                          <Link to="/customers/$customerId" params={{ customerId: c.id }} className="text-primary hover:underline font-semibold">
+                            {c.full_name ?? "—"}
+                          </Link>
+                          {c.roles?.includes("admin") && <Badge variant="outline" className="ml-2 border-amber-400 text-amber-600">admin</Badge>}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-slate-600 dark:text-slate-300">{c.email ?? "—"}</TableCell>
+                    <TableCell>
+                      {c.phone ? (
+                        <span className="inline-flex rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 px-2.5 py-0.5 text-xs font-medium">{c.phone}</span>
+                      ) : <span className="text-muted-foreground">—</span>}
+                    </TableCell>
+                    <TableCell>
+                      {c.company ? (
+                        <span className="inline-flex rounded-full bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300 px-2.5 py-0.5 text-xs font-medium">{c.company}</span>
+                      ) : <span className="text-muted-foreground">—</span>}
+                    </TableCell>
+                    <TableCell className="text-slate-500 dark:text-slate-400 text-sm">{formatDate(c.created_at)}</TableCell>
+                    <TableCell className="text-right">
+                      <Button size="icon" variant="ghost" className="hover:bg-indigo-100 hover:text-indigo-700 dark:hover:bg-indigo-950/40" onClick={() => { setEditing(c); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" className="hover:bg-rose-100 hover:text-rose-700 dark:hover:bg-rose-950/40" onClick={() => { if (confirm("Delete this customer? Their auth user remains.")) del.mutate(c.id); }}><Trash2 className="h-4 w-4" /></Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </CardContent>
@@ -112,6 +173,7 @@ function CustomersPage() {
     </div>
   );
 }
+
 
 function CustomerDialog({ open, onOpenChange, editing }: { open: boolean; onOpenChange: (o: boolean) => void; editing: Customer | null }) {
   const qc = useQueryClient();
