@@ -17,7 +17,7 @@ export const getMyReferral = createServerFn({ method: "GET" })
       .maybeSingle();
     const { data: commissions } = await context.supabase
       .from("referral_commissions")
-      .select("id, amount, status, created_at, paid_at, invoice_id, referred_user_id, profiles:referred_user_id(email, full_name)")
+      .select("id, amount, status, created_at, paid_at, invoice_id, referred_user_id")
       .eq("referrer_id", context.userId)
       .order("created_at", { ascending: false });
     const totals = { pending: 0, paid: 0, void: 0 };
@@ -54,7 +54,7 @@ export const listAllCommissions = createServerFn({ method: "GET" })
     await assertAdmin(context);
     let q = context.supabase
       .from("referral_commissions")
-      .select("id, amount, status, created_at, paid_at, referrer_id, referred_user_id, invoice_id, rate_percent, referrer:referrer_id(email, full_name), referred:referred_user_id(email, full_name)")
+      .select("id, amount, status, created_at, paid_at, referrer_id, referred_user_id, invoice_id, rate_percent")
       .order("created_at", { ascending: false })
       .limit(500);
     if (data?.status) q = q.eq("status", data.status);
