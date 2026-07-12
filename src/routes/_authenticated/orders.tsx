@@ -82,7 +82,7 @@ function OrdersPage() {
             <TableHead>Status</TableHead><TableHead></TableHead>
           </TableRow></TableHeader>
           <TableBody>
-            {(rows ?? []).map((o: any) => (
+            {pg.paged.map((o: any) => (
               <ClickableRow key={o.id} to="/orders/$orderId" params={{ orderId: o.id }}>
                 <TableCell className="text-xs">{formatDate(o.created_at)}</TableCell>
                 <TableCell className="text-sm">{o.profiles?.full_name ?? o.profiles?.email ?? "—"}</TableCell>
