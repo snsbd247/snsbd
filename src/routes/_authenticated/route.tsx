@@ -4,11 +4,13 @@ import { useAuth } from "@/lib/auth";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger,
-  SidebarHeader, SidebarFooter, SidebarInset,
+  SidebarHeader, SidebarFooter, SidebarInset, SidebarSeparator,
+  SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   LayoutDashboard, Users, Globe, HardDrive, Package, FileText, FolderKanban,
-  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server,
+  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server, ChevronRight,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
