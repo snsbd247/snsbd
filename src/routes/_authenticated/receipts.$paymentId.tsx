@@ -165,9 +165,9 @@ function ReceiptPage() {
 
       <style>{`
         @media print {
-          @page { size: A4 landscape; margin: 10mm; }
+          @page { size: A5 landscape; margin: 6mm; }
           body { background: white !important; }
-          .receipt { box-shadow: none !important; border: 0 !important; }
+          .receipt { box-shadow: none !important; border: 0 !important; width: 100% !important; max-width: 100% !important; }
         }
       `}</style>
     </div>
