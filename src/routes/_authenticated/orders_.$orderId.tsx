@@ -198,14 +198,22 @@ function OrderDetailsPage() {
                 )}
               </div>
               {editingDomain ? (
-                <div className="flex gap-2">
-                  <Input value={domainEdit} onChange={(e) => setDomainEdit(e.target.value)} placeholder="example.com" className="h-8" />
-                  <Button size="sm" onClick={() => {
-                    const d = domainEdit.trim().toLowerCase();
-                    if (o.order_type === "hosting" && (!d || !d.includes("."))) { toast.error("Valid domain required"); return; }
-                    saveMeta.mutate({ domain_name: d || null as any }, { onSuccess: () => setEditingDomain(false) });
-                  }} disabled={saveMeta.isPending}>Save</Button>
-                  <Button size="sm" variant="ghost" onClick={() => setEditingDomain(false)}>Cancel</Button>
+                <div className="space-y-1">
+                  <div className="flex gap-2">
+                    <Input value={domainEdit} onChange={(e) => setDomainEdit(e.target.value)} placeholder="example.com" className="h-8" aria-invalid={domainEdit.length > 0 && !validateDomain(domainEdit).ok} />
+                    <Button size="sm" onClick={() => {
+                      const v = validateDomain(domainEdit);
+                      if (!v.ok) { toast.error(v.error); return; }
+                      if (o.domain_name && v.value !== String(o.domain_name).toLowerCase()) {
+                        if (!confirm(`ডোমেইন পরিবর্তন করবেন?\n\nপুরাতন: ${o.domain_name}\nনতুন: ${v.value}\n\nএই পরিবর্তন অডিট লগে যাবে।`)) return;
+                      }
+                      domainMut.mutate(v.value);
+                    }} disabled={domainMut.isPending || !validateDomain(domainEdit).ok}>Save</Button>
+                    <Button size="sm" variant="ghost" onClick={() => setEditingDomain(false)}>Cancel</Button>
+                  </div>
+                  {domainEdit.length > 0 && !validateDomain(domainEdit).ok && (
+                    <p className="text-xs text-destructive">{(validateDomain(domainEdit) as { ok: false; error: string }).error}</p>
+                  )}
                 </div>
               ) : (
                 <div className="text-sm">{o.domain_name || <span className="text-destructive italic">Missing — required for activation</span>} {o.domain_action && <span className="text-xs text-muted-foreground capitalize">({o.domain_action.replace("_", " ")})</span>}</div>
