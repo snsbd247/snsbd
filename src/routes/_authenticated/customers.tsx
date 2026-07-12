@@ -132,7 +132,7 @@ function CustomersPage() {
             <TableBody>
               {isLoading && <TableRow><TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-8">Loading…</TableCell></TableRow>}
               {!isLoading && customers.length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-12">No customers yet. Add your first one! ✨</TableCell></TableRow>}
-              {customers.map((c: any, i: number) => {
+              {pg.paged.map((c: any, i: number) => {
                 const grad = gradients[i % gradients.length];
                 return (
                   <ClickableRow key={c.id} to="/customers/$customerId" params={{ customerId: c.id }}>
