@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, Printer, Loader2 } from "lucide-react";
-import { downloadElementAsPdf } from "@/lib/pdf";
+import { downloadElementAsPdf, printElementAsPdf } from "@/lib/pdf";
 import { useCompanySettings, amountInWords } from "@/lib/company-settings";
 import { formatBDT, formatDate } from "@/lib/format";
 
@@ -64,7 +64,7 @@ function ReceiptPage() {
           <ArrowLeft className="mr-2 h-4 w-4" />Back to invoice
         </Button>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4" />Print</Button>
+          <Button variant="outline" onClick={() => printElementAsPdf("receipt-pdf", "a5", "l")}><Printer className="mr-2 h-4 w-4" />Print</Button>
           <Button onClick={() => downloadElementAsPdf("receipt-pdf", `${pay.receipt_number ?? "receipt"}.pdf`, "a5", "l")}><Download className="mr-2 h-4 w-4" />Download PDF</Button>
         </div>
       </div>
