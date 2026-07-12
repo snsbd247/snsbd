@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { PricingCard } from "@/components/marketing/pricing-card";
 import { SectionHeading, CtaBand } from "@/components/marketing/section";
 import { resellerPlans } from "@/content/plans";
+import { useHostingPackages } from "@/hooks/use-marketing-data";
 
 export const Route = createFileRoute("/_marketing/reseller-hosting")({
   head: () => ({
@@ -18,6 +19,8 @@ export const Route = createFileRoute("/_marketing/reseller-hosting")({
 });
 
 function Page() {
+  const { data: plans } = useHostingPackages("reseller");
+  const list = plans && plans.length > 0 ? plans : resellerPlans;
   return (
     <>
       <section className="bg-gradient-to-br from-[#0B1220] to-[#0F172A] py-20 text-white">
@@ -30,7 +33,7 @@ function Page() {
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <SectionHeading eyebrow="Reseller Pricing" title="Plans built for hosting entrepreneurs" />
         <div className="mt-10 grid gap-6 lg:grid-cols-3">
-          {resellerPlans.map((p) => <PricingCard key={p.name} plan={p} />)}
+          {list.map((p) => <PricingCard key={p.name} plan={p} />)}
         </div>
       </section>
 

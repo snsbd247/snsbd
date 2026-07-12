@@ -43,9 +43,13 @@ export function MarketingFooter() {
         <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
             <div className="flex items-center gap-2 text-white">
-              <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 font-black text-[#0B1220]">
-                {brand.charAt(0)}
-              </span>
+              {data?.logo_url ? (
+                <img src={data.logo_url} alt={`${brand} logo`} className="h-9 w-auto object-contain bg-transparent" />
+              ) : (
+                <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 font-black text-[#0B1220]">
+                  {brand.charAt(0)}
+                </span>
+              )}
               <span className="text-base font-bold">{brand}</span>
             </div>
             <p className="mt-4 max-w-sm text-sm">

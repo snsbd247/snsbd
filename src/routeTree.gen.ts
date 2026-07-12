@@ -42,6 +42,7 @@ import { Route as AuthenticatedHostingPackagesRouteImport } from './routes/_auth
 import { Route as AuthenticatedHostingRouteImport } from './routes/_authenticated/hosting'
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedDomainsRouteImport } from './routes/_authenticated/domains'
+import { Route as AuthenticatedDomainPricingRouteImport } from './routes/_authenticated/domain-pricing'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects.index'
@@ -56,6 +57,7 @@ import { Route as AuthenticatedCustomersCustomerIdRouteImport } from './routes/_
 import { Route as ApiPublicHooksRenewInvoicesRouteImport } from './routes/api/public/hooks/renew-invoices'
 import { Route as ApiPublicHooksNotifyLeadRouteImport } from './routes/api/public/hooks/notify-lead'
 import { Route as ApiPublicHooksEnforceOverdueRouteImport } from './routes/api/public/hooks/enforce-overdue'
+import { Route as AuthenticatedOrderHostingPackageIdRouteImport } from './routes/_authenticated/order.hosting.$packageId'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -225,6 +227,12 @@ const AuthenticatedDomainsRoute = AuthenticatedDomainsRouteImport.update({
   path: '/domains',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDomainPricingRoute =
+  AuthenticatedDomainPricingRouteImport.update({
+    id: '/domain-pricing',
+    path: '/domain-pricing',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -307,6 +315,12 @@ const ApiPublicHooksEnforceOverdueRoute =
     path: '/api/public/hooks/enforce-overdue',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedOrderHostingPackageIdRoute =
+  AuthenticatedOrderHostingPackageIdRouteImport.update({
+    id: '/order/hosting/$packageId',
+    path: '/order/hosting/$packageId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof MarketingIndexRoute
@@ -315,6 +329,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/domain-pricing': typeof AuthenticatedDomainPricingRoute
   '/domains': typeof AuthenticatedDomainsRoute
   '/expenses': typeof AuthenticatedExpensesRoute
   '/hosting': typeof AuthenticatedHostingRoute
@@ -351,6 +366,7 @@ export interface FileRoutesByFullPath {
   '/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/team/$memberId': typeof AuthenticatedTeamMemberIdRoute
   '/projects/': typeof AuthenticatedProjectsIndexRoute
+  '/order/hosting/$packageId': typeof AuthenticatedOrderHostingPackageIdRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
   '/api/public/hooks/notify-lead': typeof ApiPublicHooksNotifyLeadRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
@@ -362,6 +378,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/domain-pricing': typeof AuthenticatedDomainPricingRoute
   '/domains': typeof AuthenticatedDomainsRoute
   '/expenses': typeof AuthenticatedExpensesRoute
   '/hosting': typeof AuthenticatedHostingRoute
@@ -398,6 +415,7 @@ export interface FileRoutesByTo {
   '/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/team/$memberId': typeof AuthenticatedTeamMemberIdRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
+  '/order/hosting/$packageId': typeof AuthenticatedOrderHostingPackageIdRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
   '/api/public/hooks/notify-lead': typeof ApiPublicHooksNotifyLeadRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
@@ -411,6 +429,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/domain-pricing': typeof AuthenticatedDomainPricingRoute
   '/_authenticated/domains': typeof AuthenticatedDomainsRoute
   '/_authenticated/expenses': typeof AuthenticatedExpensesRoute
   '/_authenticated/hosting': typeof AuthenticatedHostingRoute
@@ -448,6 +467,7 @@ export interface FileRoutesById {
   '/_authenticated/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/_authenticated/team_/$memberId': typeof AuthenticatedTeamMemberIdRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
+  '/_authenticated/order/hosting/$packageId': typeof AuthenticatedOrderHostingPackageIdRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
   '/api/public/hooks/notify-lead': typeof ApiPublicHooksNotifyLeadRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
@@ -461,6 +481,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/customers'
     | '/dashboard'
+    | '/domain-pricing'
     | '/domains'
     | '/expenses'
     | '/hosting'
@@ -497,6 +518,7 @@ export interface FileRouteTypes {
     | '/services/$serviceId'
     | '/team/$memberId'
     | '/projects/'
+    | '/order/hosting/$packageId'
     | '/api/public/hooks/enforce-overdue'
     | '/api/public/hooks/notify-lead'
     | '/api/public/hooks/renew-invoices'
@@ -508,6 +530,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/customers'
     | '/dashboard'
+    | '/domain-pricing'
     | '/domains'
     | '/expenses'
     | '/hosting'
@@ -544,6 +567,7 @@ export interface FileRouteTypes {
     | '/services/$serviceId'
     | '/team/$memberId'
     | '/projects'
+    | '/order/hosting/$packageId'
     | '/api/public/hooks/enforce-overdue'
     | '/api/public/hooks/notify-lead'
     | '/api/public/hooks/renew-invoices'
@@ -556,6 +580,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
+    | '/_authenticated/domain-pricing'
     | '/_authenticated/domains'
     | '/_authenticated/expenses'
     | '/_authenticated/hosting'
@@ -593,6 +618,7 @@ export interface FileRouteTypes {
     | '/_authenticated/services/$serviceId'
     | '/_authenticated/team_/$memberId'
     | '/_authenticated/projects/'
+    | '/_authenticated/order/hosting/$packageId'
     | '/api/public/hooks/enforce-overdue'
     | '/api/public/hooks/notify-lead'
     | '/api/public/hooks/renew-invoices'
@@ -842,6 +868,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDomainsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/domain-pricing': {
+      id: '/_authenticated/domain-pricing'
+      path: '/domain-pricing'
+      fullPath: '/domain-pricing'
+      preLoaderRoute: typeof AuthenticatedDomainPricingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -940,12 +973,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksEnforceOverdueRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/order/hosting/$packageId': {
+      id: '/_authenticated/order/hosting/$packageId'
+      path: '/order/hosting/$packageId'
+      fullPath: '/order/hosting/$packageId'
+      preLoaderRoute: typeof AuthenticatedOrderHostingPackageIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDomainPricingRoute: typeof AuthenticatedDomainPricingRoute
   AuthenticatedDomainsRoute: typeof AuthenticatedDomainsRoute
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRoute
   AuthenticatedHostingRoute: typeof AuthenticatedHostingRoute
@@ -968,11 +1009,13 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedServicesServiceIdRoute: typeof AuthenticatedServicesServiceIdRoute
   AuthenticatedTeamMemberIdRoute: typeof AuthenticatedTeamMemberIdRoute
   AuthenticatedProjectsIndexRoute: typeof AuthenticatedProjectsIndexRoute
+  AuthenticatedOrderHostingPackageIdRoute: typeof AuthenticatedOrderHostingPackageIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDomainPricingRoute: AuthenticatedDomainPricingRoute,
   AuthenticatedDomainsRoute: AuthenticatedDomainsRoute,
   AuthenticatedExpensesRoute: AuthenticatedExpensesRoute,
   AuthenticatedHostingRoute: AuthenticatedHostingRoute,
@@ -995,6 +1038,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedServicesServiceIdRoute: AuthenticatedServicesServiceIdRoute,
   AuthenticatedTeamMemberIdRoute: AuthenticatedTeamMemberIdRoute,
   AuthenticatedProjectsIndexRoute: AuthenticatedProjectsIndexRoute,
+  AuthenticatedOrderHostingPackageIdRoute:
+    AuthenticatedOrderHostingPackageIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -1062,13 +1107,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Check, X, Globe, Loader2, ShoppingCart } from "lucide-react";
-import { tlds } from "@/content/plans";
+import { useDomainPricing } from "@/hooks/use-marketing-data";
 import { toast } from "sonner";
 import { submitLead } from "@/lib/leads";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -25,21 +25,19 @@ export const Route = createFileRoute("/_marketing/domain-search")({
 
 type Result = { domain: string; tld: string; price: string; available: boolean };
 
-// Deterministic mock availability (until registrar API creds are wired).
-// Replace this with a call to a /api/public/domain-check server route.
-function mockCheck(query: string): Result[] {
+function mockCheck(query: string, tlds: Array<{ tld: string; register_price: number }>): Result[] {
   const base = query.trim().toLowerCase().replace(/^https?:\/\//, "").split("/")[0]!;
   const bare = base.includes(".") ? base.split(".")[0]! : base;
   return tlds.map((t) => {
     const domain = `${bare}${t.tld}`;
-    // hash-ish for stability
     const hash = [...domain].reduce((a, c) => (a * 33 + c.charCodeAt(0)) & 0xffffffff, 5381);
     const available = Math.abs(hash) % 3 !== 0;
-    return { domain, tld: t.tld, price: t.register, available };
+    return { domain, tld: t.tld, price: `৳${Number(t.register_price).toLocaleString("en-BD")}`, available };
   });
 }
 
 function Page() {
+  const { data: tlds = [] } = useDomainPricing();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Result[] | null>(null);
   const [busy, setBusy] = useState(false);
@@ -52,7 +50,7 @@ function Page() {
     setResults(null);
     // Simulate network latency — swap for real API call when creds provided.
     await new Promise((r) => setTimeout(r, 500));
-    setResults(mockCheck(query));
+    setResults(mockCheck(query, tlds));
     setBusy(false);
   }
 
