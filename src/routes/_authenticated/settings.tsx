@@ -181,6 +181,8 @@ function SettingsPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div><Label>Email</Label><Input type="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} /></div>
             <div><Label>Mobile</Label><Input value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} /></div>
+            <div><Label>Facebook Page URL</Label><Input placeholder="www.fb.com/yourpage" value={f.facebook_url} onChange={(e) => setF({ ...f, facebook_url: e.target.value })} /></div>
+            <div><Label>Website URL</Label><Input placeholder="www.yourdomain.com" value={f.website} onChange={(e) => setF({ ...f, website: e.target.value })} /></div>
             <div className="sm:col-span-2"><Label>Address</Label><Textarea value={f.address} onChange={(e) => setF({ ...f, address: e.target.value })} /></div>
           </div>
         </CardContent>
