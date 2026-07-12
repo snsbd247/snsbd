@@ -115,7 +115,7 @@ function InvoiceDetailPage() {
         </div>
       </div>
 
-      <Card className="print:shadow-none print:border-0 overflow-hidden border-0 shadow-lg">
+      <Card id="invoice-pdf" className="print:shadow-none print:border-0 overflow-hidden border-0 shadow-lg">
         <div className="h-3 w-full" style={{ background: "linear-gradient(90deg, #0e3a5f 0%, #1e6091 50%, #f39c1f 100%)" }} />
         <CardContent className="p-8 space-y-6 bg-gradient-to-br from-white via-slate-50 to-orange-50/30">
           <div className="flex items-start justify-between">
