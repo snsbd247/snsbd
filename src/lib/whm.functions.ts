@@ -200,7 +200,7 @@ export const cpanelCreateAccount = createServerFn({ method: "POST" })
     await assertAdmin(context);
     const { data: svc, error } = await context.supabase
       .from("services")
-      .select("id, customer_id, type, name, cpanel_username, cpanel_password, whm_server_id, whm_account_user, hosting_package_id, hosting_packages(name)")
+      .select("id, customer_id, type, name, cpanel_username, cpanel_password, whm_server_id, whm_account_user, hosting_package_id, hosting_packages(name, whm_package_name)")
       .eq("id", data.service_id)
       .maybeSingle();
     if (error || !svc) throw new Error("Service not found");
@@ -224,7 +224,8 @@ export const cpanelCreateAccount = createServerFn({ method: "POST" })
       password: svc.cpanel_password,
       contactemail: prof?.email ?? "",
     });
-    const planName = (svc as any).hosting_packages?.name as string | undefined;
+    const pkgRow = (svc as any).hosting_packages;
+    const planName = (pkgRow?.whm_package_name || pkgRow?.name) as string | undefined;
     if (planName) params.set("plan", planName);
 
     await whmGet(server, `/json-api/createacct?${params.toString()}`);
@@ -237,3 +238,21 @@ export const cpanelCreateAccount = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+
+/** Admin: list available WHM/cPanel packages on a server. */
+export const listWhmPackages = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { server_id: string }) => data)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const server = await loadServer(context.supabase, data.server_id);
+    const body = await whmGet(server, "/json-api/listpkgs");
+    const pkgs: any[] = body?.data?.pkg ?? [];
+    return {
+      packages: pkgs.map((p) => ({
+        name: p.name as string,
+        quota: p.QUOTA as string | undefined,
+        bwlimit: p.BWLIMIT as string | undefined,
+      })),
+    };
+  });

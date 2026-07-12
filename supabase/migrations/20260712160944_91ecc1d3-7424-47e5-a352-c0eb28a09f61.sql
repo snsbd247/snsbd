@@ -1,0 +1,1 @@
+ALTER TABLE public.hosting_packages ADD COLUMN IF NOT EXISTS whm_package_name text;

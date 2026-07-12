@@ -17,6 +17,8 @@ import { formatBDT } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { db } from "@/lib/db-shim";
 import { usePagination, PaginationControls } from "@/components/ui/pagination-controls";
+import { useServerFn } from "@tanstack/react-start";
+import { listWhmPackages } from "@/lib/whm.functions";
 
 export const Route = createFileRoute("/_authenticated/hosting-packages")({
   component: PackagesPage,
@@ -25,6 +27,7 @@ export const Route = createFileRoute("/_authenticated/hosting-packages")({
 const empty = {
   name: "", description: "", disk_space: "", bandwidth: "",
   features: "", price: "0", billing_cycle: "yearly", is_active: true, sort_order: "0",
+  whm_package_name: "",
 };
 
 function PackagesPage() {
@@ -48,6 +51,7 @@ function PackagesPage() {
           billing_cycle: editing.billing_cycle ?? "yearly",
           is_active: editing.is_active ?? true,
           sort_order: String(editing.sort_order ?? 0),
+          whm_package_name: editing.whm_package_name ?? "",
         });
       } else setF(empty);
     }
@@ -70,6 +74,7 @@ function PackagesPage() {
         billing_cycle: f.billing_cycle,
         is_active: f.is_active,
         sort_order: Number(f.sort_order) || 0,
+        whm_package_name: f.whm_package_name.trim() || null,
       };
       const q = editing
         ? db.from("hosting_packages").update(payload).eq("id", editing.id)
@@ -159,6 +164,7 @@ function PackagesPage() {
               <div><Label>Sort</Label><Input type="number" value={f.sort_order} onChange={(e) => setF({ ...f, sort_order: e.target.value })} /></div>
             </div>
             <div className="flex items-center gap-2"><Switch checked={f.is_active} onCheckedChange={(v) => setF({ ...f, is_active: v })} /><Label>Show to customers</Label></div>
+            <WhmPackagePicker value={f.whm_package_name} onChange={(v) => setF({ ...f, whm_package_name: v })} />
           </div>
           <DialogFooter><Button onClick={() => save.mutate()} disabled={!f.name || save.isPending}>Save</Button></DialogFooter>
         </DialogContent>
@@ -260,5 +266,49 @@ function UsageDialog({ pkg, onClose }: { pkg: any; onClose: () => void }) {
         )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+function WhmPackagePicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [serverId, setServerId] = useState<string>("");
+  const { data: servers } = useQuery({
+    queryKey: ["whm_servers_list_pkg"],
+    queryFn: async () => (await db.from("whm_servers").select("id, name").eq("is_active", true).order("name")).data ?? [],
+  });
+  const listPkgs = useServerFn(listWhmPackages);
+  const { data: pkgs, isFetching, refetch } = useQuery({
+    queryKey: ["whm_packages", serverId],
+    enabled: !!serverId,
+    queryFn: async () => (await listPkgs({ data: { server_id: serverId } })).packages,
+  });
+
+  return (
+    <div className="grid gap-2 rounded-md border p-3 bg-muted/30">
+      <div className="text-xs font-semibold uppercase text-muted-foreground">WHM package (optional)</div>
+      <div className="grid grid-cols-2 gap-2">
+        <Select value={serverId} onValueChange={setServerId}>
+          <SelectTrigger><SelectValue placeholder="Pick WHM server to load packages" /></SelectTrigger>
+          <SelectContent>
+            {(servers ?? []).map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={value || "__none"} onValueChange={(v) => onChange(v === "__none" ? "" : v)}>
+          <SelectTrigger><SelectValue placeholder={isFetching ? "Loading…" : "Select WHM package"} /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__none">— None (use package name) —</SelectItem>
+            {(pkgs ?? []).map((p: any) => (
+              <SelectItem key={p.name} value={p.name}>{p.name}{p.quota ? ` · ${p.quota}MB` : ""}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-xs text-muted-foreground">
+          {value ? <>Will create cPanel accounts using WHM plan <span className="font-mono">{value}</span>.</> : "If empty, WHM will use the package name as the plan."}
+        </p>
+        {serverId && <Button type="button" size="sm" variant="ghost" onClick={() => refetch()} disabled={isFetching}>Refresh</Button>}
+      </div>
+      <Input placeholder="Or type WHM package name manually" value={value} onChange={(e) => onChange(e.target.value)} />
+    </div>
   );
 }

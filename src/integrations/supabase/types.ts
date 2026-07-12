@@ -253,6 +253,7 @@ export type Database = {
           sort_order: number
           tagline: string | null
           updated_at: string
+          whm_package_name: string | null
         }
         Insert: {
           badge?: string | null
@@ -271,6 +272,7 @@ export type Database = {
           sort_order?: number
           tagline?: string | null
           updated_at?: string
+          whm_package_name?: string | null
         }
         Update: {
           badge?: string | null
@@ -289,6 +291,7 @@ export type Database = {
           sort_order?: number
           tagline?: string | null
           updated_at?: string
+          whm_package_name?: string | null
         }
         Relationships: []
       }
