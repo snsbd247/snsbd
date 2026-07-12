@@ -103,7 +103,7 @@ export function ServicesManager({
             <TableBody>
               {isLoading && <TableRow><TableCell colSpan={8} className="text-center py-8 text-sm text-muted-foreground">Loading…</TableCell></TableRow>}
               {!isLoading && (services ?? []).length === 0 && <TableRow><TableCell colSpan={8} className="text-center py-8 text-sm text-muted-foreground">No {lockType ?? "service"}s yet.</TableCell></TableRow>}
-              {(services ?? []).map((s: any) => {
+              {pg.paged.map((s: any) => {
                 const days = daysUntil(s.expiry_date);
                 const detailTo = s.type === "domain" ? "/domains/$domainId" : "/services/$serviceId";
                 const detailParams = s.type === "domain" ? { domainId: s.id } : { serviceId: s.id };
