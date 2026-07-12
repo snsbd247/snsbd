@@ -50,6 +50,7 @@ import { Route as AuthenticatedTeamMemberIdRouteImport } from './routes/_authent
 import { Route as AuthenticatedServicesServiceIdRouteImport } from './routes/_authenticated/services.$serviceId'
 import { Route as AuthenticatedReceiptsPaymentIdRouteImport } from './routes/_authenticated/receipts.$paymentId'
 import { Route as AuthenticatedProjectsProjectIdRouteImport } from './routes/_authenticated/projects.$projectId'
+import { Route as AuthenticatedOrdersOrderIdRouteImport } from './routes/_authenticated/orders_.$orderId'
 import { Route as AuthenticatedInvoicesInvoiceIdRouteImport } from './routes/_authenticated/invoices_.$invoiceId'
 import { Route as AuthenticatedExpensesExpenseIdRouteImport } from './routes/_authenticated/expenses_.$expenseId'
 import { Route as AuthenticatedDomainsDomainIdRouteImport } from './routes/_authenticated/domains_.$domainId'
@@ -273,6 +274,12 @@ const AuthenticatedProjectsProjectIdRoute =
     path: '/projects/$projectId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedOrdersOrderIdRoute =
+  AuthenticatedOrdersOrderIdRouteImport.update({
+    id: '/orders_/$orderId',
+    path: '/orders/$orderId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedInvoicesInvoiceIdRoute =
   AuthenticatedInvoicesInvoiceIdRouteImport.update({
     id: '/invoices_/$invoiceId',
@@ -361,6 +368,7 @@ export interface FileRoutesByFullPath {
   '/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
   '/expenses/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
   '/invoices/$invoiceId': typeof AuthenticatedInvoicesInvoiceIdRoute
+  '/orders/$orderId': typeof AuthenticatedOrdersOrderIdRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
@@ -410,6 +418,7 @@ export interface FileRoutesByTo {
   '/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
   '/expenses/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
   '/invoices/$invoiceId': typeof AuthenticatedInvoicesInvoiceIdRoute
+  '/orders/$orderId': typeof AuthenticatedOrdersOrderIdRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
@@ -462,6 +471,7 @@ export interface FileRoutesById {
   '/_authenticated/domains_/$domainId': typeof AuthenticatedDomainsDomainIdRoute
   '/_authenticated/expenses_/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
   '/_authenticated/invoices_/$invoiceId': typeof AuthenticatedInvoicesInvoiceIdRoute
+  '/_authenticated/orders_/$orderId': typeof AuthenticatedOrdersOrderIdRoute
   '/_authenticated/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/_authenticated/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/_authenticated/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
@@ -513,6 +523,7 @@ export interface FileRouteTypes {
     | '/domains/$domainId'
     | '/expenses/$expenseId'
     | '/invoices/$invoiceId'
+    | '/orders/$orderId'
     | '/projects/$projectId'
     | '/receipts/$paymentId'
     | '/services/$serviceId'
@@ -562,6 +573,7 @@ export interface FileRouteTypes {
     | '/domains/$domainId'
     | '/expenses/$expenseId'
     | '/invoices/$invoiceId'
+    | '/orders/$orderId'
     | '/projects/$projectId'
     | '/receipts/$paymentId'
     | '/services/$serviceId'
@@ -613,6 +625,7 @@ export interface FileRouteTypes {
     | '/_authenticated/domains_/$domainId'
     | '/_authenticated/expenses_/$expenseId'
     | '/_authenticated/invoices_/$invoiceId'
+    | '/_authenticated/orders_/$orderId'
     | '/_authenticated/projects/$projectId'
     | '/_authenticated/receipts/$paymentId'
     | '/_authenticated/services/$serviceId'
@@ -924,6 +937,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProjectsProjectIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/orders_/$orderId': {
+      id: '/_authenticated/orders_/$orderId'
+      path: '/orders/$orderId'
+      fullPath: '/orders/$orderId'
+      preLoaderRoute: typeof AuthenticatedOrdersOrderIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/invoices_/$invoiceId': {
       id: '/_authenticated/invoices_/$invoiceId'
       path: '/invoices/$invoiceId'
@@ -1004,6 +1024,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDomainsDomainIdRoute: typeof AuthenticatedDomainsDomainIdRoute
   AuthenticatedExpensesExpenseIdRoute: typeof AuthenticatedExpensesExpenseIdRoute
   AuthenticatedInvoicesInvoiceIdRoute: typeof AuthenticatedInvoicesInvoiceIdRoute
+  AuthenticatedOrdersOrderIdRoute: typeof AuthenticatedOrdersOrderIdRoute
   AuthenticatedProjectsProjectIdRoute: typeof AuthenticatedProjectsProjectIdRoute
   AuthenticatedReceiptsPaymentIdRoute: typeof AuthenticatedReceiptsPaymentIdRoute
   AuthenticatedServicesServiceIdRoute: typeof AuthenticatedServicesServiceIdRoute
@@ -1033,6 +1054,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDomainsDomainIdRoute: AuthenticatedDomainsDomainIdRoute,
   AuthenticatedExpensesExpenseIdRoute: AuthenticatedExpensesExpenseIdRoute,
   AuthenticatedInvoicesInvoiceIdRoute: AuthenticatedInvoicesInvoiceIdRoute,
+  AuthenticatedOrdersOrderIdRoute: AuthenticatedOrdersOrderIdRoute,
   AuthenticatedProjectsProjectIdRoute: AuthenticatedProjectsProjectIdRoute,
   AuthenticatedReceiptsPaymentIdRoute: AuthenticatedReceiptsPaymentIdRoute,
   AuthenticatedServicesServiceIdRoute: AuthenticatedServicesServiceIdRoute,
