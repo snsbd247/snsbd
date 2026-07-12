@@ -1135,6 +1135,88 @@ export type Database = {
           },
         ]
       }
+      support_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          is_internal: boolean
+          sender_id: string
+          ticket_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          sender_id: string
+          ticket_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          sender_id?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_tickets: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          customer_id: string
+          id: string
+          last_reply_at: string
+          priority: Database["public"]["Enums"]["support_ticket_priority"]
+          service_id: string | null
+          status: Database["public"]["Enums"]["support_ticket_status"]
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          last_reply_at?: string
+          priority?: Database["public"]["Enums"]["support_ticket_priority"]
+          service_id?: string | null
+          status?: Database["public"]["Enums"]["support_ticket_status"]
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          last_reply_at?: string
+          priority?: Database["public"]["Enums"]["support_ticket_priority"]
+          service_id?: string | null
+          status?: Database["public"]["Enums"]["support_ticket_status"]
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_tickets_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       team_members: {
         Row: {
           active: boolean
@@ -1297,6 +1379,8 @@ export type Database = {
         | "pending"
         | "suspended"
       service_type: "domain" | "hosting" | "software" | "other"
+      support_ticket_priority: "low" | "normal" | "high" | "urgent"
+      support_ticket_status: "open" | "pending" | "resolved" | "closed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1467,6 +1551,8 @@ export const Constants = {
         "suspended",
       ],
       service_type: ["domain", "hosting", "software", "other"],
+      support_ticket_priority: ["low", "normal", "high", "urgent"],
+      support_ticket_status: ["open", "pending", "resolved", "closed"],
     },
   },
 } as const

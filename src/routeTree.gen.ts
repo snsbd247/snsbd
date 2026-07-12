@@ -33,6 +33,7 @@ import { Route as MarketingContactRouteImport } from './routes/_marketing.contac
 import { Route as MarketingBdixHostingRouteImport } from './routes/_marketing.bdix-hosting'
 import { Route as MarketingAboutRouteImport } from './routes/_marketing.about'
 import { Route as AuthenticatedWhmServersRouteImport } from './routes/_authenticated/whm-servers'
+import { Route as AuthenticatedTicketsRouteImport } from './routes/_authenticated/tickets'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedServiceCatalogRouteImport } from './routes/_authenticated/service-catalog'
@@ -49,6 +50,7 @@ import { Route as AuthenticatedDomainPricingRouteImport } from './routes/_authen
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects.index'
+import { Route as AuthenticatedTicketsTicketIdRouteImport } from './routes/_authenticated/tickets_.$ticketId'
 import { Route as AuthenticatedTeamMemberIdRouteImport } from './routes/_authenticated/team_.$memberId'
 import { Route as AuthenticatedServicesServiceIdRouteImport } from './routes/_authenticated/services.$serviceId'
 import { Route as AuthenticatedReceiptsPaymentIdRouteImport } from './routes/_authenticated/receipts.$paymentId'
@@ -183,6 +185,11 @@ const AuthenticatedWhmServersRoute = AuthenticatedWhmServersRouteImport.update({
   path: '/whm-servers',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTicketsRoute = AuthenticatedTicketsRouteImport.update({
+  id: '/tickets',
+  path: '/tickets',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedTeamRoute = AuthenticatedTeamRouteImport.update({
   id: '/team',
   path: '/team',
@@ -267,6 +274,12 @@ const AuthenticatedProjectsIndexRoute =
   AuthenticatedProjectsIndexRouteImport.update({
     id: '/projects/',
     path: '/projects/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTicketsTicketIdRoute =
+  AuthenticatedTicketsTicketIdRouteImport.update({
+    id: '/tickets_/$ticketId',
+    path: '/tickets/$ticketId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedTeamMemberIdRoute =
@@ -375,6 +388,7 @@ export interface FileRoutesByFullPath {
   '/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
+  '/tickets': typeof AuthenticatedTicketsRoute
   '/whm-servers': typeof AuthenticatedWhmServersRoute
   '/about': typeof MarketingAboutRoute
   '/bdix-hosting': typeof MarketingBdixHostingRoute
@@ -401,6 +415,7 @@ export interface FileRoutesByFullPath {
   '/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/team/$memberId': typeof AuthenticatedTeamMemberIdRoute
+  '/tickets/$ticketId': typeof AuthenticatedTicketsTicketIdRoute
   '/projects/': typeof AuthenticatedProjectsIndexRoute
   '/order/hosting/$packageId': typeof AuthenticatedOrderHostingPackageIdRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
@@ -429,6 +444,7 @@ export interface FileRoutesByTo {
   '/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
+  '/tickets': typeof AuthenticatedTicketsRoute
   '/whm-servers': typeof AuthenticatedWhmServersRoute
   '/about': typeof MarketingAboutRoute
   '/bdix-hosting': typeof MarketingBdixHostingRoute
@@ -455,6 +471,7 @@ export interface FileRoutesByTo {
   '/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/team/$memberId': typeof AuthenticatedTeamMemberIdRoute
+  '/tickets/$ticketId': typeof AuthenticatedTicketsTicketIdRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
   '/order/hosting/$packageId': typeof AuthenticatedOrderHostingPackageIdRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
@@ -485,6 +502,7 @@ export interface FileRoutesById {
   '/_authenticated/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/team': typeof AuthenticatedTeamRoute
+  '/_authenticated/tickets': typeof AuthenticatedTicketsRoute
   '/_authenticated/whm-servers': typeof AuthenticatedWhmServersRoute
   '/_marketing/about': typeof MarketingAboutRoute
   '/_marketing/bdix-hosting': typeof MarketingBdixHostingRoute
@@ -512,6 +530,7 @@ export interface FileRoutesById {
   '/_authenticated/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/_authenticated/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/_authenticated/team_/$memberId': typeof AuthenticatedTeamMemberIdRoute
+  '/_authenticated/tickets_/$ticketId': typeof AuthenticatedTicketsTicketIdRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
   '/_authenticated/order/hosting/$packageId': typeof AuthenticatedOrderHostingPackageIdRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
@@ -542,6 +561,7 @@ export interface FileRouteTypes {
     | '/service-catalog'
     | '/settings'
     | '/team'
+    | '/tickets'
     | '/whm-servers'
     | '/about'
     | '/bdix-hosting'
@@ -568,6 +588,7 @@ export interface FileRouteTypes {
     | '/receipts/$paymentId'
     | '/services/$serviceId'
     | '/team/$memberId'
+    | '/tickets/$ticketId'
     | '/projects/'
     | '/order/hosting/$packageId'
     | '/api/public/hooks/enforce-overdue'
@@ -596,6 +617,7 @@ export interface FileRouteTypes {
     | '/service-catalog'
     | '/settings'
     | '/team'
+    | '/tickets'
     | '/whm-servers'
     | '/about'
     | '/bdix-hosting'
@@ -622,6 +644,7 @@ export interface FileRouteTypes {
     | '/receipts/$paymentId'
     | '/services/$serviceId'
     | '/team/$memberId'
+    | '/tickets/$ticketId'
     | '/projects'
     | '/order/hosting/$packageId'
     | '/api/public/hooks/enforce-overdue'
@@ -651,6 +674,7 @@ export interface FileRouteTypes {
     | '/_authenticated/service-catalog'
     | '/_authenticated/settings'
     | '/_authenticated/team'
+    | '/_authenticated/tickets'
     | '/_authenticated/whm-servers'
     | '/_marketing/about'
     | '/_marketing/bdix-hosting'
@@ -678,6 +702,7 @@ export interface FileRouteTypes {
     | '/_authenticated/receipts/$paymentId'
     | '/_authenticated/services/$serviceId'
     | '/_authenticated/team_/$memberId'
+    | '/_authenticated/tickets_/$ticketId'
     | '/_authenticated/projects/'
     | '/_authenticated/order/hosting/$packageId'
     | '/api/public/hooks/enforce-overdue'
@@ -869,6 +894,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWhmServersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/tickets': {
+      id: '/_authenticated/tickets'
+      path: '/tickets'
+      fullPath: '/tickets'
+      preLoaderRoute: typeof AuthenticatedTicketsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/team': {
       id: '/_authenticated/team'
       path: '/team'
@@ -979,6 +1011,13 @@ declare module '@tanstack/react-router' {
       path: '/projects'
       fullPath: '/projects/'
       preLoaderRoute: typeof AuthenticatedProjectsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tickets_/$ticketId': {
+      id: '/_authenticated/tickets_/$ticketId'
+      path: '/tickets/$ticketId'
+      fullPath: '/tickets/$ticketId'
+      preLoaderRoute: typeof AuthenticatedTicketsTicketIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/team_/$memberId': {
@@ -1098,6 +1137,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedServiceCatalogRoute: typeof AuthenticatedServiceCatalogRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
+  AuthenticatedTicketsRoute: typeof AuthenticatedTicketsRoute
   AuthenticatedWhmServersRoute: typeof AuthenticatedWhmServersRoute
   AuthenticatedCustomersCustomerIdRoute: typeof AuthenticatedCustomersCustomerIdRoute
   AuthenticatedDomainsDomainIdRoute: typeof AuthenticatedDomainsDomainIdRoute
@@ -1108,6 +1148,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedReceiptsPaymentIdRoute: typeof AuthenticatedReceiptsPaymentIdRoute
   AuthenticatedServicesServiceIdRoute: typeof AuthenticatedServicesServiceIdRoute
   AuthenticatedTeamMemberIdRoute: typeof AuthenticatedTeamMemberIdRoute
+  AuthenticatedTicketsTicketIdRoute: typeof AuthenticatedTicketsTicketIdRoute
   AuthenticatedProjectsIndexRoute: typeof AuthenticatedProjectsIndexRoute
   AuthenticatedOrderHostingPackageIdRoute: typeof AuthenticatedOrderHostingPackageIdRoute
 }
@@ -1128,6 +1169,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedServiceCatalogRoute: AuthenticatedServiceCatalogRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
+  AuthenticatedTicketsRoute: AuthenticatedTicketsRoute,
   AuthenticatedWhmServersRoute: AuthenticatedWhmServersRoute,
   AuthenticatedCustomersCustomerIdRoute: AuthenticatedCustomersCustomerIdRoute,
   AuthenticatedDomainsDomainIdRoute: AuthenticatedDomainsDomainIdRoute,
@@ -1138,6 +1180,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedReceiptsPaymentIdRoute: AuthenticatedReceiptsPaymentIdRoute,
   AuthenticatedServicesServiceIdRoute: AuthenticatedServicesServiceIdRoute,
   AuthenticatedTeamMemberIdRoute: AuthenticatedTeamMemberIdRoute,
+  AuthenticatedTicketsTicketIdRoute: AuthenticatedTicketsTicketIdRoute,
   AuthenticatedProjectsIndexRoute: AuthenticatedProjectsIndexRoute,
   AuthenticatedOrderHostingPackageIdRoute:
     AuthenticatedOrderHostingPackageIdRoute,

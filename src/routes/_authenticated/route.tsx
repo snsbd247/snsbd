@@ -10,7 +10,7 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   LayoutDashboard, Users, Globe, HardDrive, Package, FileText, FolderKanban,
-  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server, ChevronRight,
+  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server, ChevronRight, LifeBuoy,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -78,6 +78,7 @@ function AuthedLayout() {
                 <NavItem to="/hosting" icon={HardDrive} label={isAdmin ? "Hosting" : "My Hosting"} />
                 <NavItem to="/other-services" icon={Package} label={isAdmin ? "Other Services" : "My Services"} />
                 <NavItem to="/invoices" icon={FileText} label={isAdmin ? "Invoices" : "My Invoices"} />
+                <NavItem to="/tickets" icon={LifeBuoy} label={isAdmin ? "Support Tickets" : "Support"} />
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
