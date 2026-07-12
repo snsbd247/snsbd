@@ -120,8 +120,12 @@ function OrderPage() {
         <CardContent className="space-y-4">
           <div>
             <Label htmlFor="domain">Domain name *</Label>
-            <Input id="domain" placeholder="yoursite.com" value={domain} onChange={(e) => setDomain(e.target.value)} />
-            <p className="mt-1 text-xs text-muted-foreground">Enter the domain you'll host on this plan (existing or new).</p>
+            <Input id="domain" placeholder="example.com" value={domain} onChange={(e) => setDomain(e.target.value)} aria-invalid={domain.length > 0 && !validateDomain(domain).ok} />
+            {domain.length > 0 && !validateDomain(domain).ok ? (
+              <p className="mt-1 text-xs text-destructive">{(validateDomain(domain) as { ok: false; error: string }).error}</p>
+            ) : (
+              <p className="mt-1 text-xs text-muted-foreground">শুধু বেয়ার ডোমেইন লিখুন (http/https, www বা path ছাড়া)। যেমন: example.com</p>
+            )}
           </div>
           <div>
             <Label>Billing cycle</Label>
