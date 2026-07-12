@@ -154,7 +154,7 @@ export const registerDomainNamecheap = createServerFn({ method: "POST" })
     const logEvent = async (status: string, message: string, metadata?: Record<string, unknown>) => {
       if (!data.serviceId) return;
       await supabaseAdmin.from("service_events").insert({
-        service_id: data.serviceId, status, message, actor_id: userId, metadata: metadata ?? null,
+        service_id: data.serviceId, status, message, actor_id: userId, metadata: (metadata ?? null) as never,
       });
     };
 
