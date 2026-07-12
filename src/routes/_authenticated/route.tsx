@@ -265,3 +265,26 @@ function NavGroup({
   );
 }
 
+function LangCurrencySwitcher() {
+  const { lang, setLang } = useI18n();
+  const { currency, setCurrency, currencies } = useCurrency();
+  return (
+    <div className="flex items-center gap-1">
+      <Select value={lang} onValueChange={(v) => setLang(v as "en" | "bn")}>
+        <SelectTrigger className="h-8 w-[80px] text-xs"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          <SelectItem value="en">EN</SelectItem>
+          <SelectItem value="bn">বাংলা</SelectItem>
+        </SelectContent>
+      </Select>
+      <Select value={currency} onValueChange={setCurrency}>
+        <SelectTrigger className="h-8 w-[80px] text-xs"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          {currencies.map((c) => (<SelectItem key={c.code} value={c.code}>{c.code}</SelectItem>))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
+
