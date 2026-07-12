@@ -1,27 +1,30 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 // pg_cron calls this daily. It:
-// 1) Marks unpaid invoices past due_date as `overdue` and adds a one-time late fee
-//    (percentage configured in company_settings.late_fee_percent, default 2%).
-// 2) Suspends hosting services whose overdue invoice is >= 1 day past due.
-// 3) Deactivates (expires) domain services whose overdue invoice is >= 1 day past due.
+// 1) Marks unpaid invoices past due_date as `overdue` and adds a one-time
+//    late fee (percentage from company_settings.late_fee_percent).
+// 2) After `grace_days` past the due date, suspends hosting services
+//    (DB status + WHM suspendacct when linked) and expires domain services.
+//    Auto-suspend can be disabled via company_settings.auto_suspend.
 export const Route = createFileRoute("/api/public/hooks/enforce-overdue")({
   server: {
     handlers: {
       POST: async () => {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-        const today = new Date();
-        const todayISO = today.toISOString().slice(0, 10);
-        const yesterday = new Date(today);
-        yesterday.setDate(today.getDate() - 1);
-        const yesterdayISO = yesterday.toISOString().slice(0, 10);
-
         const { data: settings } = await supabaseAdmin
           .from("company_settings")
-          .select("late_fee_percent")
+          .select("late_fee_percent, grace_days, auto_suspend")
           .maybeSingle();
         const feePct = Number((settings as any)?.late_fee_percent ?? 2);
+        const graceDays = Number((settings as any)?.grace_days ?? 7);
+        const autoSuspend = (settings as any)?.auto_suspend !== false;
+
+        const today = new Date();
+        const todayISO = today.toISOString().slice(0, 10);
+        const graceCut = new Date(today);
+        graceCut.setDate(today.getDate() - graceDays);
+        const graceCutISO = graceCut.toISOString().slice(0, 10);
 
         // 1) Overdue invoices — apply late fee once, mark overdue
         const { data: overdueInvs } = await supabaseAdmin
@@ -53,12 +56,25 @@ export const Route = createFileRoute("/api/public/hooks/enforce-overdue")({
           }
         }
 
-        // 2 & 3) Suspend/deactivate services tied to invoices past due (>= 1 day)
+        const result = {
+          ok: true,
+          invoices_updated: updatedInvoices.length,
+          hosting_suspended: 0,
+          hosting_whm_suspended: 0,
+          domains_deactivated: 0,
+          grace_days: graceDays,
+          late_fee_percent: feePct,
+          auto_suspend: autoSuspend,
+        };
+
+        if (!autoSuspend) return Response.json(result);
+
+        // 2 & 3) Suspend/deactivate services with invoices past grace period
         const { data: staleItems } = await supabaseAdmin
           .from("invoice_items")
           .select("service_id, invoices!inner(due_date, status, total, amount_paid)")
           .not("service_id", "is", null)
-          .lte("invoices.due_date", yesterdayISO)
+          .lte("invoices.due_date", graceCutISO)
           .in("invoices.status", ["overdue", "sent", "partial", "draft"]);
 
         const serviceIds = Array.from(
@@ -69,29 +85,44 @@ export const Route = createFileRoute("/api/public/hooks/enforce-overdue")({
           ),
         );
 
-        const suspended: string[] = [];
-        const deactivated: string[] = [];
         if (serviceIds.length) {
           const { data: svcs } = await supabaseAdmin
             .from("services")
-            .select("id, type, status")
+            .select("id, type, status, whm_server_id, whm_account_user, cpanel_username")
             .in("id", serviceIds)
             .in("status", ["active", "pending"]);
           for (const s of svcs ?? []) {
             const nextStatus = s.type === "hosting" ? "suspended" : "expired";
             await supabaseAdmin.from("services").update({ status: nextStatus }).eq("id", s.id);
-            if (nextStatus === "suspended") suspended.push(s.id);
-            else deactivated.push(s.id);
+            if (nextStatus === "suspended") {
+              result.hosting_suspended++;
+              const user = s.whm_account_user || s.cpanel_username;
+              if (s.whm_server_id && user) {
+                try {
+                  const { data: srv } = await supabaseAdmin
+                    .from("whm_servers")
+                    .select("hostname, port, username, api_token, auth_type")
+                    .eq("id", s.whm_server_id)
+                    .maybeSingle();
+                  if (srv) {
+                    const auth = srv.auth_type === "password"
+                      ? `Basic ${btoa(`${srv.username}:${srv.api_token}`)}`
+                      : `whm ${srv.username}:${srv.api_token}`;
+                    const url = `https://${srv.hostname}:${srv.port}/json-api/suspendacct?api.version=1&user=${encodeURIComponent(user)}&reason=${encodeURIComponent("Overdue invoice - auto-suspended")}`;
+                    const res = await fetch(url, { headers: { Authorization: auth, Accept: "application/json" } });
+                    if (res.ok) result.hosting_whm_suspended++;
+                  }
+                } catch (_) {
+                  // swallow — DB status is source of truth; retry next run
+                }
+              }
+            } else {
+              result.domains_deactivated++;
+            }
           }
         }
 
-        return Response.json({
-          ok: true,
-          invoices_updated: updatedInvoices.length,
-          hosting_suspended: suspended.length,
-          domains_deactivated: deactivated.length,
-          late_fee_percent: feePct,
-        });
+        return Response.json(result);
       },
     },
   },
