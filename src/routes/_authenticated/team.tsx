@@ -65,7 +65,7 @@ function TeamPage() {
               <TableHead>Monthly salary</TableHead><TableHead>Joined</TableHead><TableHead>Status</TableHead><TableHead className="w-32" />
             </TableRow></TableHeader>
             <TableBody>
-              {(members ?? []).map((m: any) => (
+              {pg.paged.map((m: any) => (
                 <ClickableRow key={m.id} to="/team/$memberId" params={{ memberId: m.id }}>
                   <TableCell className="font-semibold text-primary">{m.full_name}</TableCell>
                   <TableCell>{m.role ?? "—"}</TableCell>
