@@ -224,7 +224,8 @@ export const cpanelCreateAccount = createServerFn({ method: "POST" })
       password: svc.cpanel_password,
       contactemail: prof?.email ?? "",
     });
-    const planName = (svc as any).hosting_packages?.name as string | undefined;
+    const pkgRow = (svc as any).hosting_packages;
+    const planName = (pkgRow?.whm_package_name || pkgRow?.name) as string | undefined;
     if (planName) params.set("plan", planName);
 
     await whmGet(server, `/json-api/createacct?${params.toString()}`);
