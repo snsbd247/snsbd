@@ -287,15 +287,22 @@ function InvoiceDetailPage() {
           This is a software generated invoice and no signature required.
         </div>
 
-        {/* Footer — red angular bottom-right band with address */}
-        <div className="relative h-[64px] w-full">
+        {/* Footer — dark bar with red parallelogram overlapping from right, extending above */}
+        <div className="relative h-[64px] w-full mt-8" style={{ background: "#1f1f1f" }}>
           <div
-            className="absolute inset-y-0 right-0 flex items-center justify-end pr-6 text-white text-[12px] leading-tight text-right"
-            style={{ width: "55%", background: "#c0392b", clipPath: "polygon(12% 0, 100% 0, 100% 100%, 0 100%)" }}
+            className="absolute right-0 flex items-center justify-end pr-6 text-white text-[12px] leading-tight text-right z-10"
+            style={{
+              width: "50%",
+              height: "96px",
+              bottom: 0,
+              background: "#c0392b",
+              clipPath: "polygon(28% 0, 100% 0, 100% 100%, 0 100%)",
+            }}
           >
-            {company?.address && <div className="whitespace-pre-line">{company.address}</div>}
+            {company?.address && <div className="whitespace-pre-line font-semibold">{company.address}</div>}
           </div>
         </div>
+
       </div>
 
 
