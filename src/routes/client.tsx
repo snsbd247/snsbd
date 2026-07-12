@@ -278,9 +278,11 @@ function DomainOrder({ uid, onSubmitted }: { uid: string; onSubmitted: () => voi
   }, [base]);
 
   const submit = async (domain: string, price: number) => {
+    const v = validateDomain(domain);
+    if (!v.ok) return toast.error(v.error);
     setSubmitting(true);
     const { error } = await getPortalClient().from("customer_orders").insert({
-      customer_id: uid, order_type: "domain", domain_name: domain, domain_action: action,
+      customer_id: uid, order_type: "domain", domain_name: v.value, domain_action: action,
       quoted_price: price, customer_notes: notes || null,
     });
     setSubmitting(false);
