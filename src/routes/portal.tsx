@@ -182,17 +182,37 @@ function PortalPage() {
 
           <TabsContent value="orders" className="space-y-2">
             {orders.length === 0 && <Card><CardContent className="p-6 text-sm text-muted-foreground">No orders yet.</CardContent></Card>}
-            {orders.map((o) => (
-              <Card key={o.id}><CardContent className="p-4 flex items-center justify-between">
-                <div>
-                  <div className="text-sm font-medium capitalize">
-                    {o.order_type} — {o.hosting_packages?.name ?? o.service_catalog?.name ?? o.domain_name ?? "—"}
+            {orders.map((o) => {
+              const svc = o.services;
+              return (
+                <Card key={o.id}><CardContent className="p-4 space-y-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <div className="text-sm font-medium capitalize">
+                        {o.order_type} — {o.hosting_packages?.name ?? o.service_catalog?.name ?? o.domain_name ?? "—"}
+                      </div>
+                      <div className="text-xs text-muted-foreground">{formatDate(o.created_at)} · {formatBDT(o.quoted_price)}</div>
+                    </div>
+                    <Badge variant="outline" className="capitalize">{o.status}</Badge>
                   </div>
-                  <div className="text-xs text-muted-foreground">{formatDate(o.created_at)} · {formatBDT(o.quoted_price)}</div>
-                </div>
-                <Badge variant="outline" className="capitalize">{o.status}</Badge>
-              </CardContent></Card>
-            ))}
+                  {(o.payment_method || o.manual_trx_id) && (
+                    <div className="text-xs text-muted-foreground border-t pt-2">
+                      {o.payment_method && <span className="capitalize">{o.payment_method.replace("_", " ")}</span>}
+                      {o.manual_trx_id && <> · TRX <span className="font-mono">{o.manual_trx_id}</span></>}
+                    </div>
+                  )}
+                  {o.status === "completed" && svc && (
+                    <div className="rounded-md bg-muted/60 p-2 text-xs space-y-1">
+                      <div className="font-medium text-foreground">Activated — {svc.name}</div>
+                      {svc.cpanel_username && <div>cPanel user: <span className="font-mono">{svc.cpanel_username}</span></div>}
+                      {svc.cpanel_password && <div>cPanel pass: <span className="font-mono">{svc.cpanel_password}</span></div>}
+                      {svc.expiry_date && <div className="text-muted-foreground">Expires {formatDate(svc.expiry_date)}</div>}
+                    </div>
+                  )}
+                  {o.admin_notes && <div className="text-xs italic text-muted-foreground">Note: {o.admin_notes}</div>}
+                </CardContent></Card>
+              );
+            })}
           </TabsContent>
 
           <TabsContent value="invoices" className="space-y-2">
