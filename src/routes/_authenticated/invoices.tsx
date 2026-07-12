@@ -110,6 +110,7 @@ function InvoicesPage() {
 
             </TableBody>
           </Table>
+          <PaginationControls {...pg} />
         </CardContent>
       </Card>
 
