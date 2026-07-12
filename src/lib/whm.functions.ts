@@ -238,3 +238,21 @@ export const cpanelCreateAccount = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+
+/** Admin: list available WHM/cPanel packages on a server. */
+export const listWhmPackages = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { server_id: string }) => data)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const server = await loadServer(context.supabase, data.server_id);
+    const body = await whmGet(server, "/json-api/listpkgs");
+    const pkgs: any[] = body?.data?.pkg ?? [];
+    return {
+      packages: pkgs.map((p) => ({
+        name: p.name as string,
+        quota: p.QUOTA as string | undefined,
+        bwlimit: p.BWLIMIT as string | undefined,
+      })),
+    };
+  });
