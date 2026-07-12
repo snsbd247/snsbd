@@ -148,37 +148,64 @@ export const registerDomainNamecheap = createServerFn({ method: "POST" })
     if (!isAdmin) throw new Error("Admins only");
 
     const years = data.years ?? 1;
-    const contact = await loadDefaultContact(supabase, data.customerId ?? null);
-    const params: Record<string, string> = {
-      DomainName: data.domain.toLowerCase(),
-      Years: String(years),
-      AddFreeWhoisguard: "yes",
-      WGEnabled: "yes",
-      ...contactParams("Registrant", contact),
-      ...contactParams("Tech", contact),
-      ...contactParams("Admin", contact),
-      ...contactParams("AuxBilling", contact),
+    const domain = data.domain.toLowerCase();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const logEvent = async (status: string, message: string, metadata?: Record<string, unknown>) => {
+      if (!data.serviceId) return;
+      await supabaseAdmin.from("service_events").insert({
+        service_id: data.serviceId, status, message, actor_id: userId, metadata: metadata ?? null,
+      });
     };
-    const xml = await ncCall("namecheap.domains.create", params);
-    const registered = /Registered="true"/i.test(xml);
-    const orderId = /OrderID="([^"]+)"/i.exec(xml)?.[1] ?? null;
-    const chargedAmount = Number(/ChargedAmount="([^"]+)"/i.exec(xml)?.[1] ?? "") || null;
 
-    if (!registered) throw new Error("Namecheap did not confirm registration");
-
-    // Optional service update
     if (data.serviceId) {
-      const purchase = new Date();
-      const expiry = new Date(purchase);
-      expiry.setFullYear(expiry.getFullYear() + years);
-      await supabase.from("services").update({
-        registrar: "Namecheap",
-        status: "active",
-        purchase_date: purchase.toISOString().slice(0, 10),
-        expiry_date: expiry.toISOString().slice(0, 10),
-        details: `Namecheap Order #${orderId ?? "—"}`,
-      }).eq("id", data.serviceId);
+      await supabaseAdmin.from("services").update({ provisioning_status: "processing", registrar: "Namecheap" }).eq("id", data.serviceId);
+      await logEvent("processing", `Sending registration request to Namecheap for ${domain} (${years}y)`);
     }
 
-    return { ok: true, orderId, chargedAmount };
+    try {
+      const contact = await loadDefaultContact(supabase, data.customerId ?? null);
+      const params: Record<string, string> = {
+        DomainName: domain,
+        Years: String(years),
+        AddFreeWhoisguard: "yes",
+        WGEnabled: "yes",
+        ...contactParams("Registrant", contact),
+        ...contactParams("Tech", contact),
+        ...contactParams("Admin", contact),
+        ...contactParams("AuxBilling", contact),
+      };
+      const xml = await ncCall("namecheap.domains.create", params);
+      const registered = /Registered="true"/i.test(xml);
+      const orderId = /OrderID="([^"]+)"/i.exec(xml)?.[1] ?? null;
+      const chargedAmount = Number(/ChargedAmount="([^"]+)"/i.exec(xml)?.[1] ?? "") || null;
+
+      if (!registered) throw new Error("Namecheap did not confirm registration");
+
+      if (data.serviceId) {
+        const purchase = new Date();
+        const expiry = new Date(purchase);
+        expiry.setFullYear(expiry.getFullYear() + years);
+        await supabaseAdmin.from("services").update({
+          provisioning_status: "active",
+          status: "active",
+          registrar_order_id: orderId,
+          registrar_meta: { chargedAmount, years, registeredAt: purchase.toISOString() },
+          purchase_date: purchase.toISOString().slice(0, 10),
+          expiry_date: expiry.toISOString().slice(0, 10),
+          details: `Namecheap Order #${orderId ?? "—"}`,
+        }).eq("id", data.serviceId);
+        await logEvent("active", `Domain registered${orderId ? ` (Namecheap Order #${orderId})` : ""}`, { orderId, chargedAmount });
+      }
+
+      return { ok: true, orderId, chargedAmount };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (data.serviceId) {
+        await supabaseAdmin.from("services").update({ provisioning_status: "failed" }).eq("id", data.serviceId);
+        await logEvent("failed", `Registration failed: ${message}`);
+      }
+      throw err;
+    }
   });
+
