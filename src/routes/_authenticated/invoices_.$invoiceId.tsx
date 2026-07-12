@@ -114,11 +114,12 @@ function InvoiceDetailPage() {
         </div>
       </div>
 
-      <Card className="print:shadow-none print:border-0">
-        <CardContent className="p-8 space-y-6">
+      <Card className="print:shadow-none print:border-0 overflow-hidden border-0 shadow-lg">
+        <div className="h-3 w-full" style={{ background: "linear-gradient(90deg, #0e3a5f 0%, #1e6091 50%, #f39c1f 100%)" }} />
+        <CardContent className="p-8 space-y-6 bg-gradient-to-br from-white via-slate-50 to-orange-50/30">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-3xl font-bold">INVOICE</h1>
+              <h1 className="text-4xl font-extrabold tracking-tight" style={{ color: "#0e3a5f" }}>INVOICE</h1>
               <div className="mt-1 font-mono text-sm text-muted-foreground">{inv.invoice_number}</div>
               <Badge variant={statusVariant(inv.status)} className="capitalize mt-2">{inv.status}</Badge>
             </div>
@@ -153,12 +154,12 @@ function InvoiceDetailPage() {
 
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Description</TableHead>
-                <TableHead>Linked</TableHead>
-                <TableHead className="text-right">Qty</TableHead>
-                <TableHead className="text-right">Unit</TableHead>
-                <TableHead className="text-right">Total</TableHead>
+              <TableRow style={{ background: "#0e3a5f" }} className="hover:bg-[#0e3a5f]">
+                <TableHead className="text-white font-semibold">Description</TableHead>
+                <TableHead className="text-white font-semibold">Linked</TableHead>
+                <TableHead className="text-right text-white font-semibold">Qty</TableHead>
+                <TableHead className="text-right text-white font-semibold">Unit</TableHead>
+                <TableHead className="text-right text-white font-semibold">Total</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -239,6 +240,14 @@ function InvoiceDetailPage() {
           )}
         </CardContent>
       </Card>
+
+      <style>{`
+        @media print {
+          @page { size: A4 portrait; margin: 12mm; }
+          body { background: white !important; }
+          .print\\:hidden { display: none !important; }
+        }
+      `}</style>
     </div>
   );
 }
