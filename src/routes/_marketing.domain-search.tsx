@@ -42,14 +42,29 @@ function Page() {
 
   async function onSearch(e: React.FormEvent) {
     e.preventDefault();
-    if (!query.trim()) return;
+    const q = query.trim().toLowerCase().replace(/^https?:\/\//, "").split("/")[0];
+    if (!q) return;
     setBusy(true);
     setResults(null);
-    // Simulate network latency — swap for real API call when creds provided.
-    await new Promise((r) => setTimeout(r, 500));
-    setResults(mockCheck(query, tlds));
-    setBusy(false);
+    try {
+      const bare = q.includes(".") ? q.split(".")[0]! : q;
+      const tldList = (tlds.length ? tlds : [{ tld: ".com", register_price: 0 }, { tld: ".net", register_price: 0 }, { tld: ".org", register_price: 0 }]);
+      const domains = tldList.map((t) => `${bare}${t.tld.startsWith(".") ? t.tld : "." + t.tld}`);
+      const { results: apiResults } = await checkDomains({ data: { domains } });
+      const merged: Result[] = tldList.map((t) => {
+        const tld = t.tld.startsWith(".") ? t.tld : "." + t.tld;
+        const domain = `${bare}${tld}`;
+        const found = apiResults.find((r) => r.domain === domain.toLowerCase());
+        return { domain, tld, price: priceFor(tld, tlds), available: !!found?.available };
+      });
+      setResults(merged);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Domain check failed");
+    } finally {
+      setBusy(false);
+    }
   }
+
 
   return (
     <>
