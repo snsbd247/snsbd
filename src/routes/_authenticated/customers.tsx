@@ -40,13 +40,13 @@ function CustomersPage() {
         db.from("user_roles").select("user_id, role"),
       ]);
       const roleMap = new Map<string, string[]>();
-      (roles.data ?? []).forEach((r) => {
+      (roles.data ?? []).forEach((r: any) => {
         const arr = roleMap.get(r.user_id) ?? [];
         arr.push(r.role);
         roleMap.set(r.user_id, arr);
       });
-      return (profiles.data ?? []).filter((p) => (roleMap.get(p.id) ?? []).includes("customer") || !(roleMap.get(p.id) ?? []).includes("admin"))
-        .map((p) => ({ ...p, roles: roleMap.get(p.id) ?? [] }));
+      return (profiles.data ?? []).filter((p: any) => (roleMap.get(p.id) ?? []).includes("customer") || !(roleMap.get(p.id) ?? []).includes("admin"))
+        .map((p: any) => ({ ...p, roles: roleMap.get(p.id) ?? [] }));
     },
   });
 

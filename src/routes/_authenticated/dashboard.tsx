@@ -30,10 +30,10 @@ function AdminDashboard() {
           .order("expiry_date", { ascending: true }),
       ]);
       const invRows = invoices.data ?? [];
-      const totalBilled = invRows.reduce((s, i) => s + Number(i.total ?? 0), 0);
-      const totalReceived = invRows.reduce((s, i) => s + Number(i.amount_paid ?? 0), 0);
-      const totalExpenses = (expenses.data ?? []).reduce((s, e) => s + Number(e.amount ?? 0), 0);
-      const overdue = invRows.filter((i) => i.status === "overdue" || (i.status !== "paid" && i.status !== "cancelled" && Number(i.amount_paid ?? 0) < Number(i.total ?? 0))).length;
+      const totalBilled = invRows.reduce((s: number, i: any) => s + Number(i.total ?? 0), 0);
+      const totalReceived = invRows.reduce((s: number, i: any) => s + Number(i.amount_paid ?? 0), 0);
+      const totalExpenses = (expenses.data ?? []).reduce((s: number, e: any) => s + Number(e.amount ?? 0), 0);
+      const overdue = invRows.filter((i: any) => i.status === "overdue" || (i.status !== "paid" && i.status !== "cancelled" && Number(i.amount_paid ?? 0) < Number(i.total ?? 0))).length;
       return {
         customers: customers.count ?? 0,
         activeServices: services.count ?? 0,
@@ -104,7 +104,7 @@ function CustomerDashboard({ uid }: { uid: string }) {
         db.from("projects").select("*").eq("customer_id", uid),
       ]);
       const invRows = invoices.data ?? [];
-      const outstanding = invRows.reduce((s, i) => s + (Number(i.total) - Number(i.amount_paid)), 0);
+      const outstanding = invRows.reduce((s: number, i: any) => s + (Number(i.total) - Number(i.amount_paid)), 0);
       return {
         services: services.data ?? [],
         invoices: invRows,
