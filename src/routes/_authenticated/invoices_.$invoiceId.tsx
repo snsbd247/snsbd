@@ -201,8 +201,16 @@ function InvoiceDetailPage() {
             </div>
           )}
 
+          <div className="border-t pt-3 mt-2 text-[11px] text-muted-foreground flex items-center justify-between gap-4">
+            <div className="truncate">
+              {company?.company_name}
+              {company?.email && <> · {company.email}</>}
+              {company?.phone && <> · {company.phone}</>}
+            </div>
+            <div className="whitespace-nowrap">Issued {formatDate(inv.issue_date)} · Page 1 of 1</div>
+          </div>
           {company?.footer_copyright && (
-            <div className="text-center text-[11px] text-muted-foreground border-t pt-3">{company.footer_copyright}</div>
+            <div className="text-center text-[10px] text-muted-foreground">{company.footer_copyright}</div>
           )}
         </CardContent>
       </Card>
