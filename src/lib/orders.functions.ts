@@ -10,6 +10,8 @@ type CreateHostingOrderInput = {
   manual_trx_id?: string;
   manual_sender?: string;
   customer_notes?: string;
+  addon_ids?: string[];
+  coupon_code?: string;
 };
 
 export const createHostingOrder = createServerFn({ method: "POST" })
@@ -32,6 +34,40 @@ export const createHostingOrder = createServerFn({ method: "POST" })
       .maybeSingle();
     if (pErr || !pkg) throw new Error("Package not found");
 
+    let subtotal = Number(pkg.price) || 0;
+    const addonIds = (data.addon_ids ?? []).filter(Boolean);
+    let addons: Array<{ id: string; name: string; price: number }> = [];
+    if (addonIds.length) {
+      const { data: rows } = await context.supabase
+        .from("product_addons").select("id, name, price, is_active")
+        .in("id", addonIds);
+      addons = (rows ?? []).filter((r: any) => r.is_active).map((r: any) => ({ id: r.id, name: r.name, price: Number(r.price) || 0 }));
+      subtotal += addons.reduce((s, a) => s + a.price, 0);
+    }
+
+    let discount = 0;
+    let couponId: string | null = null;
+    let couponCode: string | null = null;
+    if (data.coupon_code?.trim()) {
+      const code = data.coupon_code.trim().toUpperCase();
+      const { data: c } = await context.supabase.from("coupons").select("*").eq("code", code).maybeSingle();
+      if (c && c.is_active
+        && (!c.expires_at || new Date(c.expires_at) >= new Date())
+        && (c.max_uses == null || c.used_count < c.max_uses)) {
+        if (c.discount_percent) discount += subtotal * (Number(c.discount_percent) / 100);
+        if (c.discount_amount) discount += Number(c.discount_amount);
+        discount = Math.min(discount, subtotal);
+        couponId = c.id; couponCode = c.code;
+      }
+    }
+    const total = Math.max(0, subtotal - discount);
+
+    const notes = [
+      data.customer_notes,
+      addons.length ? `Add-ons: ${addons.map(a => a.name).join(", ")}` : null,
+      couponCode ? `Coupon ${couponCode} (-${discount.toFixed(2)})` : null,
+    ].filter(Boolean).join(" | ");
+
     const { data: order, error } = await context.supabase
       .from("customer_orders")
       .insert({
@@ -39,18 +75,27 @@ export const createHostingOrder = createServerFn({ method: "POST" })
         order_type: "hosting" as any,
         hosting_package_id: pkg.id,
         domain_name: data.domain_name.trim().toLowerCase(),
-        quoted_price: Number(pkg.price) || 0,
+        quoted_price: total,
         status: "pending" as any,
         billing_cycle: data.billing_cycle || pkg.billing_cycle,
         payment_method: data.payment_method,
         manual_trx_id: data.manual_trx_id ?? null,
         manual_sender: data.manual_sender ?? null,
-        customer_notes: data.customer_notes ?? null,
+        customer_notes: notes || null,
       } as any)
       .select("id")
       .single();
     if (error) throw new Error(error.message);
-    return { order_id: order.id as string };
+
+    if (couponId) {
+      try {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { data: cur } = await supabaseAdmin.from("coupons").select("used_count").eq("id", couponId).single();
+        await supabaseAdmin.from("coupons").update({ used_count: (cur?.used_count ?? 0) + 1 }).eq("id", couponId);
+      } catch {}
+    }
+
+    return { order_id: order.id as string, subtotal, discount, total, addons };
   });
 
 export const activateHostingOrder = createServerFn({ method: "POST" })
