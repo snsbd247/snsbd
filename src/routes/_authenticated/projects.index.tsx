@@ -43,7 +43,7 @@ function ProjectsPage() {
     queryKey: ["all-milestones"],
     queryFn: async () => (await db.from("project_milestones").select("project_id,title,due_date,completed,sort_order").order("sort_order").order("due_date", { ascending: true, nullsFirst: false })).data ?? [],
   });
-  const progressByProject = (allMilestones ?? []).reduce<Record<string, { total: number; done: number; next: any }>>((acc, m: any) => {
+  const progressByProject = ((allMilestones ?? []) as any[]).reduce((acc: Record<string, { total: number; done: number; next: any }>, m: any) => {
     const g = acc[m.project_id] ?? { total: 0, done: 0, next: null };
     g.total += 1; if (m.completed) g.done += 1;
     if (!m.completed && !g.next) g.next = m;
