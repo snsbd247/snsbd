@@ -28,6 +28,8 @@ function OrderDetailsPage() {
   const nav = useNavigate();
   const qc = useQueryClient();
   const [notes, setNotes] = useState<string>("");
+  const [domainEdit, setDomainEdit] = useState<string>("");
+  const [editingDomain, setEditingDomain] = useState(false);
   const [whmServerId, setWhmServerId] = useState<string>("");
   const [activateOpen, setActivateOpen] = useState(false);
   const [creds, setCreds] = useState<{ cpanel_username: string; cpanel_password: string; whm_created: boolean; whm_error: string | null } | null>(null);
