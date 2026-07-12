@@ -27,6 +27,7 @@ import { Route as MarketingResellerHostingRouteImport } from './routes/_marketin
 import { Route as MarketingRegisterDomainRouteImport } from './routes/_marketing.register-domain'
 import { Route as MarketingRefundRouteImport } from './routes/_marketing.refund'
 import { Route as MarketingPrivacyRouteImport } from './routes/_marketing.privacy'
+import { Route as MarketingHelpRouteImport } from './routes/_marketing.help'
 import { Route as MarketingEmailHostingRouteImport } from './routes/_marketing.email-hosting'
 import { Route as MarketingDomainSearchRouteImport } from './routes/_marketing.domain-search'
 import { Route as MarketingContactRouteImport } from './routes/_marketing.contact'
@@ -37,11 +38,14 @@ import { Route as AuthenticatedTicketsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedServiceCatalogRouteImport } from './routes/_authenticated/service-catalog'
+import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedRenewalsRouteImport } from './routes/_authenticated/renewals'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedPaymentSettingsRouteImport } from './routes/_authenticated/payment-settings'
 import { Route as AuthenticatedOtherServicesRouteImport } from './routes/_authenticated/other-services'
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
+import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
+import { Route as AuthenticatedKbRouteImport } from './routes/_authenticated/kb'
 import { Route as AuthenticatedInvoicesRouteImport } from './routes/_authenticated/invoices'
 import { Route as AuthenticatedHostingPackagesRouteImport } from './routes/_authenticated/hosting-packages'
 import { Route as AuthenticatedHostingRouteImport } from './routes/_authenticated/hosting'
@@ -51,12 +55,14 @@ import { Route as AuthenticatedDomainPricingRouteImport } from './routes/_authen
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects.index'
+import { Route as MarketingHelpSlugRouteImport } from './routes/_marketing.help.$slug'
 import { Route as AuthenticatedTicketsTicketIdRouteImport } from './routes/_authenticated/tickets_.$ticketId'
 import { Route as AuthenticatedTeamMemberIdRouteImport } from './routes/_authenticated/team_.$memberId'
 import { Route as AuthenticatedServicesServiceIdRouteImport } from './routes/_authenticated/services.$serviceId'
 import { Route as AuthenticatedReceiptsPaymentIdRouteImport } from './routes/_authenticated/receipts.$paymentId'
 import { Route as AuthenticatedProjectsProjectIdRouteImport } from './routes/_authenticated/projects.$projectId'
 import { Route as AuthenticatedOrdersOrderIdRouteImport } from './routes/_authenticated/orders_.$orderId'
+import { Route as AuthenticatedKbArticleIdRouteImport } from './routes/_authenticated/kb_.$articleId'
 import { Route as AuthenticatedInvoicesInvoiceIdRouteImport } from './routes/_authenticated/invoices_.$invoiceId'
 import { Route as AuthenticatedExpensesExpenseIdRouteImport } from './routes/_authenticated/expenses_.$expenseId'
 import { Route as AuthenticatedDomainsDomainIdRouteImport } from './routes/_authenticated/domains_.$domainId'
@@ -157,6 +163,11 @@ const MarketingPrivacyRoute = MarketingPrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => MarketingRoute,
 } as any)
+const MarketingHelpRoute = MarketingHelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => MarketingRoute,
+} as any)
 const MarketingEmailHostingRoute = MarketingEmailHostingRouteImport.update({
   id: '/email-hosting',
   path: '/email-hosting',
@@ -208,6 +219,11 @@ const AuthenticatedServiceCatalogRoute =
     path: '/service-catalog',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedRenewalsRoute = AuthenticatedRenewalsRouteImport.update({
   id: '/renewals',
   path: '/renewals',
@@ -233,6 +249,17 @@ const AuthenticatedOtherServicesRoute =
 const AuthenticatedOrdersRoute = AuthenticatedOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedNotificationsRoute =
+  AuthenticatedNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedKbRoute = AuthenticatedKbRouteImport.update({
+  id: '/kb',
+  path: '/kb',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedInvoicesRoute = AuthenticatedInvoicesRouteImport.update({
@@ -283,6 +310,11 @@ const AuthenticatedProjectsIndexRoute =
     path: '/projects/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const MarketingHelpSlugRoute = MarketingHelpSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => MarketingHelpRoute,
+} as any)
 const AuthenticatedTicketsTicketIdRoute =
   AuthenticatedTicketsTicketIdRouteImport.update({
     id: '/tickets_/$ticketId',
@@ -317,6 +349,12 @@ const AuthenticatedOrdersOrderIdRoute =
   AuthenticatedOrdersOrderIdRouteImport.update({
     id: '/orders_/$orderId',
     path: '/orders/$orderId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedKbArticleIdRoute =
+  AuthenticatedKbArticleIdRouteImport.update({
+    id: '/kb_/$articleId',
+    path: '/kb/$articleId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedInvoicesInvoiceIdRoute =
@@ -393,11 +431,14 @@ export interface FileRoutesByFullPath {
   '/hosting': typeof AuthenticatedHostingRoute
   '/hosting-packages': typeof AuthenticatedHostingPackagesRoute
   '/invoices': typeof AuthenticatedInvoicesRoute
+  '/kb': typeof AuthenticatedKbRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
   '/orders': typeof AuthenticatedOrdersRoute
   '/other-services': typeof AuthenticatedOtherServicesRoute
   '/payment-settings': typeof AuthenticatedPaymentSettingsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/renewals': typeof AuthenticatedRenewalsRoute
+  '/reports': typeof AuthenticatedReportsRoute
   '/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
@@ -408,6 +449,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof MarketingContactRoute
   '/domain-search': typeof MarketingDomainSearchRoute
   '/email-hosting': typeof MarketingEmailHostingRoute
+  '/help': typeof MarketingHelpRouteWithChildren
   '/privacy': typeof MarketingPrivacyRoute
   '/refund': typeof MarketingRefundRoute
   '/register-domain': typeof MarketingRegisterDomainRoute
@@ -423,12 +465,14 @@ export interface FileRoutesByFullPath {
   '/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
   '/expenses/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
   '/invoices/$invoiceId': typeof AuthenticatedInvoicesInvoiceIdRoute
+  '/kb/$articleId': typeof AuthenticatedKbArticleIdRoute
   '/orders/$orderId': typeof AuthenticatedOrdersOrderIdRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/team/$memberId': typeof AuthenticatedTeamMemberIdRoute
   '/tickets/$ticketId': typeof AuthenticatedTicketsTicketIdRoute
+  '/help/$slug': typeof MarketingHelpSlugRoute
   '/projects/': typeof AuthenticatedProjectsIndexRoute
   '/order/hosting/$packageId': typeof AuthenticatedOrderHostingPackageIdRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
@@ -451,11 +495,14 @@ export interface FileRoutesByTo {
   '/hosting': typeof AuthenticatedHostingRoute
   '/hosting-packages': typeof AuthenticatedHostingPackagesRoute
   '/invoices': typeof AuthenticatedInvoicesRoute
+  '/kb': typeof AuthenticatedKbRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
   '/orders': typeof AuthenticatedOrdersRoute
   '/other-services': typeof AuthenticatedOtherServicesRoute
   '/payment-settings': typeof AuthenticatedPaymentSettingsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/renewals': typeof AuthenticatedRenewalsRoute
+  '/reports': typeof AuthenticatedReportsRoute
   '/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
@@ -466,6 +513,7 @@ export interface FileRoutesByTo {
   '/contact': typeof MarketingContactRoute
   '/domain-search': typeof MarketingDomainSearchRoute
   '/email-hosting': typeof MarketingEmailHostingRoute
+  '/help': typeof MarketingHelpRouteWithChildren
   '/privacy': typeof MarketingPrivacyRoute
   '/refund': typeof MarketingRefundRoute
   '/register-domain': typeof MarketingRegisterDomainRoute
@@ -481,12 +529,14 @@ export interface FileRoutesByTo {
   '/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
   '/expenses/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
   '/invoices/$invoiceId': typeof AuthenticatedInvoicesInvoiceIdRoute
+  '/kb/$articleId': typeof AuthenticatedKbArticleIdRoute
   '/orders/$orderId': typeof AuthenticatedOrdersOrderIdRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/team/$memberId': typeof AuthenticatedTeamMemberIdRoute
   '/tickets/$ticketId': typeof AuthenticatedTicketsTicketIdRoute
+  '/help/$slug': typeof MarketingHelpSlugRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
   '/order/hosting/$packageId': typeof AuthenticatedOrderHostingPackageIdRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
@@ -511,11 +561,14 @@ export interface FileRoutesById {
   '/_authenticated/hosting': typeof AuthenticatedHostingRoute
   '/_authenticated/hosting-packages': typeof AuthenticatedHostingPackagesRoute
   '/_authenticated/invoices': typeof AuthenticatedInvoicesRoute
+  '/_authenticated/kb': typeof AuthenticatedKbRoute
+  '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/orders': typeof AuthenticatedOrdersRoute
   '/_authenticated/other-services': typeof AuthenticatedOtherServicesRoute
   '/_authenticated/payment-settings': typeof AuthenticatedPaymentSettingsRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/renewals': typeof AuthenticatedRenewalsRoute
+  '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/team': typeof AuthenticatedTeamRoute
@@ -526,6 +579,7 @@ export interface FileRoutesById {
   '/_marketing/contact': typeof MarketingContactRoute
   '/_marketing/domain-search': typeof MarketingDomainSearchRoute
   '/_marketing/email-hosting': typeof MarketingEmailHostingRoute
+  '/_marketing/help': typeof MarketingHelpRouteWithChildren
   '/_marketing/privacy': typeof MarketingPrivacyRoute
   '/_marketing/refund': typeof MarketingRefundRoute
   '/_marketing/register-domain': typeof MarketingRegisterDomainRoute
@@ -542,12 +596,14 @@ export interface FileRoutesById {
   '/_authenticated/domains_/$domainId': typeof AuthenticatedDomainsDomainIdRoute
   '/_authenticated/expenses_/$expenseId': typeof AuthenticatedExpensesExpenseIdRoute
   '/_authenticated/invoices_/$invoiceId': typeof AuthenticatedInvoicesInvoiceIdRoute
+  '/_authenticated/kb_/$articleId': typeof AuthenticatedKbArticleIdRoute
   '/_authenticated/orders_/$orderId': typeof AuthenticatedOrdersOrderIdRoute
   '/_authenticated/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/_authenticated/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/_authenticated/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/_authenticated/team_/$memberId': typeof AuthenticatedTeamMemberIdRoute
   '/_authenticated/tickets_/$ticketId': typeof AuthenticatedTicketsTicketIdRoute
+  '/_marketing/help/$slug': typeof MarketingHelpSlugRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
   '/_authenticated/order/hosting/$packageId': typeof AuthenticatedOrderHostingPackageIdRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
@@ -572,11 +628,14 @@ export interface FileRouteTypes {
     | '/hosting'
     | '/hosting-packages'
     | '/invoices'
+    | '/kb'
+    | '/notifications'
     | '/orders'
     | '/other-services'
     | '/payment-settings'
     | '/profile'
     | '/renewals'
+    | '/reports'
     | '/service-catalog'
     | '/settings'
     | '/team'
@@ -587,6 +646,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/domain-search'
     | '/email-hosting'
+    | '/help'
     | '/privacy'
     | '/refund'
     | '/register-domain'
@@ -602,12 +662,14 @@ export interface FileRouteTypes {
     | '/domains/$domainId'
     | '/expenses/$expenseId'
     | '/invoices/$invoiceId'
+    | '/kb/$articleId'
     | '/orders/$orderId'
     | '/projects/$projectId'
     | '/receipts/$paymentId'
     | '/services/$serviceId'
     | '/team/$memberId'
     | '/tickets/$ticketId'
+    | '/help/$slug'
     | '/projects/'
     | '/order/hosting/$packageId'
     | '/api/public/hooks/enforce-overdue'
@@ -630,11 +692,14 @@ export interface FileRouteTypes {
     | '/hosting'
     | '/hosting-packages'
     | '/invoices'
+    | '/kb'
+    | '/notifications'
     | '/orders'
     | '/other-services'
     | '/payment-settings'
     | '/profile'
     | '/renewals'
+    | '/reports'
     | '/service-catalog'
     | '/settings'
     | '/team'
@@ -645,6 +710,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/domain-search'
     | '/email-hosting'
+    | '/help'
     | '/privacy'
     | '/refund'
     | '/register-domain'
@@ -660,12 +726,14 @@ export interface FileRouteTypes {
     | '/domains/$domainId'
     | '/expenses/$expenseId'
     | '/invoices/$invoiceId'
+    | '/kb/$articleId'
     | '/orders/$orderId'
     | '/projects/$projectId'
     | '/receipts/$paymentId'
     | '/services/$serviceId'
     | '/team/$memberId'
     | '/tickets/$ticketId'
+    | '/help/$slug'
     | '/projects'
     | '/order/hosting/$packageId'
     | '/api/public/hooks/enforce-overdue'
@@ -689,11 +757,14 @@ export interface FileRouteTypes {
     | '/_authenticated/hosting'
     | '/_authenticated/hosting-packages'
     | '/_authenticated/invoices'
+    | '/_authenticated/kb'
+    | '/_authenticated/notifications'
     | '/_authenticated/orders'
     | '/_authenticated/other-services'
     | '/_authenticated/payment-settings'
     | '/_authenticated/profile'
     | '/_authenticated/renewals'
+    | '/_authenticated/reports'
     | '/_authenticated/service-catalog'
     | '/_authenticated/settings'
     | '/_authenticated/team'
@@ -704,6 +775,7 @@ export interface FileRouteTypes {
     | '/_marketing/contact'
     | '/_marketing/domain-search'
     | '/_marketing/email-hosting'
+    | '/_marketing/help'
     | '/_marketing/privacy'
     | '/_marketing/refund'
     | '/_marketing/register-domain'
@@ -720,12 +792,14 @@ export interface FileRouteTypes {
     | '/_authenticated/domains_/$domainId'
     | '/_authenticated/expenses_/$expenseId'
     | '/_authenticated/invoices_/$invoiceId'
+    | '/_authenticated/kb_/$articleId'
     | '/_authenticated/orders_/$orderId'
     | '/_authenticated/projects/$projectId'
     | '/_authenticated/receipts/$paymentId'
     | '/_authenticated/services/$serviceId'
     | '/_authenticated/team_/$memberId'
     | '/_authenticated/tickets_/$ticketId'
+    | '/_marketing/help/$slug'
     | '/_authenticated/projects/'
     | '/_authenticated/order/hosting/$packageId'
     | '/api/public/hooks/enforce-overdue'
@@ -877,6 +951,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketingPrivacyRouteImport
       parentRoute: typeof MarketingRoute
     }
+    '/_marketing/help': {
+      id: '/_marketing/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof MarketingHelpRouteImport
+      parentRoute: typeof MarketingRoute
+    }
     '/_marketing/email-hosting': {
       id: '/_marketing/email-hosting'
       path: '/email-hosting'
@@ -947,6 +1028,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedServiceCatalogRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/reports': {
+      id: '/_authenticated/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof AuthenticatedReportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/renewals': {
       id: '/_authenticated/renewals'
       path: '/renewals'
@@ -980,6 +1068,20 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof AuthenticatedOrdersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/notifications': {
+      id: '/_authenticated/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/kb': {
+      id: '/_authenticated/kb'
+      path: '/kb'
+      fullPath: '/kb'
+      preLoaderRoute: typeof AuthenticatedKbRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/invoices': {
@@ -1045,6 +1147,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProjectsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_marketing/help/$slug': {
+      id: '/_marketing/help/$slug'
+      path: '/$slug'
+      fullPath: '/help/$slug'
+      preLoaderRoute: typeof MarketingHelpSlugRouteImport
+      parentRoute: typeof MarketingHelpRoute
+    }
     '/_authenticated/tickets_/$ticketId': {
       id: '/_authenticated/tickets_/$ticketId'
       path: '/tickets/$ticketId'
@@ -1085,6 +1194,13 @@ declare module '@tanstack/react-router' {
       path: '/orders/$orderId'
       fullPath: '/orders/$orderId'
       preLoaderRoute: typeof AuthenticatedOrdersOrderIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/kb_/$articleId': {
+      id: '/_authenticated/kb_/$articleId'
+      path: '/kb/$articleId'
+      fullPath: '/kb/$articleId'
+      preLoaderRoute: typeof AuthenticatedKbArticleIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/invoices_/$invoiceId': {
@@ -1169,11 +1285,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHostingRoute: typeof AuthenticatedHostingRoute
   AuthenticatedHostingPackagesRoute: typeof AuthenticatedHostingPackagesRoute
   AuthenticatedInvoicesRoute: typeof AuthenticatedInvoicesRoute
+  AuthenticatedKbRoute: typeof AuthenticatedKbRoute
+  AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRoute
   AuthenticatedOtherServicesRoute: typeof AuthenticatedOtherServicesRoute
   AuthenticatedPaymentSettingsRoute: typeof AuthenticatedPaymentSettingsRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedRenewalsRoute: typeof AuthenticatedRenewalsRoute
+  AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedServiceCatalogRoute: typeof AuthenticatedServiceCatalogRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
@@ -1183,6 +1302,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDomainsDomainIdRoute: typeof AuthenticatedDomainsDomainIdRoute
   AuthenticatedExpensesExpenseIdRoute: typeof AuthenticatedExpensesExpenseIdRoute
   AuthenticatedInvoicesInvoiceIdRoute: typeof AuthenticatedInvoicesInvoiceIdRoute
+  AuthenticatedKbArticleIdRoute: typeof AuthenticatedKbArticleIdRoute
   AuthenticatedOrdersOrderIdRoute: typeof AuthenticatedOrdersOrderIdRoute
   AuthenticatedProjectsProjectIdRoute: typeof AuthenticatedProjectsProjectIdRoute
   AuthenticatedReceiptsPaymentIdRoute: typeof AuthenticatedReceiptsPaymentIdRoute
@@ -1202,11 +1322,14 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHostingRoute: AuthenticatedHostingRoute,
   AuthenticatedHostingPackagesRoute: AuthenticatedHostingPackagesRoute,
   AuthenticatedInvoicesRoute: AuthenticatedInvoicesRoute,
+  AuthenticatedKbRoute: AuthenticatedKbRoute,
+  AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedOrdersRoute: AuthenticatedOrdersRoute,
   AuthenticatedOtherServicesRoute: AuthenticatedOtherServicesRoute,
   AuthenticatedPaymentSettingsRoute: AuthenticatedPaymentSettingsRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedRenewalsRoute: AuthenticatedRenewalsRoute,
+  AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedServiceCatalogRoute: AuthenticatedServiceCatalogRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
@@ -1216,6 +1339,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDomainsDomainIdRoute: AuthenticatedDomainsDomainIdRoute,
   AuthenticatedExpensesExpenseIdRoute: AuthenticatedExpensesExpenseIdRoute,
   AuthenticatedInvoicesInvoiceIdRoute: AuthenticatedInvoicesInvoiceIdRoute,
+  AuthenticatedKbArticleIdRoute: AuthenticatedKbArticleIdRoute,
   AuthenticatedOrdersOrderIdRoute: AuthenticatedOrdersOrderIdRoute,
   AuthenticatedProjectsProjectIdRoute: AuthenticatedProjectsProjectIdRoute,
   AuthenticatedReceiptsPaymentIdRoute: AuthenticatedReceiptsPaymentIdRoute,
@@ -1230,12 +1354,25 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface MarketingHelpRouteChildren {
+  MarketingHelpSlugRoute: typeof MarketingHelpSlugRoute
+}
+
+const MarketingHelpRouteChildren: MarketingHelpRouteChildren = {
+  MarketingHelpSlugRoute: MarketingHelpSlugRoute,
+}
+
+const MarketingHelpRouteWithChildren = MarketingHelpRoute._addFileChildren(
+  MarketingHelpRouteChildren,
+)
+
 interface MarketingRouteChildren {
   MarketingAboutRoute: typeof MarketingAboutRoute
   MarketingBdixHostingRoute: typeof MarketingBdixHostingRoute
   MarketingContactRoute: typeof MarketingContactRoute
   MarketingDomainSearchRoute: typeof MarketingDomainSearchRoute
   MarketingEmailHostingRoute: typeof MarketingEmailHostingRoute
+  MarketingHelpRoute: typeof MarketingHelpRouteWithChildren
   MarketingPrivacyRoute: typeof MarketingPrivacyRoute
   MarketingRefundRoute: typeof MarketingRefundRoute
   MarketingRegisterDomainRoute: typeof MarketingRegisterDomainRoute
@@ -1253,6 +1390,7 @@ const MarketingRouteChildren: MarketingRouteChildren = {
   MarketingContactRoute: MarketingContactRoute,
   MarketingDomainSearchRoute: MarketingDomainSearchRoute,
   MarketingEmailHostingRoute: MarketingEmailHostingRoute,
+  MarketingHelpRoute: MarketingHelpRouteWithChildren,
   MarketingPrivacyRoute: MarketingPrivacyRoute,
   MarketingRefundRoute: MarketingRefundRoute,
   MarketingRegisterDomainRoute: MarketingRegisterDomainRoute,
