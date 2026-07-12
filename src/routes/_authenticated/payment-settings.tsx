@@ -18,6 +18,7 @@ export const Route = createFileRoute("/_authenticated/payment-settings")({
 const PROVIDERS = [
   { key: "bkash", label: "bKash Merchant (Tokenized Checkout)" },
   { key: "nagad", label: "Nagad Merchant" },
+  { key: "sslcommerz", label: "SSLCommerz (Cards / bKash / Nagad / Rocket / Netbanking)" },
 ] as const;
 
 function PaymentSettingsPage() {
@@ -25,13 +26,14 @@ function PaymentSettingsPage() {
   if (role !== "admin") return <p className="text-sm text-muted-foreground">Admin only.</p>;
   return (
     <div className="space-y-6">
-      <div><h1 className="text-2xl font-bold">Payment Gateways</h1><p className="text-sm text-muted-foreground">Configure bKash and Nagad merchant API credentials.</p></div>
+      <div><h1 className="text-2xl font-bold">Payment Gateways</h1><p className="text-sm text-muted-foreground">Configure bKash, Nagad and SSLCommerz merchant API credentials. For SSLCommerz, put your Store ID in "Username" and Store Password in "Password".</p></div>
       {PROVIDERS.map((p) => <GatewayCard key={p.key} provider={p.key} label={p.label} />)}
     </div>
   );
 }
 
-function GatewayCard({ provider, label }: { provider: "bkash" | "nagad"; label: string }) {
+function GatewayCard({ provider, label }: { provider: "bkash" | "nagad" | "sslcommerz"; label: string }) {
+
   const qc = useQueryClient();
   const { data } = useQuery({
     queryKey: ["payment_gateway", provider],
