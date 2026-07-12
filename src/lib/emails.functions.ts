@@ -88,7 +88,7 @@ export const sendHostingWelcomeEmail = createServerFn({ method: "POST" })
 
     await supabaseAdmin.from("service_events").insert({
       service_id: svc.id,
-      event_type: result.ok ? "welcome_email_sent" : "welcome_email_skipped",
+      status: result.ok ? "welcome_email_sent" : "welcome_email_skipped",
       message: result.ok ? `Welcome email sent to ${prof.email}` : (result.error || "Email skipped"),
       actor_id: context.userId,
     } as any);
@@ -123,7 +123,7 @@ export async function sendWelcomeForService(service_id: string, actor_id: string
   });
   await supabaseAdmin.from("service_events").insert({
     service_id,
-    event_type: result.ok ? "welcome_email_sent" : "welcome_email_skipped",
+    status: result.ok ? "welcome_email_sent" : "welcome_email_skipped",
     message: result.ok ? `Welcome email sent to ${prof.email}` : (result.error || "Email skipped"),
     actor_id,
   } as any);
