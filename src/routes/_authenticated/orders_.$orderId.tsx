@@ -34,6 +34,7 @@ function OrderDetailsPage() {
   const [editingDomain, setEditingDomain] = useState(false);
   const [whmServerId, setWhmServerId] = useState<string>("");
   const [activateOpen, setActivateOpen] = useState(false);
+  const [confirmActivate, setConfirmActivate] = useState(false);
   const [creds, setCreds] = useState<{ cpanel_username: string; cpanel_password: string; whm_created: boolean; whm_error: string | null } | null>(null);
 
   const { data: order, isLoading, error: orderError } = useQuery({
