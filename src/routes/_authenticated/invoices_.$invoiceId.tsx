@@ -121,7 +121,9 @@ function InvoiceDetailPage() {
         </div>
       </div>
 
-      <div id="invoice-pdf" className="bg-white text-slate-900 mx-auto shadow-lg print:shadow-none relative overflow-hidden" style={{ width: "100%", maxWidth: 900 }}>
+      <div className="w-full overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible print:overflow-visible print:mx-0 print:px-0">
+      <div id="invoice-pdf" className="bg-white text-slate-900 mx-auto shadow-lg print:shadow-none relative overflow-hidden" style={{ width: 900, maxWidth: "none" }}>
+
         {/* subtle hex background pattern */}
         <div
           aria-hidden
