@@ -363,6 +363,7 @@ export type Database = {
           due_date: string | null
           id: string
           invoice_number: string
+          is_renewal: boolean
           issue_date: string
           late_fee: number
           late_fee_applied_at: string | null
@@ -381,6 +382,7 @@ export type Database = {
           due_date?: string | null
           id?: string
           invoice_number: string
+          is_renewal?: boolean
           issue_date?: string
           late_fee?: number
           late_fee_applied_at?: string | null
@@ -399,6 +401,7 @@ export type Database = {
           due_date?: string | null
           id?: string
           invoice_number?: string
+          is_renewal?: boolean
           issue_date?: string
           late_fee?: number
           late_fee_applied_at?: string | null
@@ -1028,6 +1031,7 @@ export type Database = {
           registrar_meta: Json | null
           registrar_order_id: string | null
           renewable: boolean
+          renewal_reminder_stage: number
           sale_price: number
           status: Database["public"]["Enums"]["service_status"]
           type: Database["public"]["Enums"]["service_type"]
@@ -1059,6 +1063,7 @@ export type Database = {
           registrar_meta?: Json | null
           registrar_order_id?: string | null
           renewable?: boolean
+          renewal_reminder_stage?: number
           sale_price?: number
           status?: Database["public"]["Enums"]["service_status"]
           type: Database["public"]["Enums"]["service_type"]
@@ -1090,6 +1095,7 @@ export type Database = {
           registrar_meta?: Json | null
           registrar_order_id?: string | null
           renewable?: boolean
+          renewal_reminder_stage?: number
           sale_price?: number
           status?: Database["public"]["Enums"]["service_status"]
           type?: Database["public"]["Enums"]["service_type"]
