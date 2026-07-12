@@ -46,12 +46,10 @@ export function MarketingFooter() {
               {data?.logo_url ? (
                 <img src={data.logo_url} alt={`${brand} logo`} className="h-9 w-auto object-contain bg-transparent" />
               ) : (
-                <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 font-black text-[#0B1220]">
-                  {brand.charAt(0)}
-                </span>
+                <span className="text-base font-bold">{brand}</span>
               )}
-              <span className="text-base font-bold">{brand}</span>
             </div>
+
             <p className="mt-4 max-w-sm text-sm">
               Reliable web hosting, domains and cloud services trusted by businesses and creators across Bangladesh.
             </p>

@@ -49,16 +49,20 @@ function AuthedLayout() {
       <Sidebar>
         <SidebarHeader className="border-b border-sidebar-border">
           <div className="flex items-center gap-2 px-2 py-2">
-            <img
-              src={company?.logo_url || "/favicon.png"}
-              alt={`${company?.company_name ?? "Company"} logo`}
-              className="h-8 w-auto object-contain bg-transparent"
-            />
-            <div>
-              <div className="font-semibold text-sm">{company?.company_name ?? "Company"}</div>
-              <div className="text-[10px] uppercase tracking-wider text-sidebar-foreground/60">{isAdmin ? "Admin" : "Customer"}</div>
-            </div>
+            {company?.logo_url ? (
+              <img
+                src={company.logo_url}
+                alt={`${company?.company_name ?? "Company"} logo`}
+                className="h-8 w-auto object-contain bg-transparent"
+              />
+            ) : (
+              <div className="flex-1">
+                <div className="font-semibold text-sm">{company?.company_name ?? "Company"}</div>
+                <div className="text-[10px] uppercase tracking-wider text-sidebar-foreground/60">{isAdmin ? "Admin" : "Customer"}</div>
+              </div>
+            )}
           </div>
+
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
