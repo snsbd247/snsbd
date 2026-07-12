@@ -263,8 +263,8 @@ function InvoiceDetailPage() {
                 </tr>
                 <tr>
                   <td colSpan={3} className="border-0" />
-                  <td className="border border-slate-300 px-2 py-1.5 text-right font-extrabold">&nbsp;</td>
-                  <td className="border border-slate-300 px-2 py-1.5 text-right font-extrabold">{formatBDT(inv.total)}</td>
+                  <td className="border border-slate-300 px-2 py-2 text-right font-extrabold" style={{ borderTop: "2px solid #1f1f1f" }}>&nbsp;</td>
+                  <td className="border border-slate-300 px-2 py-2 text-right font-extrabold text-[14px]" style={{ borderTop: "2px solid #1f1f1f" }}>{formatBDT(inv.total)}</td>
                 </tr>
               </tfoot>
             </table>
