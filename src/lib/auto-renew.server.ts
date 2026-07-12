@@ -27,7 +27,7 @@ export async function autoRenewOnInvoicePaid(invoiceId: string): Promise<void> {
 
     const { data: services } = await supabaseAdmin
       .from("services")
-      .select("id, name, type, status, expiry_date, whm_server_id, whm_account_user, cpanel_username")
+      .select("id, name, type, status, expiry_date, whm_server_id, whm_account_user, cpanel_username, domain_name")
       .in("id", serviceIds);
 
     for (const s of services ?? []) {
@@ -73,6 +73,29 @@ export async function autoRenewOnInvoicePaid(invoiceId: string): Promise<void> {
             service_id: s.id,
             status: "unsuspend_failed",
             message: `WHM unsuspend error: ${e?.message ?? String(e)}`,
+          } as any);
+        }
+      }
+
+      // Renew domain via Namecheap
+      if (s.type === "domain" && s.domain_name) {
+        try {
+          const { renewDomainNamecheap } = await import("@/lib/namecheap-renew.server");
+          const r = await renewDomainNamecheap(s.domain_name);
+          await supabaseAdmin.from("service_events").insert({
+            service_id: s.id,
+            status: r.ok ? "domain_renewed" : "domain_renew_failed",
+            message: r.ok
+              ? `Namecheap renewed until ${r.expiry ?? "?"} (txn ${r.orderId ?? "-"})`
+              : `Namecheap error: ${r.error}`,
+          } as any);
+          if (r.ok && r.expiry) {
+            await supabaseAdmin.from("services").update({ expiry_date: r.expiry }).eq("id", s.id);
+          }
+        } catch (e: any) {
+          await supabaseAdmin.from("service_events").insert({
+            service_id: s.id, status: "domain_renew_failed",
+            message: `Namecheap renew error: ${e?.message ?? String(e)}`,
           } as any);
         }
       }
