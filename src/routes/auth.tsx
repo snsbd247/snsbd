@@ -10,24 +10,28 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { z } from "zod";
 
-type Search = { mode?: "signin" | "signup" };
+type Search = { mode?: "signin" | "signup"; redirect?: string };
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (s: Record<string, unknown>): Search => ({
     mode: s.mode === "signup" ? "signup" : "signin",
+    redirect: typeof s.redirect === "string" && s.redirect.startsWith("/") ? s.redirect : undefined,
   }),
   component: AuthPage,
 });
 
 function AuthPage() {
-  const { mode } = Route.useSearch();
+  const { mode, redirect } = Route.useSearch();
   const navigate = useNavigate();
   const { session, loading } = useAuth();
   const [tab, setTab] = useState<"signin" | "signup">(mode ?? "signin");
 
   useEffect(() => {
-    if (!loading && session) navigate({ to: "/dashboard" });
-  }, [loading, session, navigate]);
+    if (!loading && session) {
+      if (redirect) window.location.assign(redirect);
+      else navigate({ to: "/dashboard" });
+    }
+  }, [loading, session, navigate, redirect]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-accent/30 px-4">
@@ -36,6 +40,7 @@ function AuthPage() {
           <img src="/favicon.png" alt="Sync & Solutions IT logo" className="mx-auto h-14 w-14 rounded-xl" />
           <h1 className="mt-4 text-2xl font-bold">Sync & Solutions IT</h1>
           <p className="text-sm text-muted-foreground">Sign in or create your account</p>
+          {redirect && <p className="mt-2 text-xs text-emerald-600">Sign in to continue with your order</p>}
         </div>
 
         <Card>
