@@ -16,6 +16,7 @@ import { CheckCircle2, Copy, Loader2 } from "lucide-react";
 import { db } from "@/lib/db-shim";
 import { ClickableRow, StopClick } from "@/components/ui/clickable-row";
 import { Eye } from "lucide-react";
+import { usePagination, PaginationControls } from "@/components/ui/pagination-controls";
 
 
 export const Route = createFileRoute("/_authenticated/orders")({
