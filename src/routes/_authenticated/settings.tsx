@@ -86,7 +86,12 @@ function SettingsPage() {
     website: "",
     footer_copyright: "",
     late_fee_percent: "2",
+    vat_percent: "0",
+    renewal_lead_days: "7",
+    grace_days: "7",
+    auto_suspend: true,
   });
+
 
   useEffect(() => {
     if (data) {
@@ -101,7 +106,12 @@ function SettingsPage() {
         website: data.website ?? "",
         footer_copyright: data.footer_copyright ?? "",
         late_fee_percent: String(data.late_fee_percent ?? 2),
+        vat_percent: String((data as any).vat_percent ?? 0),
+        renewal_lead_days: String((data as any).renewal_lead_days ?? 7),
+        grace_days: String((data as any).grace_days ?? 7),
+        auto_suspend: (data as any).auto_suspend !== false,
       });
+
     }
   }, [data]);
 
@@ -119,7 +129,12 @@ function SettingsPage() {
         website: f.website.trim() || null,
         footer_copyright: f.footer_copyright.trim() || null,
         late_fee_percent: Math.max(0, Number(f.late_fee_percent) || 0),
+        vat_percent: Math.max(0, Number(f.vat_percent) || 0),
+        renewal_lead_days: Math.max(1, Math.round(Number(f.renewal_lead_days) || 7)),
+        grace_days: Math.max(0, Math.round(Number(f.grace_days) || 7)),
+        auto_suspend: !!f.auto_suspend,
       };
+
       const { error } = await db.from("company_settings").upsert(payload);
       if (error) throw error;
     },
@@ -203,16 +218,33 @@ function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Billing</CardTitle>
-          <CardDescription>Automation for overdue invoices. A daily job marks unpaid invoices past their due date as overdue, adds this late fee once, suspends the linked hosting, and deactivates the linked domain.</CardDescription>
+          <CardTitle>Billing Automation</CardTitle>
+          <CardDescription>Nightly jobs generate renewal invoices before expiry and enforce overdue policies. VAT is applied to auto-generated renewal invoices.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="max-w-xs">
+        <CardContent className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <Label>VAT (%)</Label>
+            <Input type="number" min="0" step="0.1" value={f.vat_percent} onChange={(e) => setF({ ...f, vat_percent: e.target.value })} />
+          </div>
+          <div>
             <Label>Late fee (% of subtotal)</Label>
             <Input type="number" min="0" step="0.1" value={f.late_fee_percent} onChange={(e) => setF({ ...f, late_fee_percent: e.target.value })} />
           </div>
+          <div>
+            <Label>Renewal invoice lead time (days before expiry)</Label>
+            <Input type="number" min="1" step="1" value={f.renewal_lead_days} onChange={(e) => setF({ ...f, renewal_lead_days: e.target.value })} />
+          </div>
+          <div>
+            <Label>Grace period (days after due date before suspension)</Label>
+            <Input type="number" min="0" step="1" value={f.grace_days} onChange={(e) => setF({ ...f, grace_days: e.target.value })} />
+          </div>
+          <div className="sm:col-span-2 flex items-center gap-3 rounded-md border p-3">
+            <input id="auto_suspend" type="checkbox" checked={f.auto_suspend} onChange={(e) => setF({ ...f, auto_suspend: e.target.checked })} />
+            <Label htmlFor="auto_suspend" className="cursor-pointer">Auto-suspend hosting (WHM) and expire domains after grace period</Label>
+          </div>
         </CardContent>
       </Card>
+
 
       <div className="flex justify-end">
         <Button onClick={() => save.mutate()} disabled={save.isPending}>

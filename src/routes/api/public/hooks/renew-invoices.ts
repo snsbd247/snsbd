@@ -1,17 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-// pg_cron calls this daily. It scans services flagged as `renewable`
-// whose expiry_date is within the next 10 days and creates a draft
-// invoice for each unless one was already generated in the last 30 days.
+// pg_cron calls this daily. Scans renewable services whose expiry_date
+// is within `renewal_lead_days` (company_settings, default 7) and creates
+// a draft invoice for each unless one was already generated in the last 30 days.
+// Applies configured VAT % to each renewal invoice.
 export const Route = createFileRoute("/api/public/hooks/renew-invoices")({
   server: {
     handlers: {
       POST: async () => {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
+        const { data: settings } = await supabaseAdmin
+          .from("company_settings")
+          .select("renewal_lead_days, vat_percent")
+          .maybeSingle();
+        const leadDays = Number((settings as any)?.renewal_lead_days ?? 7);
+        const vatPct = Number((settings as any)?.vat_percent ?? 0);
+
         const today = new Date();
         const cutoff = new Date();
-        cutoff.setDate(today.getDate() + 10);
+        cutoff.setDate(today.getDate() + leadDays);
         const cutoffISO = cutoff.toISOString().slice(0, 10);
         const todayISO = today.toISOString().slice(0, 10);
         const dupWindow = new Date();
@@ -33,13 +41,15 @@ export const Route = createFileRoute("/api/public/hooks/renew-invoices")({
           if (s.last_renewal_invoice_at && new Date(s.last_renewal_invoice_at) > dupWindow) continue;
 
           const subtotal = Number(s.sale_price) || 0;
+          const tax = Math.round(subtotal * vatPct) / 100;
+          const total = subtotal + tax;
           const invoice_number = "INV-" + Date.now().toString().slice(-8) + "-" + Math.floor(Math.random() * 90 + 10);
           const due = new Date(s.expiry_date!);
           const { data: inv, error: invErr } = await supabaseAdmin.from("invoices").insert({
             customer_id: s.customer_id,
             project_id: s.project_id,
             invoice_number,
-            subtotal, tax: 0, total: subtotal, amount_paid: 0,
+            subtotal, tax, total, amount_paid: 0,
             status: "draft",
             issue_date: todayISO,
             due_date: due.toISOString().slice(0, 10),
@@ -60,7 +70,7 @@ export const Route = createFileRoute("/api/public/hooks/renew-invoices")({
           created.push(inv.id);
         }
 
-        return Response.json({ ok: true, count: created.length, invoice_ids: created });
+        return Response.json({ ok: true, count: created.length, invoice_ids: created, vat_percent: vatPct, renewal_lead_days: leadDays });
       },
     },
   },

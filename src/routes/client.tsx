@@ -229,7 +229,12 @@ function PortalPage() {
                   <div className="flex items-center gap-3">
                     <Badge variant="outline" className="capitalize">{i.status}</Badge>
                     <span className="font-medium">{formatBDT(i.total)}</span>
-                    {outstanding > 0 && i.status !== "paid" && <BkashPayButton invoiceId={i.id} amount={outstanding} />}
+                    {outstanding > 0 && i.status !== "paid" && (
+                      <div className="flex gap-2">
+                        <BkashPayButton invoiceId={i.id} amount={outstanding} />
+                        <SslczPayButton invoiceId={i.id} amount={outstanding} />
+                      </div>
+                    )}
                   </div>
                 </CardContent></Card>
               );
@@ -261,6 +266,23 @@ function BkashPayButton({ invoiceId, amount }: { invoiceId: string; amount: numb
     }
   };
   return <Button size="sm" onClick={pay} disabled={busy}>{busy ? "Redirecting…" : `Pay ${formatBDT(amount)} with bKash`}</Button>;
+}
+
+function SslczPayButton({ invoiceId, amount }: { invoiceId: string; amount: number }) {
+  const [busy, setBusy] = useState(false);
+  const pay = async () => {
+    setBusy(true);
+    try {
+      const { sslczCreatePayment } = await import("@/lib/sslcommerz.functions");
+      const callback_url = `${window.location.origin}/client/sslcz-callback`;
+      const res = await sslczCreatePayment({ data: { invoice_id: invoiceId, amount, callback_url } });
+      window.location.href = res.gatewayURL;
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to start SSLCommerz payment");
+      setBusy(false);
+    }
+  };
+  return <Button size="sm" variant="outline" onClick={pay} disabled={busy}>{busy ? "Redirecting…" : `Pay ${formatBDT(amount)} (Cards/Nagad)`}</Button>;
 }
 
 

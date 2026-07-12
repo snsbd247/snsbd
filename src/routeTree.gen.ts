@@ -17,6 +17,7 @@ import { Route as MarketingRouteImport } from './routes/_marketing'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as MarketingIndexRouteImport } from './routes/_marketing.index'
 import { Route as PortalBkashCallbackRouteImport } from './routes/portal.bkash-callback'
+import { Route as ClientSslczCallbackRouteImport } from './routes/client.sslcz-callback'
 import { Route as ClientBkashCallbackRouteImport } from './routes/client.bkash-callback'
 import { Route as MarketingWebHostingRouteImport } from './routes/_marketing.web-hosting'
 import { Route as MarketingVpsRouteImport } from './routes/_marketing.vps'
@@ -99,6 +100,11 @@ const PortalBkashCallbackRoute = PortalBkashCallbackRouteImport.update({
   id: '/bkash-callback',
   path: '/bkash-callback',
   getParentRoute: () => PortalRoute,
+} as any)
+const ClientSslczCallbackRoute = ClientSslczCallbackRouteImport.update({
+  id: '/sslcz-callback',
+  path: '/sslcz-callback',
+  getParentRoute: () => ClientRoute,
 } as any)
 const ClientBkashCallbackRoute = ClientBkashCallbackRouteImport.update({
   id: '/bkash-callback',
@@ -377,6 +383,7 @@ export interface FileRoutesByFullPath {
   '/vps': typeof MarketingVpsRoute
   '/web-hosting': typeof MarketingWebHostingRoute
   '/client/bkash-callback': typeof ClientBkashCallbackRoute
+  '/client/sslcz-callback': typeof ClientSslczCallbackRoute
   '/portal/bkash-callback': typeof PortalBkashCallbackRoute
   '/customers/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
   '/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
@@ -429,6 +436,7 @@ export interface FileRoutesByTo {
   '/vps': typeof MarketingVpsRoute
   '/web-hosting': typeof MarketingWebHostingRoute
   '/client/bkash-callback': typeof ClientBkashCallbackRoute
+  '/client/sslcz-callback': typeof ClientSslczCallbackRoute
   '/portal/bkash-callback': typeof PortalBkashCallbackRoute
   '/customers/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
   '/domains/$domainId': typeof AuthenticatedDomainsDomainIdRoute
@@ -483,6 +491,7 @@ export interface FileRoutesById {
   '/_marketing/vps': typeof MarketingVpsRoute
   '/_marketing/web-hosting': typeof MarketingWebHostingRoute
   '/client/bkash-callback': typeof ClientBkashCallbackRoute
+  '/client/sslcz-callback': typeof ClientSslczCallbackRoute
   '/portal/bkash-callback': typeof PortalBkashCallbackRoute
   '/_marketing/': typeof MarketingIndexRoute
   '/_authenticated/customers_/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
@@ -538,6 +547,7 @@ export interface FileRouteTypes {
     | '/vps'
     | '/web-hosting'
     | '/client/bkash-callback'
+    | '/client/sslcz-callback'
     | '/portal/bkash-callback'
     | '/customers/$customerId'
     | '/domains/$domainId'
@@ -590,6 +600,7 @@ export interface FileRouteTypes {
     | '/vps'
     | '/web-hosting'
     | '/client/bkash-callback'
+    | '/client/sslcz-callback'
     | '/portal/bkash-callback'
     | '/customers/$customerId'
     | '/domains/$domainId'
@@ -643,6 +654,7 @@ export interface FileRouteTypes {
     | '/_marketing/vps'
     | '/_marketing/web-hosting'
     | '/client/bkash-callback'
+    | '/client/sslcz-callback'
     | '/portal/bkash-callback'
     | '/_marketing/'
     | '/_authenticated/customers_/$customerId'
@@ -730,6 +742,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal/bkash-callback'
       preLoaderRoute: typeof PortalBkashCallbackRouteImport
       parentRoute: typeof PortalRoute
+    }
+    '/client/sslcz-callback': {
+      id: '/client/sslcz-callback'
+      path: '/sslcz-callback'
+      fullPath: '/client/sslcz-callback'
+      preLoaderRoute: typeof ClientSslczCallbackRouteImport
+      parentRoute: typeof ClientRoute
     }
     '/client/bkash-callback': {
       id: '/client/bkash-callback'
@@ -1146,10 +1165,12 @@ const MarketingRouteWithChildren = MarketingRoute._addFileChildren(
 
 interface ClientRouteChildren {
   ClientBkashCallbackRoute: typeof ClientBkashCallbackRoute
+  ClientSslczCallbackRoute: typeof ClientSslczCallbackRoute
 }
 
 const ClientRouteChildren: ClientRouteChildren = {
   ClientBkashCallbackRoute: ClientBkashCallbackRoute,
+  ClientSslczCallbackRoute: ClientSslczCallbackRoute,
 }
 
 const ClientRouteWithChildren =
