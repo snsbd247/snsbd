@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, Eye } from "lucide-react";
 import { ClickableRow, StopClick } from "@/components/ui/clickable-row";
+import { usePagination, PaginationControls } from "@/components/ui/pagination-controls";
 
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
