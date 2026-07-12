@@ -64,7 +64,9 @@ export type Database = {
       }
       customer_orders: {
         Row: {
+          activated_service_id: string | null
           admin_notes: string | null
+          billing_cycle: string | null
           created_at: string
           customer_id: string
           customer_notes: string | null
@@ -72,14 +74,20 @@ export type Database = {
           domain_name: string | null
           hosting_package_id: string | null
           id: string
+          manual_sender: string | null
+          manual_trx_id: string | null
           order_type: Database["public"]["Enums"]["customer_order_type"]
+          payment_method: string | null
           quoted_price: number
           service_catalog_id: string | null
           status: Database["public"]["Enums"]["customer_order_status"]
           updated_at: string
+          whm_server_id: string | null
         }
         Insert: {
+          activated_service_id?: string | null
           admin_notes?: string | null
+          billing_cycle?: string | null
           created_at?: string
           customer_id: string
           customer_notes?: string | null
@@ -87,14 +95,20 @@ export type Database = {
           domain_name?: string | null
           hosting_package_id?: string | null
           id?: string
+          manual_sender?: string | null
+          manual_trx_id?: string | null
           order_type: Database["public"]["Enums"]["customer_order_type"]
+          payment_method?: string | null
           quoted_price?: number
           service_catalog_id?: string | null
           status?: Database["public"]["Enums"]["customer_order_status"]
           updated_at?: string
+          whm_server_id?: string | null
         }
         Update: {
+          activated_service_id?: string | null
           admin_notes?: string | null
+          billing_cycle?: string | null
           created_at?: string
           customer_id?: string
           customer_notes?: string | null
@@ -102,11 +116,15 @@ export type Database = {
           domain_name?: string | null
           hosting_package_id?: string | null
           id?: string
+          manual_sender?: string | null
+          manual_trx_id?: string | null
           order_type?: Database["public"]["Enums"]["customer_order_type"]
+          payment_method?: string | null
           quoted_price?: number
           service_catalog_id?: string | null
           status?: Database["public"]["Enums"]["customer_order_status"]
           updated_at?: string
+          whm_server_id?: string | null
         }
         Relationships: [
           {
@@ -130,7 +148,56 @@ export type Database = {
             referencedRelation: "service_catalog"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "customer_orders_whm_server_id_fkey"
+            columns: ["whm_server_id"]
+            isOneToOne: false
+            referencedRelation: "whm_servers"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      domain_pricing: {
+        Row: {
+          created_at: string
+          currency: string
+          featured: boolean
+          id: string
+          is_active: boolean
+          register_price: number
+          renew_price: number
+          sort_order: number
+          tld: string
+          transfer_price: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          featured?: boolean
+          id?: string
+          is_active?: boolean
+          register_price?: number
+          renew_price?: number
+          sort_order?: number
+          tld: string
+          transfer_price?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          featured?: boolean
+          id?: string
+          is_active?: boolean
+          register_price?: number
+          renew_price?: number
+          sort_order?: number
+          tld?: string
+          transfer_price?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       expenses: {
         Row: {
@@ -170,45 +237,57 @@ export type Database = {
       }
       hosting_packages: {
         Row: {
+          badge: string | null
           bandwidth: string | null
           billing_cycle: string
+          category: string
           created_at: string
           description: string | null
           disk_space: string | null
+          featured: boolean
           features: Json
           id: string
           is_active: boolean
           name: string
           price: number
           sort_order: number
+          tagline: string | null
           updated_at: string
         }
         Insert: {
+          badge?: string | null
           bandwidth?: string | null
           billing_cycle?: string
+          category?: string
           created_at?: string
           description?: string | null
           disk_space?: string | null
+          featured?: boolean
           features?: Json
           id?: string
           is_active?: boolean
           name: string
           price?: number
           sort_order?: number
+          tagline?: string | null
           updated_at?: string
         }
         Update: {
+          badge?: string | null
           bandwidth?: string | null
           billing_cycle?: string
+          category?: string
           created_at?: string
           description?: string | null
           disk_space?: string | null
+          featured?: boolean
           features?: Json
           id?: string
           is_active?: boolean
           name?: string
           price?: number
           sort_order?: number
+          tagline?: string | null
           updated_at?: string
         }
         Relationships: []
