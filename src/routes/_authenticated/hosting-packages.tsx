@@ -74,6 +74,7 @@ function PackagesPage() {
         billing_cycle: f.billing_cycle,
         is_active: f.is_active,
         sort_order: Number(f.sort_order) || 0,
+        whm_package_name: f.whm_package_name.trim() || null,
       };
       const q = editing
         ? db.from("hosting_packages").update(payload).eq("id", editing.id)
