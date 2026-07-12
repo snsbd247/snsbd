@@ -62,6 +62,7 @@ function ProjectsPage() {
     mutationFn: async (id: string) => { const { error } = await db.from("projects").delete().eq("id", id); if (error) throw error; },
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["projects"] }); },
   });
+  const pg = usePagination((projects ?? []) as any[]);
 
   return (
     <div className="space-y-6">
