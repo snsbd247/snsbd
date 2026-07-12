@@ -322,7 +322,29 @@ function OrderDetailsPage() {
         </CardContent>
       </Card>
 
-      <Dialog open={activateOpen} onOpenChange={(v) => { if (!v) { setActivateOpen(false); setCreds(null); } }}>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2"><History className="h-4 w-4" />Domain change history</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm">
+          {(domainHistory ?? []).length === 0 ? (
+            <div className="text-muted-foreground">কোনো পরিবর্তন নেই।</div>
+          ) : (
+            <ul className="space-y-2">
+              {(domainHistory ?? []).map((h: any) => (
+                <li key={h.id} className="rounded-md border p-2 flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-xs text-muted-foreground">{formatDate(h.created_at)} · {h.actor?.full_name ?? h.actor?.email ?? "System"}</div>
+                    <div><span className="font-mono line-through text-muted-foreground">{h.old_domain ?? "—"}</span> <span className="mx-1">→</span> <span className="font-mono font-medium">{h.new_domain ?? "—"}</span></div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+
+      <Dialog open={activateOpen} onOpenChange={(v) => { if (!v) { setActivateOpen(false); setCreds(null); setConfirmActivate(false); } }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{creds ? "Order activated" : "Verify & Activate"}</DialogTitle>
