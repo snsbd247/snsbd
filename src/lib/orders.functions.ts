@@ -149,6 +149,8 @@ export const activateHostingOrder = createServerFn({ method: "POST" })
       cpanel_password: cpanelPass,
       whm_created: whmCreated,
       whm_error: whmError,
+      email_sent: emailSent,
+      email_error: emailError,
     };
   });
 
