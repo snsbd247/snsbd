@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Disallow: /dashboard
+Disallow: /portal
+Disallow: /_authenticated
+Disallow: /auth
+
+Sitemap: https://snsbd.lovable.app/sitemap.xml

@@ -1,7 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import { useCompanySettings } from "@/lib/company-settings";
+import { submitLead } from "@/lib/leads";
+import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/_marketing/contact")({
   head: () => ({
@@ -47,29 +51,55 @@ function Page() {
               </div>
             ))}
           </div>
-          <form className="rounded-3xl border border-slate-200 bg-white p-6" onSubmit={(e) => { e.preventDefault(); alert("Thanks — we'll get back to you shortly."); }}>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="text-sm font-medium text-slate-700">
-                Name
-                <input required className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-500" />
-              </label>
-              <label className="text-sm font-medium text-slate-700">
-                Email
-                <input required type="email" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-500" />
-              </label>
-            </div>
-            <label className="mt-4 block text-sm font-medium text-slate-700">
-              Subject
-              <input required className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-500" />
-            </label>
-            <label className="mt-4 block text-sm font-medium text-slate-700">
-              Message
-              <textarea required rows={5} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-500" />
-            </label>
-            <Button className="mt-6 w-full bg-emerald-500 text-[#0B1220] hover:bg-emerald-400" type="submit">Send Message</Button>
-          </form>
+          <ContactForm />
         </div>
       </section>
     </>
   );
 }
+
+function ContactForm() {
+  const [busy, setBusy] = useState(false);
+  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    try {
+      await submitLead({ ...form, source: "contact_form" });
+      toast.success("Thanks — we'll get back to you shortly.");
+      setForm({ name: "", email: "", subject: "", message: "" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form className="rounded-3xl border border-slate-200 bg-white p-6" onSubmit={onSubmit}>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="text-sm font-medium text-slate-700">
+          Name
+          <input required value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-500" />
+        </label>
+        <label className="text-sm font-medium text-slate-700">
+          Email
+          <input required type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-500" />
+        </label>
+      </div>
+      <label className="mt-4 block text-sm font-medium text-slate-700">
+        Subject
+        <input required value={form.subject} onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-500" />
+      </label>
+      <label className="mt-4 block text-sm font-medium text-slate-700">
+        Message
+        <textarea required rows={5} value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-500" />
+      </label>
+      <Button disabled={busy} className="mt-6 w-full bg-emerald-500 text-[#0B1220] hover:bg-emerald-400" type="submit">
+        {busy ? "Sending…" : "Send Message"}
+      </Button>
+    </form>
+  );
+}
+

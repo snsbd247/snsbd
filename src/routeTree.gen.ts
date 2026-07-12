@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as MarketingRouteImport } from './routes/_marketing'
@@ -24,6 +25,7 @@ import { Route as MarketingRegisterDomainRouteImport } from './routes/_marketing
 import { Route as MarketingRefundRouteImport } from './routes/_marketing.refund'
 import { Route as MarketingPrivacyRouteImport } from './routes/_marketing.privacy'
 import { Route as MarketingEmailHostingRouteImport } from './routes/_marketing.email-hosting'
+import { Route as MarketingDomainSearchRouteImport } from './routes/_marketing.domain-search'
 import { Route as MarketingContactRouteImport } from './routes/_marketing.contact'
 import { Route as MarketingBdixHostingRouteImport } from './routes/_marketing.bdix-hosting'
 import { Route as MarketingAboutRouteImport } from './routes/_marketing.about'
@@ -52,8 +54,14 @@ import { Route as AuthenticatedExpensesExpenseIdRouteImport } from './routes/_au
 import { Route as AuthenticatedDomainsDomainIdRouteImport } from './routes/_authenticated/domains_.$domainId'
 import { Route as AuthenticatedCustomersCustomerIdRouteImport } from './routes/_authenticated/customers_.$customerId'
 import { Route as ApiPublicHooksRenewInvoicesRouteImport } from './routes/api/public/hooks/renew-invoices'
+import { Route as ApiPublicHooksNotifyLeadRouteImport } from './routes/api/public/hooks/notify-lead'
 import { Route as ApiPublicHooksEnforceOverdueRouteImport } from './routes/api/public/hooks/enforce-overdue'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortalRoute = PortalRouteImport.update({
   id: '/portal',
   path: '/portal',
@@ -126,6 +134,11 @@ const MarketingPrivacyRoute = MarketingPrivacyRouteImport.update({
 const MarketingEmailHostingRoute = MarketingEmailHostingRouteImport.update({
   id: '/email-hosting',
   path: '/email-hosting',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingDomainSearchRoute = MarketingDomainSearchRouteImport.update({
+  id: '/domain-search',
+  path: '/domain-search',
   getParentRoute: () => MarketingRoute,
 } as any)
 const MarketingContactRoute = MarketingContactRouteImport.update({
@@ -282,6 +295,12 @@ const ApiPublicHooksRenewInvoicesRoute =
     path: '/api/public/hooks/renew-invoices',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksNotifyLeadRoute =
+  ApiPublicHooksNotifyLeadRouteImport.update({
+    id: '/api/public/hooks/notify-lead',
+    path: '/api/public/hooks/notify-lead',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksEnforceOverdueRoute =
   ApiPublicHooksEnforceOverdueRouteImport.update({
     id: '/api/public/hooks/enforce-overdue',
@@ -293,6 +312,7 @@ export interface FileRoutesByFullPath {
   '/': typeof MarketingIndexRoute
   '/auth': typeof AuthRoute
   '/portal': typeof PortalRouteWithChildren
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/domains': typeof AuthenticatedDomainsRoute
@@ -311,6 +331,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof MarketingAboutRoute
   '/bdix-hosting': typeof MarketingBdixHostingRoute
   '/contact': typeof MarketingContactRoute
+  '/domain-search': typeof MarketingDomainSearchRoute
   '/email-hosting': typeof MarketingEmailHostingRoute
   '/privacy': typeof MarketingPrivacyRoute
   '/refund': typeof MarketingRefundRoute
@@ -331,12 +352,14 @@ export interface FileRoutesByFullPath {
   '/team/$memberId': typeof AuthenticatedTeamMemberIdRoute
   '/projects/': typeof AuthenticatedProjectsIndexRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
+  '/api/public/hooks/notify-lead': typeof ApiPublicHooksNotifyLeadRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof MarketingIndexRoute
   '/auth': typeof AuthRoute
   '/portal': typeof PortalRouteWithChildren
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/domains': typeof AuthenticatedDomainsRoute
@@ -355,6 +378,7 @@ export interface FileRoutesByTo {
   '/about': typeof MarketingAboutRoute
   '/bdix-hosting': typeof MarketingBdixHostingRoute
   '/contact': typeof MarketingContactRoute
+  '/domain-search': typeof MarketingDomainSearchRoute
   '/email-hosting': typeof MarketingEmailHostingRoute
   '/privacy': typeof MarketingPrivacyRoute
   '/refund': typeof MarketingRefundRoute
@@ -375,6 +399,7 @@ export interface FileRoutesByTo {
   '/team/$memberId': typeof AuthenticatedTeamMemberIdRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
+  '/api/public/hooks/notify-lead': typeof ApiPublicHooksNotifyLeadRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
 }
 export interface FileRoutesById {
@@ -383,6 +408,7 @@ export interface FileRoutesById {
   '/_marketing': typeof MarketingRouteWithChildren
   '/auth': typeof AuthRoute
   '/portal': typeof PortalRouteWithChildren
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/domains': typeof AuthenticatedDomainsRoute
@@ -401,6 +427,7 @@ export interface FileRoutesById {
   '/_marketing/about': typeof MarketingAboutRoute
   '/_marketing/bdix-hosting': typeof MarketingBdixHostingRoute
   '/_marketing/contact': typeof MarketingContactRoute
+  '/_marketing/domain-search': typeof MarketingDomainSearchRoute
   '/_marketing/email-hosting': typeof MarketingEmailHostingRoute
   '/_marketing/privacy': typeof MarketingPrivacyRoute
   '/_marketing/refund': typeof MarketingRefundRoute
@@ -422,6 +449,7 @@ export interface FileRoutesById {
   '/_authenticated/team_/$memberId': typeof AuthenticatedTeamMemberIdRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
+  '/api/public/hooks/notify-lead': typeof ApiPublicHooksNotifyLeadRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
 }
 export interface FileRouteTypes {
@@ -430,6 +458,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/portal'
+    | '/sitemap.xml'
     | '/customers'
     | '/dashboard'
     | '/domains'
@@ -448,6 +477,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/bdix-hosting'
     | '/contact'
+    | '/domain-search'
     | '/email-hosting'
     | '/privacy'
     | '/refund'
@@ -468,12 +498,14 @@ export interface FileRouteTypes {
     | '/team/$memberId'
     | '/projects/'
     | '/api/public/hooks/enforce-overdue'
+    | '/api/public/hooks/notify-lead'
     | '/api/public/hooks/renew-invoices'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/portal'
+    | '/sitemap.xml'
     | '/customers'
     | '/dashboard'
     | '/domains'
@@ -492,6 +524,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/bdix-hosting'
     | '/contact'
+    | '/domain-search'
     | '/email-hosting'
     | '/privacy'
     | '/refund'
@@ -512,6 +545,7 @@ export interface FileRouteTypes {
     | '/team/$memberId'
     | '/projects'
     | '/api/public/hooks/enforce-overdue'
+    | '/api/public/hooks/notify-lead'
     | '/api/public/hooks/renew-invoices'
   id:
     | '__root__'
@@ -519,6 +553,7 @@ export interface FileRouteTypes {
     | '/_marketing'
     | '/auth'
     | '/portal'
+    | '/sitemap.xml'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
     | '/_authenticated/domains'
@@ -537,6 +572,7 @@ export interface FileRouteTypes {
     | '/_marketing/about'
     | '/_marketing/bdix-hosting'
     | '/_marketing/contact'
+    | '/_marketing/domain-search'
     | '/_marketing/email-hosting'
     | '/_marketing/privacy'
     | '/_marketing/refund'
@@ -558,6 +594,7 @@ export interface FileRouteTypes {
     | '/_authenticated/team_/$memberId'
     | '/_authenticated/projects/'
     | '/api/public/hooks/enforce-overdue'
+    | '/api/public/hooks/notify-lead'
     | '/api/public/hooks/renew-invoices'
   fileRoutesById: FileRoutesById
 }
@@ -566,12 +603,21 @@ export interface RootRouteChildren {
   MarketingRoute: typeof MarketingRouteWithChildren
   AuthRoute: typeof AuthRoute
   PortalRoute: typeof PortalRouteWithChildren
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiPublicHooksEnforceOverdueRoute: typeof ApiPublicHooksEnforceOverdueRoute
+  ApiPublicHooksNotifyLeadRoute: typeof ApiPublicHooksNotifyLeadRoute
   ApiPublicHooksRenewInvoicesRoute: typeof ApiPublicHooksRenewInvoicesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portal': {
       id: '/portal'
       path: '/portal'
@@ -675,6 +721,13 @@ declare module '@tanstack/react-router' {
       path: '/email-hosting'
       fullPath: '/email-hosting'
       preLoaderRoute: typeof MarketingEmailHostingRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/domain-search': {
+      id: '/_marketing/domain-search'
+      path: '/domain-search'
+      fullPath: '/domain-search'
+      preLoaderRoute: typeof MarketingDomainSearchRouteImport
       parentRoute: typeof MarketingRoute
     }
     '/_marketing/contact': {
@@ -873,6 +926,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksRenewInvoicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/notify-lead': {
+      id: '/api/public/hooks/notify-lead'
+      path: '/api/public/hooks/notify-lead'
+      fullPath: '/api/public/hooks/notify-lead'
+      preLoaderRoute: typeof ApiPublicHooksNotifyLeadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/enforce-overdue': {
       id: '/api/public/hooks/enforce-overdue'
       path: '/api/public/hooks/enforce-overdue'
@@ -944,6 +1004,7 @@ interface MarketingRouteChildren {
   MarketingAboutRoute: typeof MarketingAboutRoute
   MarketingBdixHostingRoute: typeof MarketingBdixHostingRoute
   MarketingContactRoute: typeof MarketingContactRoute
+  MarketingDomainSearchRoute: typeof MarketingDomainSearchRoute
   MarketingEmailHostingRoute: typeof MarketingEmailHostingRoute
   MarketingPrivacyRoute: typeof MarketingPrivacyRoute
   MarketingRefundRoute: typeof MarketingRefundRoute
@@ -960,6 +1021,7 @@ const MarketingRouteChildren: MarketingRouteChildren = {
   MarketingAboutRoute: MarketingAboutRoute,
   MarketingBdixHostingRoute: MarketingBdixHostingRoute,
   MarketingContactRoute: MarketingContactRoute,
+  MarketingDomainSearchRoute: MarketingDomainSearchRoute,
   MarketingEmailHostingRoute: MarketingEmailHostingRoute,
   MarketingPrivacyRoute: MarketingPrivacyRoute,
   MarketingRefundRoute: MarketingRefundRoute,
@@ -992,19 +1054,11 @@ const rootRouteChildren: RootRouteChildren = {
   MarketingRoute: MarketingRouteWithChildren,
   AuthRoute: AuthRoute,
   PortalRoute: PortalRouteWithChildren,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiPublicHooksEnforceOverdueRoute: ApiPublicHooksEnforceOverdueRoute,
+  ApiPublicHooksNotifyLeadRoute: ApiPublicHooksNotifyLeadRoute,
   ApiPublicHooksRenewInvoicesRoute: ApiPublicHooksRenewInvoicesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
