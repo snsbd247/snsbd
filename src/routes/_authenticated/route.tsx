@@ -144,6 +144,8 @@ function AuthedLayout() {
                         { to: "/hosting-packages", label: "Hosting Packages" },
                         { to: "/domain-pricing", label: "Domain Pricing" },
                         { to: "/service-catalog", label: "Service Catalog" },
+                        { to: "/addons", label: "Add-ons" },
+                        { to: "/coupons", label: "Coupons" },
                       ]}
                     />
                     <NavGroup
