@@ -33,6 +33,7 @@ import { Route as MarketingContactRouteImport } from './routes/_marketing.contac
 import { Route as MarketingBdixHostingRouteImport } from './routes/_marketing.bdix-hosting'
 import { Route as MarketingAboutRouteImport } from './routes/_marketing.about'
 import { Route as AuthenticatedWhmServersRouteImport } from './routes/_authenticated/whm-servers'
+import { Route as AuthenticatedTicketsRouteImport } from './routes/_authenticated/tickets'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedServiceCatalogRouteImport } from './routes/_authenticated/service-catalog'
@@ -181,6 +182,11 @@ const MarketingAboutRoute = MarketingAboutRouteImport.update({
 const AuthenticatedWhmServersRoute = AuthenticatedWhmServersRouteImport.update({
   id: '/whm-servers',
   path: '/whm-servers',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTicketsRoute = AuthenticatedTicketsRouteImport.update({
+  id: '/tickets',
+  path: '/tickets',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedTeamRoute = AuthenticatedTeamRouteImport.update({
@@ -375,6 +381,7 @@ export interface FileRoutesByFullPath {
   '/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
+  '/tickets': typeof AuthenticatedTicketsRoute
   '/whm-servers': typeof AuthenticatedWhmServersRoute
   '/about': typeof MarketingAboutRoute
   '/bdix-hosting': typeof MarketingBdixHostingRoute
@@ -429,6 +436,7 @@ export interface FileRoutesByTo {
   '/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
+  '/tickets': typeof AuthenticatedTicketsRoute
   '/whm-servers': typeof AuthenticatedWhmServersRoute
   '/about': typeof MarketingAboutRoute
   '/bdix-hosting': typeof MarketingBdixHostingRoute
@@ -485,6 +493,7 @@ export interface FileRoutesById {
   '/_authenticated/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/team': typeof AuthenticatedTeamRoute
+  '/_authenticated/tickets': typeof AuthenticatedTicketsRoute
   '/_authenticated/whm-servers': typeof AuthenticatedWhmServersRoute
   '/_marketing/about': typeof MarketingAboutRoute
   '/_marketing/bdix-hosting': typeof MarketingBdixHostingRoute
@@ -542,6 +551,7 @@ export interface FileRouteTypes {
     | '/service-catalog'
     | '/settings'
     | '/team'
+    | '/tickets'
     | '/whm-servers'
     | '/about'
     | '/bdix-hosting'
@@ -596,6 +606,7 @@ export interface FileRouteTypes {
     | '/service-catalog'
     | '/settings'
     | '/team'
+    | '/tickets'
     | '/whm-servers'
     | '/about'
     | '/bdix-hosting'
@@ -651,6 +662,7 @@ export interface FileRouteTypes {
     | '/_authenticated/service-catalog'
     | '/_authenticated/settings'
     | '/_authenticated/team'
+    | '/_authenticated/tickets'
     | '/_authenticated/whm-servers'
     | '/_marketing/about'
     | '/_marketing/bdix-hosting'
@@ -867,6 +879,13 @@ declare module '@tanstack/react-router' {
       path: '/whm-servers'
       fullPath: '/whm-servers'
       preLoaderRoute: typeof AuthenticatedWhmServersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tickets': {
+      id: '/_authenticated/tickets'
+      path: '/tickets'
+      fullPath: '/tickets'
+      preLoaderRoute: typeof AuthenticatedTicketsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/team': {
@@ -1098,6 +1117,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedServiceCatalogRoute: typeof AuthenticatedServiceCatalogRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
+  AuthenticatedTicketsRoute: typeof AuthenticatedTicketsRoute
   AuthenticatedWhmServersRoute: typeof AuthenticatedWhmServersRoute
   AuthenticatedCustomersCustomerIdRoute: typeof AuthenticatedCustomersCustomerIdRoute
   AuthenticatedDomainsDomainIdRoute: typeof AuthenticatedDomainsDomainIdRoute
@@ -1128,6 +1148,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedServiceCatalogRoute: AuthenticatedServiceCatalogRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
+  AuthenticatedTicketsRoute: AuthenticatedTicketsRoute,
   AuthenticatedWhmServersRoute: AuthenticatedWhmServersRoute,
   AuthenticatedCustomersCustomerIdRoute: AuthenticatedCustomersCustomerIdRoute,
   AuthenticatedDomainsDomainIdRoute: AuthenticatedDomainsDomainIdRoute,
