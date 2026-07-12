@@ -126,7 +126,7 @@ export function ServicesManager({
                     <TableCell><Badge variant={s.status === "active" ? "default" : "secondary"} className="capitalize">{s.status}</Badge></TableCell>
                     <TableCell className="text-right">
                       <StopClick>
-                        <Button size="sm" variant="outline" asChild className="mr-1"><Link to={detailTo} params={detailParams as any}><Eye className="mr-1 h-3.5 w-3.5" />View</Link></Button>
+                        <Button size="icon" variant="ghost" asChild className="hover:bg-sky-100 hover:text-sky-700 dark:hover:bg-sky-950/40"><Link to={detailTo} params={detailParams as any}><Eye className="h-4 w-4" /></Link></Button>
                         {role === "admin" && (
                           <>
                             <Button size="icon" variant="ghost" onClick={() => { setEditing(s); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>

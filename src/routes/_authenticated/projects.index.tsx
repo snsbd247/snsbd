@@ -102,7 +102,7 @@ function ProjectsPage() {
                   <TableCell><ProgressCell stats={progressByProject[p.id]} /></TableCell>
                   <TableCell className="text-right">
                     <StopClick>
-                      <Button size="sm" variant="outline" asChild className="mr-1"><Link to="/projects/$projectId" params={{ projectId: p.id }}><Eye className="mr-1 h-3.5 w-3.5" />View</Link></Button>
+                      <Button size="icon" variant="ghost" asChild className="hover:bg-sky-100 hover:text-sky-700 dark:hover:bg-sky-950/40"><Link to="/projects/$projectId" params={{ projectId: p.id }}><Eye className="h-4 w-4" /></Link></Button>
                       <Button size="icon" variant="ghost" title="Timeline" onClick={() => setTimelineFor(p)}><ListChecks className="h-4 w-4" /></Button>
                       {role === "admin" && (
                         <>

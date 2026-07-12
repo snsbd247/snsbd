@@ -108,8 +108,8 @@ function OrdersPage() {
                 </TableCell>
                 <TableCell className="space-x-2 whitespace-nowrap">
                   <StopClick>
-                    <Button asChild size="sm" variant="outline">
-                      <Link to="/orders/$orderId" params={{ orderId: o.id }}><Eye className="mr-1 h-3.5 w-3.5" />View</Link>
+                    <Button asChild size="icon" variant="ghost" className="hover:bg-sky-100 hover:text-sky-700 dark:hover:bg-sky-950/40">
+                      <Link to="/orders/$orderId" params={{ orderId: o.id }}><Eye className="h-4 w-4" /></Link>
                     </Button>
                     {o.order_type === "hosting" && o.status !== "completed" && (
                       <Button size="sm" onClick={() => { setActivate(o); setWhmServerId(""); setResult(null); }}>

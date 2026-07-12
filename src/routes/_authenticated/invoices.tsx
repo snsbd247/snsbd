@@ -96,7 +96,7 @@ function InvoicesPage() {
                   <TableCell><Badge variant={statusVariant(i.status)} className="capitalize">{i.status}</Badge></TableCell>
                   <TableCell className="text-right">
                     <StopClick>
-                      <Button size="sm" variant="outline" asChild className="mr-1"><Link to="/invoices/$invoiceId" params={{ invoiceId: i.id }}><Eye className="mr-1 h-3.5 w-3.5" />View</Link></Button>
+                      <Button size="icon" variant="ghost" asChild className="hover:bg-sky-100 hover:text-sky-700 dark:hover:bg-sky-950/40"><Link to="/invoices/$invoiceId" params={{ invoiceId: i.id }}><Eye className="h-4 w-4" /></Link></Button>
                       {role === "admin" && (
                         <Button size="icon" variant="ghost" className="hover:bg-rose-100 hover:text-rose-700" onClick={() => { if (confirm("Delete?")) del.mutate(i.id); }}><Trash2 className="h-4 w-4" /></Button>
                       )}

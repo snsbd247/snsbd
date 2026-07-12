@@ -159,7 +159,7 @@ function CustomersPage() {
                     <TableCell className="text-slate-500 dark:text-slate-400 text-sm">{formatDate(c.created_at)}</TableCell>
                     <TableCell className="text-right">
                       <StopClick>
-                        <Button size="sm" variant="outline" asChild className="mr-1"><Link to="/customers/$customerId" params={{ customerId: c.id }}><Eye className="mr-1 h-3.5 w-3.5" />View</Link></Button>
+                        <Button size="icon" variant="ghost" asChild className="hover:bg-sky-100 hover:text-sky-700 dark:hover:bg-sky-950/40"><Link to="/customers/$customerId" params={{ customerId: c.id }}><Eye className="h-4 w-4" /></Link></Button>
                         <Button size="icon" variant="ghost" className="hover:bg-indigo-100 hover:text-indigo-700 dark:hover:bg-indigo-950/40" onClick={() => { setEditing(c); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
                         <Button size="icon" variant="ghost" className="hover:bg-rose-100 hover:text-rose-700 dark:hover:bg-rose-950/40" onClick={() => { if (confirm("Delete this customer? Their auth user remains.")) del.mutate(c.id); }}><Trash2 className="h-4 w-4" /></Button>
                       </StopClick>
