@@ -910,6 +910,44 @@ export type Database = {
         }
         Relationships: []
       }
+      service_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          id: string
+          message: string | null
+          metadata: Json | null
+          service_id: string
+          status: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          service_id: string
+          status: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          service_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_events_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_package_changes: {
         Row: {
           actor_id: string | null
@@ -984,8 +1022,11 @@ export type Database = {
           nameservers: string | null
           notes: string | null
           project_id: string | null
+          provisioning_status: string | null
           purchase_date: string | null
           registrar: string | null
+          registrar_meta: Json | null
+          registrar_order_id: string | null
           renewable: boolean
           sale_price: number
           status: Database["public"]["Enums"]["service_status"]
@@ -1012,8 +1053,11 @@ export type Database = {
           nameservers?: string | null
           notes?: string | null
           project_id?: string | null
+          provisioning_status?: string | null
           purchase_date?: string | null
           registrar?: string | null
+          registrar_meta?: Json | null
+          registrar_order_id?: string | null
           renewable?: boolean
           sale_price?: number
           status?: Database["public"]["Enums"]["service_status"]
@@ -1040,8 +1084,11 @@ export type Database = {
           nameservers?: string | null
           notes?: string | null
           project_id?: string | null
+          provisioning_status?: string | null
           purchase_date?: string | null
           registrar?: string | null
+          registrar_meta?: Json | null
+          registrar_order_id?: string | null
           renewable?: boolean
           sale_price?: number
           status?: Database["public"]["Enums"]["service_status"]

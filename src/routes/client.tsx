@@ -16,6 +16,7 @@ import { formatBDT, formatDate } from "@/lib/format";
 import { SiteFooter } from "@/components/site-footer";
 import { validateDomain } from "@/lib/domain-validate";
 import { supabase } from "@/integrations/supabase/client";
+import { checkDomains } from "@/lib/namecheap.functions";
 
 export const Route = createFileRoute("/client")({
   ssr: false,
@@ -136,12 +137,18 @@ function PortalPage() {
               <CardContent className="space-y-2 text-sm">
                 {services.length === 0 && <div className="text-muted-foreground">No services yet.</div>}
                 {services.map((s) => (
-                  <div key={s.id} className="flex flex-wrap items-center justify-between gap-2 border-b py-2">
-                    <div>
-                      <div className="font-medium">{s.name}</div>
-                      <div className="text-xs text-muted-foreground">{s.type} · expires {formatDate(s.expiry_date)}</div>
+                  <div key={s.id} className="space-y-2 border-b py-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <div className="font-medium">{s.name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {s.type} · expires {formatDate(s.expiry_date)}
+                          {s.provisioning_status && <> · <span className="capitalize">{s.provisioning_status}</span></>}
+                        </div>
+                      </div>
+                      {s.type === "hosting" && s.whm_server_id && <CpanelActions service={s} />}
                     </div>
-                    {s.type === "hosting" && s.whm_server_id && <CpanelActions service={s} />}
+                    {s.type === "domain" && <DomainTimeline serviceId={s.id} fallbackStatus={s.provisioning_status} />}
                   </div>
                 ))}
               </CardContent>
@@ -287,29 +294,49 @@ function SslczPayButton({ invoiceId, amount }: { invoiceId: string; amount: numb
 
 
 /* ---------- Domain ---------- */
+type LiveResult = { domain: string; tld: string; available: boolean; price: number };
+
 function DomainOrder({ uid, onSubmitted }: { uid: string; onSubmitted: () => void }) {
   const [query, setQuery] = useState("");
   const [notes, setNotes] = useState("");
   const [action, setAction] = useState<"register" | "transfer" | "renew">("register");
   const [submitting, setSubmitting] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [results, setResults] = useState<LiveResult[] | null>(null);
 
-  const base = useMemo(() => query.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0].split(".")[0], [query]);
-  const suggestions = useMemo(() => {
-    if (!base) return [];
-    return Object.entries(TLD_PRICES).map(([tld, price]) => ({ domain: base + tld, price }));
-  }, [base]);
+  const runCheck = async () => {
+    const base = query.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0]!.split(".")[0];
+    if (!base) return toast.error("Please enter a domain name");
+    setChecking(true);
+    setResults(null);
+    try {
+      const tlds = Object.entries(TLD_PRICES);
+      const domains = tlds.map(([tld]) => `${base}${tld}`);
+      const { results: api } = await checkDomains({ data: { domains } });
+      const merged: LiveResult[] = tlds.map(([tld, price]) => {
+        const domain = `${base}${tld}`;
+        const hit = api.find((r) => r.domain === domain.toLowerCase());
+        return { domain, tld, available: !!hit?.available, price };
+      });
+      setResults(merged);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Live check failed");
+    } finally {
+      setChecking(false);
+    }
+  };
 
-  const submit = async (domain: string, price: number) => {
+  const submit = async (domain: string, price: number, wantsAction: "register" | "transfer") => {
     const v = validateDomain(domain);
     if (!v.ok) return toast.error(v.error);
     setSubmitting(true);
     const { error } = await getPortalClient().from("customer_orders").insert({
-      customer_id: uid, order_type: "domain", domain_name: v.value, domain_action: action,
+      customer_id: uid, order_type: "domain", domain_name: v.value, domain_action: wantsAction,
       quoted_price: price, customer_notes: notes || null,
     });
     setSubmitting(false);
     if (error) return toast.error(error.message);
-    toast.success("Order submitted. We'll contact you shortly.");
+    toast.success("Order submitted. We'll register it once payment is confirmed.");
     setNotes("");
     onSubmitted();
   };
@@ -319,10 +346,14 @@ function DomainOrder({ uid, onSubmitted }: { uid: string; onSubmitted: () => voi
       <CardHeader><CardTitle className="text-base">Check &amp; order a domain</CardTitle></CardHeader>
       <CardContent className="space-y-4">
         <div className="flex gap-2">
-          <div className="flex-1"><Label>Search domain</Label><Input placeholder="yourbrand" value={query} onChange={(e) => setQuery(e.target.value)} /></div>
+          <div className="flex-1">
+            <Label>Search domain</Label>
+            <Input placeholder="yourbrand" value={query} onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runCheck(); } }} />
+          </div>
           <div className="w-40">
-            <Label>Action</Label>
-            <Select value={action} onValueChange={(v) => setAction(v as any)}>
+            <Label>Default action</Label>
+            <Select value={action} onValueChange={(v) => setAction(v as "register" | "transfer" | "renew")}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="register">Register new</SelectItem>
@@ -331,23 +362,98 @@ function DomainOrder({ uid, onSubmitted }: { uid: string; onSubmitted: () => voi
               </SelectContent>
             </Select>
           </div>
+          <div className="flex items-end">
+            <Button onClick={runCheck} disabled={checking || !query.trim()}>
+              {checking ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
+              {checking ? "Checking…" : "Check live"}
+            </Button>
+          </div>
         </div>
         <div><Label>Notes (optional)</Label><Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} /></div>
-        {suggestions.length === 0 && <div className="text-xs text-muted-foreground">Type a name above to see extensions.</div>}
-        <div className="grid gap-2 md:grid-cols-2">
-          {suggestions.map((s) => (
-            <div key={s.domain} className="flex items-center justify-between border rounded-md p-3">
-              <div><div className="font-medium text-sm">{s.domain}</div><div className="text-xs text-muted-foreground">Quote: {formatBDT(s.price)} / yr</div></div>
-              <Button size="sm" onClick={() => submit(s.domain, s.price)} disabled={submitting}>
-                <ShoppingCart className="mr-2 h-4 w-4" />Order
-              </Button>
-            </div>
-          ))}
-        </div>
+        {!results && !checking && <div className="text-xs text-muted-foreground">Enter a name and press Check live — availability is queried from the registrar in real time.</div>}
+        {results && (
+          <div className="grid gap-2 md:grid-cols-2">
+            {results.map((s) => (
+              <div key={s.domain} className={"flex items-center justify-between border rounded-md p-3 " + (s.available ? "" : "opacity-60")}>
+                <div>
+                  <div className="font-medium text-sm">{s.domain}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {s.available ? <span className="text-emerald-600">Available</span> : <span className="text-rose-500">Taken</span>}
+                    {" · "}Quote: {formatBDT(s.price)} / yr
+                  </div>
+                </div>
+                <Button size="sm" disabled={submitting}
+                  onClick={() => submit(s.domain, s.price, s.available ? "register" : "transfer")}>
+                  <ShoppingCart className="mr-2 h-4 w-4" />
+                  {s.available ? "Register" : "Transfer"}
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
 }
+
+function DomainTimeline({ serviceId, fallbackStatus }: { serviceId: string; fallbackStatus?: string | null }) {
+  const [events, setEvents] = useState<Array<{ id: string; status: string; message: string | null; created_at: string }> | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data } = await getPortalClient()
+        .from("service_events")
+        .select("id, status, message, created_at")
+        .eq("service_id", serviceId)
+        .order("created_at", { ascending: true });
+      if (!cancelled) setEvents((data ?? []) as never);
+    })();
+    return () => { cancelled = true; };
+  }, [serviceId]);
+
+  const stages = ["requested", "processing", "active"] as const;
+  const currentIdx = (() => {
+    if (!events || events.length === 0) return stages.indexOf((fallbackStatus as typeof stages[number]) ?? "requested");
+    const last = events[events.length - 1]!.status;
+    if (last === "failed") return -1;
+    const i = stages.indexOf(last as typeof stages[number]);
+    return i >= 0 ? i : 0;
+  })();
+  const failed = events?.some((e) => e.status === "failed");
+
+  return (
+    <div className="w-full rounded-md border bg-muted/30 p-3 text-xs">
+      <div className="flex items-center gap-2">
+        {stages.map((s, i) => (
+          <div key={s} className="flex items-center gap-2 flex-1">
+            <div className={"h-6 w-6 shrink-0 rounded-full grid place-items-center text-[10px] font-bold " +
+              (failed ? "bg-rose-100 text-rose-600 border border-rose-300" :
+                i <= currentIdx ? "bg-emerald-500 text-white" : "bg-background border text-muted-foreground")}>
+              {i + 1}
+            </div>
+            <div className="flex-1">
+              <div className="capitalize font-medium">{s}</div>
+            </div>
+            {i < stages.length - 1 && <div className={"h-px flex-1 " + (i < currentIdx && !failed ? "bg-emerald-500" : "bg-border")} />}
+          </div>
+        ))}
+        {failed && <Badge variant="destructive">Failed</Badge>}
+      </div>
+      {events && events.length > 0 && (
+        <ul className="mt-3 space-y-1 border-t pt-2">
+          {events.slice(-4).map((e) => (
+            <li key={e.id} className="flex items-start gap-2">
+              <span className="text-muted-foreground shrink-0">{formatDate(e.created_at)}</span>
+              <span className="capitalize font-medium">{e.status}</span>
+              {e.message && <span className="text-muted-foreground">— {e.message}</span>}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 
 /* ---------- Hosting ---------- */
 function HostingOrder({ uid, packages, onSubmitted }: { uid: string; packages: any[]; onSubmitted: () => void }) {
