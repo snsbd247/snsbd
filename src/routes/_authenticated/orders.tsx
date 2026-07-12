@@ -101,10 +101,13 @@ function OrdersPage() {
                     <SelectContent>{STATUSES.map((s) => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}</SelectContent>
                   </Select>
                 </TableCell>
-                <TableCell>
+                <TableCell className="space-x-2 whitespace-nowrap">
+                  <Button asChild size="sm" variant="outline">
+                    <Link to="/orders/$orderId" params={{ orderId: o.id }}>Details</Link>
+                  </Button>
                   {o.order_type === "hosting" && o.status !== "completed" && (
                     <Button size="sm" onClick={() => { setActivate(o); setWhmServerId(""); setResult(null); }}>
-                      <CheckCircle2 className="mr-1 h-3 w-3" />Verify & Activate
+                      <CheckCircle2 className="mr-1 h-3 w-3" />Activate
                     </Button>
                   )}
                 </TableCell>
