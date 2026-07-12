@@ -176,6 +176,7 @@ function AuthedLayout() {
             <SidebarTrigger />
           </div>
           <div className="flex items-center gap-1">
+            <LangCurrencySwitcher />
             <NotificationsBell />
             <DropdownMenu>
             <DropdownMenuTrigger asChild>
