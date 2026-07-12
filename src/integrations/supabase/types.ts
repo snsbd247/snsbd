@@ -20,6 +20,7 @@ export type Database = {
           company_name: string
           created_at: string
           email: string | null
+          facebook_url: string | null
           favicon_url: string | null
           footer_copyright: string | null
           id: boolean
@@ -27,12 +28,14 @@ export type Database = {
           logo_url: string | null
           phone: string | null
           updated_at: string
+          website: string | null
         }
         Insert: {
           address?: string | null
           company_name?: string
           created_at?: string
           email?: string | null
+          facebook_url?: string | null
           favicon_url?: string | null
           footer_copyright?: string | null
           id?: boolean
@@ -40,12 +43,14 @@ export type Database = {
           logo_url?: string | null
           phone?: string | null
           updated_at?: string
+          website?: string | null
         }
         Update: {
           address?: string | null
           company_name?: string
           created_at?: string
           email?: string | null
+          facebook_url?: string | null
           favicon_url?: string | null
           footer_copyright?: string | null
           id?: boolean
@@ -53,6 +58,7 @@ export type Database = {
           logo_url?: string | null
           phone?: string | null
           updated_at?: string
+          website?: string | null
         }
         Relationships: []
       }

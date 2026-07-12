@@ -9,6 +9,8 @@ export type CompanySettings = {
   email: string | null;
   phone: string | null;
   address: string | null;
+  facebook_url: string | null;
+  website: string | null;
   footer_copyright: string | null;
   late_fee_percent: number;
 };
@@ -21,6 +23,8 @@ export const COMPANY_DEFAULTS: CompanySettings = {
   email: null,
   phone: null,
   address: "Bangladesh",
+  facebook_url: null,
+  website: null,
   footer_copyright: null,
   late_fee_percent: 2,
 };

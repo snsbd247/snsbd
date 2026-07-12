@@ -82,6 +82,8 @@ function SettingsPage() {
     email: "",
     phone: "",
     address: "",
+    facebook_url: "",
+    website: "",
     footer_copyright: "",
     late_fee_percent: "2",
   });
@@ -95,6 +97,8 @@ function SettingsPage() {
         email: data.email ?? "",
         phone: data.phone ?? "",
         address: data.address ?? "",
+        facebook_url: data.facebook_url ?? "",
+        website: data.website ?? "",
         footer_copyright: data.footer_copyright ?? "",
         late_fee_percent: String(data.late_fee_percent ?? 2),
       });
@@ -111,6 +115,8 @@ function SettingsPage() {
         email: f.email.trim() || null,
         phone: f.phone.trim() || null,
         address: f.address.trim() || null,
+        facebook_url: f.facebook_url.trim() || null,
+        website: f.website.trim() || null,
         footer_copyright: f.footer_copyright.trim() || null,
         late_fee_percent: Math.max(0, Number(f.late_fee_percent) || 0),
       };
@@ -175,6 +181,8 @@ function SettingsPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div><Label>Email</Label><Input type="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} /></div>
             <div><Label>Mobile</Label><Input value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} /></div>
+            <div><Label>Facebook Page URL</Label><Input placeholder="www.fb.com/yourpage" value={f.facebook_url} onChange={(e) => setF({ ...f, facebook_url: e.target.value })} /></div>
+            <div><Label>Website URL</Label><Input placeholder="www.yourdomain.com" value={f.website} onChange={(e) => setF({ ...f, website: e.target.value })} /></div>
             <div className="sm:col-span-2"><Label>Address</Label><Textarea value={f.address} onChange={(e) => setF({ ...f, address: e.target.value })} /></div>
           </div>
         </CardContent>
