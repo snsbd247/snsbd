@@ -164,6 +164,7 @@ function PackagesPage() {
               <div><Label>Sort</Label><Input type="number" value={f.sort_order} onChange={(e) => setF({ ...f, sort_order: e.target.value })} /></div>
             </div>
             <div className="flex items-center gap-2"><Switch checked={f.is_active} onCheckedChange={(v) => setF({ ...f, is_active: v })} /><Label>Show to customers</Label></div>
+            <WhmPackagePicker value={f.whm_package_name} onChange={(v) => setF({ ...f, whm_package_name: v })} />
           </div>
           <DialogFooter><Button onClick={() => save.mutate()} disabled={!f.name || save.isPending}>Save</Button></DialogFooter>
         </DialogContent>
