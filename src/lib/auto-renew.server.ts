@@ -27,7 +27,7 @@ export async function autoRenewOnInvoicePaid(invoiceId: string): Promise<void> {
 
     const { data: services } = await supabaseAdmin
       .from("services")
-      .select("id, name, type, status, expiry_date, whm_server_id, whm_account_user, cpanel_username, domain_name")
+      .select("id, name, type, status, expiry_date, whm_server_id, whm_account_user, cpanel_username")
       .in("id", serviceIds);
 
     for (const s of services ?? []) {
