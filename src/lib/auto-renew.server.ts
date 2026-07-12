@@ -78,10 +78,10 @@ export async function autoRenewOnInvoicePaid(invoiceId: string): Promise<void> {
       }
 
       // Renew domain via Namecheap
-      if (s.type === "domain" && s.domain_name) {
+      if (s.type === "domain" && s.name) {
         try {
           const { renewDomainNamecheap } = await import("@/lib/namecheap-renew.server");
-          const r = await renewDomainNamecheap(s.domain_name);
+          const r = await renewDomainNamecheap(s.name);
           await supabaseAdmin.from("service_events").insert({
             service_id: s.id,
             status: r.ok ? "domain_renewed" : "domain_renew_failed",
