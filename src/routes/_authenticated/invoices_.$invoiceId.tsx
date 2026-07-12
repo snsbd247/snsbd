@@ -149,32 +149,24 @@ function InvoiceDetailPage() {
             )}
           </div>
           <div
-            className="absolute inset-y-0 right-6 grid grid-cols-2 gap-x-8 gap-y-1 text-white text-[12px] content-center"
+            className="absolute inset-y-0 right-6 grid grid-cols-2 gap-x-10 gap-y-2 text-white text-[12px] content-center"
           >
-            {company?.phone && (
-              <span className="flex items-center gap-2">
-                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/70 text-[9px]">☎</span>
-                {company.phone}
-              </span>
-            )}
-            {company?.email && (
-              <span className="flex items-center gap-2">
-                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/70 text-[9px]">@</span>
-                {company.email}
-              </span>
-            )}
-            {(company as any)?.facebook_url && (
-              <span className="flex items-center gap-2">
-                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/70 text-[9px]">f</span>
-                {String((company as any).facebook_url).replace(/^https?:\/\//, "")}
-              </span>
-            )}
-            {(company as any)?.website && (
-              <span className="flex items-center gap-2">
-                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/70 text-[9px]">⌾</span>
-                {String((company as any).website).replace(/^https?:\/\//, "")}
-              </span>
-            )}
+            <span className="flex items-center gap-2 whitespace-nowrap">
+              <span className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-full border border-white/70 text-[10px]">✆</span>
+              <span className="font-semibold">{company?.phone ?? "+880 0000000000"}</span>
+            </span>
+            <span className="flex items-center gap-2 whitespace-nowrap">
+              <span className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-full border border-white/70 text-[10px]">✉</span>
+              <span className="font-semibold">{company?.email ?? "info@example.com"}</span>
+            </span>
+            <span className="flex items-center gap-2 whitespace-nowrap">
+              <span className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-full border border-white/70 text-[10px]">🌐</span>
+              <span className="font-semibold">{(company?.facebook_url ?? "www.fb.com/yourpage").replace(/^https?:\/\//, "")}</span>
+            </span>
+            <span className="flex items-center gap-2 whitespace-nowrap">
+              <span className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-full border border-white/70 text-[10px]">🌐</span>
+              <span className="font-semibold">{(company?.website ?? "www.yourdomain.com").replace(/^https?:\/\//, "")}</span>
+            </span>
           </div>
         </div>
 
