@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { validateDomain } from "@/lib/domain-validate";
 
 type CreateHostingOrderInput = {
   package_id: string;
@@ -15,12 +16,13 @@ export const createHostingOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: CreateHostingOrderInput) => {
     if (!data.package_id) throw new Error("Package is required");
-    if (!data.domain_name?.trim() || !data.domain_name.includes(".")) throw new Error("Valid domain required");
+    const dom = validateDomain(data.domain_name ?? "");
+    if (!dom.ok) throw new Error(dom.error);
     if (!data.payment_method) throw new Error("Payment method required");
     if (data.payment_method === "manual_bkash" && !data.manual_trx_id?.trim()) {
       throw new Error("bKash transaction ID required");
     }
-    return data;
+    return { ...data, domain_name: dom.value };
   })
   .handler(async ({ data, context }) => {
     const { data: pkg, error: pErr } = await context.supabase
@@ -70,8 +72,9 @@ export const activateHostingOrder = createServerFn({ method: "POST" })
     if (order.order_type !== "hosting") throw new Error("Not a hosting order");
     if (order.status === "completed") throw new Error("Order already active");
 
-    const domain = (order.domain_name || "").trim().toLowerCase();
-    if (!domain || !domain.includes(".")) throw new Error("Order has no valid domain");
+    const dom = validateDomain(order.domain_name ?? "");
+    if (!dom.ok) throw new Error(`Cannot activate: ${dom.error}`);
+    const domain = dom.value;
 
     const cpanelUser = domain.split(".")[0]!.replace(/[^a-z0-9]/g, "").slice(0, 8) || `u${Date.now().toString(36).slice(-6)}`;
     const cpanelPass = Array.from(crypto.getRandomValues(new Uint8Array(9)))
@@ -134,4 +137,48 @@ export const activateHostingOrder = createServerFn({ method: "POST" })
       whm_created: whmCreated,
       whm_error: whmError,
     };
+  });
+
+export const updateOrderDomain = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { order_id: string; domain_name: string }) => {
+    if (!data.order_id) throw new Error("order_id required");
+    const dom = validateDomain(data.domain_name ?? "");
+    if (!dom.ok) throw new Error(dom.error);
+    return { order_id: data.order_id, domain_name: dom.value };
+  })
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Admins only");
+
+    const { data: existing, error: e1 } = await context.supabase
+      .from("customer_orders")
+      .select("id, domain_name, status")
+      .eq("id", data.order_id)
+      .maybeSingle();
+    if (e1 || !existing) throw new Error("Order not found");
+    if (existing.status === "completed") throw new Error("Order already activated — cannot change domain");
+
+    const oldDomain = (existing.domain_name ?? "") as string;
+    if (oldDomain.trim().toLowerCase() === data.domain_name) {
+      return { ok: true, changed: false };
+    }
+
+    const { error: uErr } = await context.supabase
+      .from("customer_orders")
+      .update({ domain_name: data.domain_name } as any)
+      .eq("id", data.order_id);
+    if (uErr) throw new Error(uErr.message);
+
+    await context.supabase.from("order_domain_changes").insert({
+      order_id: data.order_id,
+      actor_id: context.userId,
+      old_domain: oldDomain || null,
+      new_domain: data.domain_name,
+    } as any);
+
+    return { ok: true, changed: true };
   });

@@ -11,6 +11,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { formatBDT } from "@/lib/format";
 import { createHostingOrder } from "@/lib/orders.functions";
+import { validateDomain } from "@/lib/domain-validate";
 import { bkashCreatePayment } from "@/lib/bkash.functions";
 import { useCompanySettings } from "@/lib/company-settings";
 import { Loader2, ArrowLeft, CheckCircle2 } from "lucide-react";
@@ -119,8 +120,12 @@ function OrderPage() {
         <CardContent className="space-y-4">
           <div>
             <Label htmlFor="domain">Domain name *</Label>
-            <Input id="domain" placeholder="yoursite.com" value={domain} onChange={(e) => setDomain(e.target.value)} />
-            <p className="mt-1 text-xs text-muted-foreground">Enter the domain you'll host on this plan (existing or new).</p>
+            <Input id="domain" placeholder="example.com" value={domain} onChange={(e) => setDomain(e.target.value)} aria-invalid={domain.length > 0 && !validateDomain(domain).ok} />
+            {domain.length > 0 && !validateDomain(domain).ok ? (
+              <p className="mt-1 text-xs text-destructive">{(validateDomain(domain) as { ok: false; error: string }).error}</p>
+            ) : (
+              <p className="mt-1 text-xs text-muted-foreground">শুধু বেয়ার ডোমেইন লিখুন (http/https, www বা path ছাড়া)। যেমন: example.com</p>
+            )}
           </div>
           <div>
             <Label>Billing cycle</Label>
@@ -185,7 +190,7 @@ function OrderPage() {
 
       <div className="flex justify-end gap-2">
         <Button variant="outline" onClick={() => navigate({ to: "/" })}>Cancel</Button>
-        <Button onClick={() => submit.mutate()} disabled={submit.isPending || !domain.trim()}>
+        <Button onClick={() => submit.mutate()} disabled={submit.isPending || !validateDomain(domain).ok}>
           {submit.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Place order
         </Button>

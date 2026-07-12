@@ -2,19 +2,21 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, CheckCircle2, Copy, Loader2 } from "lucide-react";
+import { AlertTriangle, ArrowLeft, CheckCircle2, Copy, History, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { db } from "@/lib/db-shim";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
-import { activateHostingOrder } from "@/lib/orders.functions";
+import { activateHostingOrder, updateOrderDomain } from "@/lib/orders.functions";
+import { validateDomain } from "@/lib/domain-validate";
 
 export const Route = createFileRoute("/_authenticated/orders_/$orderId")({
   component: OrderDetailsPage,
@@ -32,6 +34,7 @@ function OrderDetailsPage() {
   const [editingDomain, setEditingDomain] = useState(false);
   const [whmServerId, setWhmServerId] = useState<string>("");
   const [activateOpen, setActivateOpen] = useState(false);
+  const [confirmActivate, setConfirmActivate] = useState(false);
   const [creds, setCreds] = useState<{ cpanel_username: string; cpanel_password: string; whm_created: boolean; whm_error: string | null } | null>(null);
 
   const { data: order, isLoading, error: orderError } = useQuery({
@@ -94,6 +97,36 @@ function OrderDetailsPage() {
     onError: (e: any) => toast.error(e.message),
   });
 
+  const domainMut = useMutation({
+    mutationFn: async (domain_name: string) => updateOrderDomain({ data: { order_id: orderId, domain_name } }),
+    onSuccess: (r: any) => {
+      toast.success(r.changed ? "Domain updated & logged" : "No change");
+      setEditingDomain(false);
+      qc.invalidateQueries({ queryKey: ["customer_order", orderId] });
+      qc.invalidateQueries({ queryKey: ["customer_orders"] });
+      qc.invalidateQueries({ queryKey: ["order_domain_changes", orderId] });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const { data: domainHistory } = useQuery({
+    queryKey: ["order_domain_changes", orderId],
+    queryFn: async () => {
+      const { data } = await db.from("order_domain_changes")
+        .select("id, old_domain, new_domain, actor_id, created_at")
+        .eq("order_id", orderId)
+        .order("created_at", { ascending: false });
+      const rows = (data ?? []) as any[];
+      const actorIds = Array.from(new Set(rows.map((r) => r.actor_id).filter(Boolean)));
+      if (actorIds.length) {
+        const { data: profs } = await db.from("profiles").select("id, full_name, email").in("id", actorIds);
+        const map = new Map((profs ?? []).map((p: any) => [p.id, p]));
+        return rows.map((r) => ({ ...r, actor: map.get(r.actor_id) ?? null }));
+      }
+      return rows.map((r) => ({ ...r, actor: null }));
+    },
+  });
+
   const activateMut = useMutation({
     mutationFn: async () => activateHostingOrder({ data: { order_id: orderId, whm_server_id: whmServerId || null } }),
     onSuccess: (r: any) => {
@@ -127,15 +160,26 @@ function OrderDetailsPage() {
           <Badge variant="outline" className="capitalize">{o.status}</Badge>
           {canActivate && (
             <Button
-              onClick={() => { setActivateOpen(true); setCreds(null); setWhmServerId(""); }}
-              disabled={!o.domain_name || !String(o.domain_name).includes(".")}
-              title={!o.domain_name ? "Add a domain first" : ""}
+              onClick={() => { setActivateOpen(true); setCreds(null); setWhmServerId(""); setConfirmActivate(false); }}
+              disabled={!validateDomain(o.domain_name ?? "").ok}
+              title={!validateDomain(o.domain_name ?? "").ok ? "একটি বৈধ ডোমেইন যোগ করুন" : ""}
             >
               <CheckCircle2 className="mr-2 h-4 w-4" />Verify &amp; Activate
             </Button>
           )}
         </div>
       </div>
+
+      {canActivate && !validateDomain(o.domain_name ?? "").ok && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Activation blocked — invalid domain</AlertTitle>
+          <AlertDescription>
+            {(validateDomain(o.domain_name ?? "") as { ok: false; error: string }).error}
+            {" "}উপরের "Domain" ঘরে সঠিক ডোমেইন সেভ করলে Activate বাটন সক্রিয় হবে।
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
@@ -155,14 +199,22 @@ function OrderDetailsPage() {
                 )}
               </div>
               {editingDomain ? (
-                <div className="flex gap-2">
-                  <Input value={domainEdit} onChange={(e) => setDomainEdit(e.target.value)} placeholder="example.com" className="h-8" />
-                  <Button size="sm" onClick={() => {
-                    const d = domainEdit.trim().toLowerCase();
-                    if (o.order_type === "hosting" && (!d || !d.includes("."))) { toast.error("Valid domain required"); return; }
-                    saveMeta.mutate({ domain_name: d || null as any }, { onSuccess: () => setEditingDomain(false) });
-                  }} disabled={saveMeta.isPending}>Save</Button>
-                  <Button size="sm" variant="ghost" onClick={() => setEditingDomain(false)}>Cancel</Button>
+                <div className="space-y-1">
+                  <div className="flex gap-2">
+                    <Input value={domainEdit} onChange={(e) => setDomainEdit(e.target.value)} placeholder="example.com" className="h-8" aria-invalid={domainEdit.length > 0 && !validateDomain(domainEdit).ok} />
+                    <Button size="sm" onClick={() => {
+                      const v = validateDomain(domainEdit);
+                      if (!v.ok) { toast.error(v.error); return; }
+                      if (o.domain_name && v.value !== String(o.domain_name).toLowerCase()) {
+                        if (!confirm(`ডোমেইন পরিবর্তন করবেন?\n\nপুরাতন: ${o.domain_name}\nনতুন: ${v.value}\n\nএই পরিবর্তন অডিট লগে যাবে।`)) return;
+                      }
+                      domainMut.mutate(v.value);
+                    }} disabled={domainMut.isPending || !validateDomain(domainEdit).ok}>Save</Button>
+                    <Button size="sm" variant="ghost" onClick={() => setEditingDomain(false)}>Cancel</Button>
+                  </div>
+                  {domainEdit.length > 0 && !validateDomain(domainEdit).ok && (
+                    <p className="text-xs text-destructive">{(validateDomain(domainEdit) as { ok: false; error: string }).error}</p>
+                  )}
                 </div>
               ) : (
                 <div className="text-sm">{o.domain_name || <span className="text-destructive italic">Missing — required for activation</span>} {o.domain_action && <span className="text-xs text-muted-foreground capitalize">({o.domain_action.replace("_", " ")})</span>}</div>
@@ -270,7 +322,29 @@ function OrderDetailsPage() {
         </CardContent>
       </Card>
 
-      <Dialog open={activateOpen} onOpenChange={(v) => { if (!v) { setActivateOpen(false); setCreds(null); } }}>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2"><History className="h-4 w-4" />Domain change history</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm">
+          {(domainHistory ?? []).length === 0 ? (
+            <div className="text-muted-foreground">কোনো পরিবর্তন নেই।</div>
+          ) : (
+            <ul className="space-y-2">
+              {(domainHistory ?? []).map((h: any) => (
+                <li key={h.id} className="rounded-md border p-2 flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-xs text-muted-foreground">{formatDate(h.created_at)} · {h.actor?.full_name ?? h.actor?.email ?? "System"}</div>
+                    <div><span className="font-mono line-through text-muted-foreground">{h.old_domain ?? "—"}</span> <span className="mx-1">→</span> <span className="font-mono font-medium">{h.new_domain ?? "—"}</span></div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+
+      <Dialog open={activateOpen} onOpenChange={(v) => { if (!v) { setActivateOpen(false); setCreds(null); setConfirmActivate(false); } }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{creds ? "Order activated" : "Verify & Activate"}</DialogTitle>
@@ -283,6 +357,11 @@ function OrderDetailsPage() {
 
           {!creds && (
             <div className="space-y-3">
+              <div className="rounded-md border p-3 text-sm space-y-1">
+                <div><span className="text-muted-foreground">Customer:</span> {o.profiles?.full_name ?? o.profiles?.email ?? "—"}</div>
+                <div><span className="text-muted-foreground">Domain:</span> <span className="font-mono">{o.domain_name}</span></div>
+                <div><span className="text-muted-foreground">Plan:</span> {o.hosting_packages?.name ?? "—"} · <span className="font-medium">{formatBDT(o.quoted_price)}</span></div>
+              </div>
               {o.manual_trx_id && (
                 <div className="rounded-md bg-muted p-3 text-sm">
                   <div><span className="text-muted-foreground">TRX:</span> <span className="font-mono">{o.manual_trx_id}</span></div>
@@ -296,6 +375,10 @@ function OrderDetailsPage() {
                   <SelectContent>{(whmServers ?? []).map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
+              <label className="flex items-start gap-2 rounded-md border p-3 text-sm cursor-pointer">
+                <input type="checkbox" checked={confirmActivate} onChange={(e) => setConfirmActivate(e.target.checked)} className="mt-0.5" />
+                <span>আমি নিশ্চিত করছি যে পেমেন্ট যাচাই হয়েছে এবং ডোমেইন <span className="font-mono">{o.domain_name}</span> সঠিক। এখন এই অর্ডার Activate করা হবে।</span>
+              </label>
             </div>
           )}
 
@@ -312,7 +395,7 @@ function OrderDetailsPage() {
             {!creds ? (
               <>
                 <Button variant="outline" onClick={() => setActivateOpen(false)}>Cancel</Button>
-                <Button onClick={() => activateMut.mutate()} disabled={activateMut.isPending}>
+                <Button onClick={() => activateMut.mutate()} disabled={activateMut.isPending || !confirmActivate || !validateDomain(o.domain_name ?? "").ok}>
                   {activateMut.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Activate
                 </Button>
               </>
