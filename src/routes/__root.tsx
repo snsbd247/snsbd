@@ -90,11 +90,31 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function DynamicFavicon() {
+  const { data } = useQuery({
+    queryKey: ["company-settings", "favicon"],
+    queryFn: getCompanySettings,
+    staleTime: 5 * 60 * 1000,
+  });
+  useEffect(() => {
+    const url = data?.favicon_url;
+    if (!url || typeof document === "undefined") return;
+    const links = document.querySelectorAll<HTMLLinkElement>("link[rel~='icon']");
+    links.forEach((l) => l.parentNode?.removeChild(l));
+    const link = document.createElement("link");
+    link.rel = "icon";
+    link.href = url;
+    document.head.appendChild(link);
+  }, [data?.favicon_url]);
+  return null;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <DynamicFavicon />
         <Outlet />
         <Toaster richColors position="top-right" />
       </AuthProvider>
