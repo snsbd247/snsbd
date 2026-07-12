@@ -86,7 +86,12 @@ function SettingsPage() {
     website: "",
     footer_copyright: "",
     late_fee_percent: "2",
+    vat_percent: "0",
+    renewal_lead_days: "7",
+    grace_days: "7",
+    auto_suspend: true,
   });
+
 
   useEffect(() => {
     if (data) {
@@ -101,7 +106,12 @@ function SettingsPage() {
         website: data.website ?? "",
         footer_copyright: data.footer_copyright ?? "",
         late_fee_percent: String(data.late_fee_percent ?? 2),
+        vat_percent: String((data as any).vat_percent ?? 0),
+        renewal_lead_days: String((data as any).renewal_lead_days ?? 7),
+        grace_days: String((data as any).grace_days ?? 7),
+        auto_suspend: (data as any).auto_suspend !== false,
       });
+
     }
   }, [data]);
 
@@ -119,7 +129,12 @@ function SettingsPage() {
         website: f.website.trim() || null,
         footer_copyright: f.footer_copyright.trim() || null,
         late_fee_percent: Math.max(0, Number(f.late_fee_percent) || 0),
+        vat_percent: Math.max(0, Number(f.vat_percent) || 0),
+        renewal_lead_days: Math.max(1, Math.round(Number(f.renewal_lead_days) || 7)),
+        grace_days: Math.max(0, Math.round(Number(f.grace_days) || 7)),
+        auto_suspend: !!f.auto_suspend,
       };
+
       const { error } = await db.from("company_settings").upsert(payload);
       if (error) throw error;
     },
