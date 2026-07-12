@@ -72,8 +72,9 @@ export const activateHostingOrder = createServerFn({ method: "POST" })
     if (order.order_type !== "hosting") throw new Error("Not a hosting order");
     if (order.status === "completed") throw new Error("Order already active");
 
-    const domain = (order.domain_name || "").trim().toLowerCase();
-    if (!domain || !domain.includes(".")) throw new Error("Order has no valid domain");
+    const dom = validateDomain(order.domain_name ?? "");
+    if (!dom.ok) throw new Error(`Cannot activate: ${dom.error}`);
+    const domain = dom.value;
 
     const cpanelUser = domain.split(".")[0]!.replace(/[^a-z0-9]/g, "").slice(0, 8) || `u${Date.now().toString(36).slice(-6)}`;
     const cpanelPass = Array.from(crypto.getRandomValues(new Uint8Array(9)))
