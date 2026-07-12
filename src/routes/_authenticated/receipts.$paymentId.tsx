@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, Printer, Loader2 } from "lucide-react";
 import { downloadElementAsPdf, printElementAsPdf } from "@/lib/pdf";
@@ -20,6 +20,7 @@ function ReceiptPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: company } = useCompanySettings();
+  const [pdfBusy, setPdfBusy] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["payment-receipt", paymentId],
@@ -64,8 +65,12 @@ function ReceiptPage() {
           <ArrowLeft className="mr-2 h-4 w-4" />Back to invoice
         </Button>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => printElementAsPdf("receipt-pdf", "a5", "l")}><Printer className="mr-2 h-4 w-4" />Print</Button>
-          <Button onClick={() => downloadElementAsPdf("receipt-pdf", `${pay.receipt_number ?? "receipt"}.pdf`, "a5", "l")}><Download className="mr-2 h-4 w-4" />Download PDF</Button>
+          <Button variant="outline" disabled={pdfBusy} onClick={async () => { setPdfBusy(true); try { await printElementAsPdf("receipt-pdf", "a5", "l"); } finally { setPdfBusy(false); } }}>
+            {pdfBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Printer className="mr-2 h-4 w-4" />}Print
+          </Button>
+          <Button disabled={pdfBusy} onClick={async () => { setPdfBusy(true); try { await downloadElementAsPdf("receipt-pdf", `${pay.receipt_number ?? "receipt"}.pdf`, "a5", "l"); } finally { setPdfBusy(false); } }}>
+            {pdfBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}Download PDF
+          </Button>
         </div>
       </div>
 

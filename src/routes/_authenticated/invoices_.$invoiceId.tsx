@@ -49,6 +49,7 @@ function InvoiceDetailPage() {
 
   const [payAmount, setPayAmount] = useState("");
   const [payMethod, setPayMethod] = useState("cash");
+  const [pdfBusy, setPdfBusy] = useState(false);
 
   const addPayment = useMutation({
     mutationFn: async () => {
@@ -111,8 +112,12 @@ function InvoiceDetailPage() {
               </SelectContent>
             </Select>
           )}
-          <Button variant="outline" onClick={() => printElementAsPdf("invoice-pdf", "a4", "p")}><Printer className="mr-2 h-4 w-4" />Print</Button>
-          <Button onClick={() => downloadElementAsPdf("invoice-pdf", `${inv.invoice_number}.pdf`, "a4", "p")}><Download className="mr-2 h-4 w-4" />Download PDF</Button>
+          <Button variant="outline" disabled={pdfBusy} onClick={async () => { setPdfBusy(true); try { await printElementAsPdf("invoice-pdf", "a4", "p"); } finally { setPdfBusy(false); } }}>
+            {pdfBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Printer className="mr-2 h-4 w-4" />}Print
+          </Button>
+          <Button disabled={pdfBusy} onClick={async () => { setPdfBusy(true); try { await downloadElementAsPdf("invoice-pdf", `${inv.invoice_number}.pdf`, "a4", "p"); } finally { setPdfBusy(false); } }}>
+            {pdfBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}Download PDF
+          </Button>
         </div>
       </div>
 

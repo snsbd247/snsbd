@@ -9,6 +9,15 @@ async function buildPdf(elementId: string, size: Size, orientation: Orient) {
   const el = document.getElementById(elementId);
   if (!el) throw new Error(`Element #${elementId} not found`);
 
+  // Ensure webfonts (incl. Bengali) are loaded so html2canvas rasterises them correctly
+  try {
+    if (document.fonts && (document.fonts as any).ready) {
+      await (document.fonts as any).ready;
+    }
+  } catch {
+    /* ignore */
+  }
+
   const canvas = await html2canvas(el, {
     scale: 2,
     useCORS: true,
@@ -59,7 +68,30 @@ export async function downloadElementAsPdf(
   } catch (e: any) {
     console.error("PDF download failed", e);
     toast.error(`PDF download failed: ${e?.message ?? e}`, { id: tid });
+    throw e;
   }
+}
+
+function printViaWindow(blobUrl: string, tid: string | number) {
+  const win = window.open(blobUrl, "_blank");
+  if (!win) {
+    toast.error("Popup blocked. Allow popups to print, or use Download PDF.", { id: tid });
+    return false;
+  }
+  const tryPrint = () => {
+    try {
+      win.focus();
+      win.print();
+      toast.success("Print dialog opened", { id: tid });
+    } catch (err: any) {
+      console.error("Window print failed", err);
+      toast.error(`Print failed: ${err?.message ?? err}`, { id: tid });
+    }
+  };
+  // Give the PDF viewer a moment to render before invoking print
+  win.addEventListener("load", () => setTimeout(tryPrint, 500));
+  setTimeout(tryPrint, 1500);
+  return true;
 }
 
 export async function printElementAsPdf(
@@ -75,6 +107,15 @@ export async function printElementAsPdf(
     const blob = pdf.output("blob");
     blobUrl = URL.createObjectURL(blob);
 
+    // Mobile / Safari often can't print PDFs from a hidden iframe — go straight to window.open
+    const ua = navigator.userAgent;
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+    if (isMobile || isSafari) {
+      printViaWindow(blobUrl, tid);
+      return;
+    }
+
     iframe = document.createElement("iframe");
     iframe.style.position = "fixed";
     iframe.style.right = "0";
@@ -85,28 +126,33 @@ export async function printElementAsPdf(
     iframe.src = blobUrl;
     document.body.appendChild(iframe);
 
+    let printed = false;
     iframe.onload = () => {
       setTimeout(() => {
         try {
           iframe!.contentWindow?.focus();
           iframe!.contentWindow?.print();
+          printed = true;
           toast.success("Print dialog opened", { id: tid });
         } catch (err: any) {
-          console.error("Print failed", err);
-          toast.error(`Print failed: ${err?.message ?? err}`, { id: tid });
+          console.error("Iframe print blocked, falling back to window.open", err);
+          if (blobUrl) printViaWindow(blobUrl, tid);
         }
-      }, 300);
+      }, 400);
     };
     iframe.onerror = (err) => {
-      console.error("PDF load failed", err);
-      toast.error("Could not load PDF for print", { id: tid });
-      if (iframe) document.body.removeChild(iframe);
-      if (blobUrl) URL.revokeObjectURL(blobUrl);
+      console.error("PDF iframe load failed, falling back to window.open", err);
+      if (blobUrl) printViaWindow(blobUrl, tid);
     };
+    // Safety net: if the iframe never fires load, fall back
+    setTimeout(() => {
+      if (!printed && blobUrl) printViaWindow(blobUrl, tid);
+    }, 3000);
   } catch (e: any) {
     console.error("PDF print failed", e);
     toast.error(`PDF print failed: ${e?.message ?? e}`, { id: tid });
     if (iframe && iframe.parentNode) iframe.parentNode.removeChild(iframe);
     if (blobUrl) URL.revokeObjectURL(blobUrl);
+    throw e;
   }
 }
