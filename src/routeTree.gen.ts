@@ -59,6 +59,7 @@ import { Route as AuthenticatedExpensesExpenseIdRouteImport } from './routes/_au
 import { Route as AuthenticatedDomainsDomainIdRouteImport } from './routes/_authenticated/domains_.$domainId'
 import { Route as AuthenticatedCustomersCustomerIdRouteImport } from './routes/_authenticated/customers_.$customerId'
 import { Route as ApiPublicHooksRenewInvoicesRouteImport } from './routes/api/public/hooks/renew-invoices'
+import { Route as ApiPublicHooksRegistrarCallbackRouteImport } from './routes/api/public/hooks/registrar-callback'
 import { Route as ApiPublicHooksNotifyLeadRouteImport } from './routes/api/public/hooks/notify-lead'
 import { Route as ApiPublicHooksEnforceOverdueRouteImport } from './routes/api/public/hooks/enforce-overdue'
 import { Route as AuthenticatedOrderHostingPackageIdRouteImport } from './routes/_authenticated/order.hosting.$packageId'
@@ -328,6 +329,12 @@ const ApiPublicHooksRenewInvoicesRoute =
     path: '/api/public/hooks/renew-invoices',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksRegistrarCallbackRoute =
+  ApiPublicHooksRegistrarCallbackRouteImport.update({
+    id: '/api/public/hooks/registrar-callback',
+    path: '/api/public/hooks/registrar-callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksNotifyLeadRoute =
   ApiPublicHooksNotifyLeadRouteImport.update({
     id: '/api/public/hooks/notify-lead',
@@ -398,6 +405,7 @@ export interface FileRoutesByFullPath {
   '/order/hosting/$packageId': typeof AuthenticatedOrderHostingPackageIdRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
   '/api/public/hooks/notify-lead': typeof ApiPublicHooksNotifyLeadRoute
+  '/api/public/hooks/registrar-callback': typeof ApiPublicHooksRegistrarCallbackRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
 }
 export interface FileRoutesByTo {
@@ -451,6 +459,7 @@ export interface FileRoutesByTo {
   '/order/hosting/$packageId': typeof AuthenticatedOrderHostingPackageIdRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
   '/api/public/hooks/notify-lead': typeof ApiPublicHooksNotifyLeadRoute
+  '/api/public/hooks/registrar-callback': typeof ApiPublicHooksRegistrarCallbackRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
 }
 export interface FileRoutesById {
@@ -507,6 +516,7 @@ export interface FileRoutesById {
   '/_authenticated/order/hosting/$packageId': typeof AuthenticatedOrderHostingPackageIdRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
   '/api/public/hooks/notify-lead': typeof ApiPublicHooksNotifyLeadRoute
+  '/api/public/hooks/registrar-callback': typeof ApiPublicHooksRegistrarCallbackRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
 }
 export interface FileRouteTypes {
@@ -562,6 +572,7 @@ export interface FileRouteTypes {
     | '/order/hosting/$packageId'
     | '/api/public/hooks/enforce-overdue'
     | '/api/public/hooks/notify-lead'
+    | '/api/public/hooks/registrar-callback'
     | '/api/public/hooks/renew-invoices'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -615,6 +626,7 @@ export interface FileRouteTypes {
     | '/order/hosting/$packageId'
     | '/api/public/hooks/enforce-overdue'
     | '/api/public/hooks/notify-lead'
+    | '/api/public/hooks/registrar-callback'
     | '/api/public/hooks/renew-invoices'
   id:
     | '__root__'
@@ -670,6 +682,7 @@ export interface FileRouteTypes {
     | '/_authenticated/order/hosting/$packageId'
     | '/api/public/hooks/enforce-overdue'
     | '/api/public/hooks/notify-lead'
+    | '/api/public/hooks/registrar-callback'
     | '/api/public/hooks/renew-invoices'
   fileRoutesById: FileRoutesById
 }
@@ -682,6 +695,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiPublicHooksEnforceOverdueRoute: typeof ApiPublicHooksEnforceOverdueRoute
   ApiPublicHooksNotifyLeadRoute: typeof ApiPublicHooksNotifyLeadRoute
+  ApiPublicHooksRegistrarCallbackRoute: typeof ApiPublicHooksRegistrarCallbackRoute
   ApiPublicHooksRenewInvoicesRoute: typeof ApiPublicHooksRenewInvoicesRoute
 }
 
@@ -1037,6 +1051,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksRenewInvoicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/registrar-callback': {
+      id: '/api/public/hooks/registrar-callback'
+      path: '/api/public/hooks/registrar-callback'
+      fullPath: '/api/public/hooks/registrar-callback'
+      preLoaderRoute: typeof ApiPublicHooksRegistrarCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/notify-lead': {
       id: '/api/public/hooks/notify-lead'
       path: '/api/public/hooks/notify-lead'
@@ -1196,6 +1217,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiPublicHooksEnforceOverdueRoute: ApiPublicHooksEnforceOverdueRoute,
   ApiPublicHooksNotifyLeadRoute: ApiPublicHooksNotifyLeadRoute,
+  ApiPublicHooksRegistrarCallbackRoute: ApiPublicHooksRegistrarCallbackRoute,
   ApiPublicHooksRenewInvoicesRoute: ApiPublicHooksRenewInvoicesRoute,
 }
 export const routeTree = rootRouteImport
