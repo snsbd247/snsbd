@@ -120,6 +120,7 @@ function WhmServersPage() {
             {rows && rows.length === 0 && <TableRow><TableCell colSpan={6} className="text-center py-8 text-sm text-muted-foreground">No WHM servers yet.</TableCell></TableRow>}
           </TableBody>
         </Table>
+        <PaginationControls {...pg} />
       </CardContent></Card>
 
       <Dialog open={open} onOpenChange={setOpen}>
