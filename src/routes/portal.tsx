@@ -52,7 +52,7 @@ function PortalPage() {
         .eq("customer_id", id).order("issue_date", { ascending: false }),
       client.from("hosting_packages").select("*").eq("is_active", true).order("sort_order").order("price"),
       client.from("service_catalog").select("*").eq("is_active", true).order("sort_order").order("name"),
-      client.from("customer_orders").select("*, hosting_packages(name), service_catalog(name)")
+      client.from("customer_orders").select("*, hosting_packages(name), service_catalog(name), services!customer_orders_activated_service_id_fkey(id, name, cpanel_username, cpanel_password, status, expiry_date)")
         .eq("customer_id", id).order("created_at", { ascending: false }),
     ]);
     setProfile(p.data);
