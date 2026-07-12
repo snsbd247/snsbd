@@ -200,7 +200,7 @@ export const cpanelCreateAccount = createServerFn({ method: "POST" })
     await assertAdmin(context);
     const { data: svc, error } = await context.supabase
       .from("services")
-      .select("id, customer_id, type, name, cpanel_username, cpanel_password, whm_server_id, whm_account_user, hosting_package_id, hosting_packages(name)")
+      .select("id, customer_id, type, name, cpanel_username, cpanel_password, whm_server_id, whm_account_user, hosting_package_id, hosting_packages(name, whm_package_name)")
       .eq("id", data.service_id)
       .maybeSingle();
     if (error || !svc) throw new Error("Service not found");
