@@ -17,47 +17,59 @@ export type Database = {
       company_settings: {
         Row: {
           address: string | null
+          auto_suspend: boolean
           company_name: string
           created_at: string
           email: string | null
           facebook_url: string | null
           favicon_url: string | null
           footer_copyright: string | null
+          grace_days: number
           id: boolean
           late_fee_percent: number
           logo_url: string | null
           phone: string | null
+          renewal_lead_days: number
           updated_at: string
+          vat_percent: number
           website: string | null
         }
         Insert: {
           address?: string | null
+          auto_suspend?: boolean
           company_name?: string
           created_at?: string
           email?: string | null
           facebook_url?: string | null
           favicon_url?: string | null
           footer_copyright?: string | null
+          grace_days?: number
           id?: boolean
           late_fee_percent?: number
           logo_url?: string | null
           phone?: string | null
+          renewal_lead_days?: number
           updated_at?: string
+          vat_percent?: number
           website?: string | null
         }
         Update: {
           address?: string | null
+          auto_suspend?: boolean
           company_name?: string
           created_at?: string
           email?: string | null
           facebook_url?: string | null
           favicon_url?: string | null
           footer_copyright?: string | null
+          grace_days?: number
           id?: boolean
           late_fee_percent?: number
           logo_url?: string | null
           phone?: string | null
+          renewal_lead_days?: number
           updated_at?: string
+          vat_percent?: number
           website?: string | null
         }
         Relationships: []
@@ -1224,7 +1236,7 @@ export type Database = {
         | "partial"
         | "overdue"
         | "cancelled"
-      payment_provider: "bkash" | "nagad"
+      payment_provider: "bkash" | "nagad" | "sslcommerz"
       project_status:
         | "planning"
         | "in_progress"
@@ -1392,7 +1404,7 @@ export const Constants = {
         "overdue",
         "cancelled",
       ],
-      payment_provider: ["bkash", "nagad"],
+      payment_provider: ["bkash", "nagad", "sslcommerz"],
       project_status: [
         "planning",
         "in_progress",
