@@ -9,7 +9,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, ExternalLink, Check, ChevronsUpDown } from "lucide-react";
+import { Plus, Pencil, Trash2, ExternalLink, Check, ChevronsUpDown, Eye } from "lucide-react";
+import { ClickableRow, StopClick } from "@/components/ui/clickable-row";
+
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
@@ -101,17 +103,17 @@ export function ServicesManager({
               {!isLoading && (services ?? []).length === 0 && <TableRow><TableCell colSpan={8} className="text-center py-8 text-sm text-muted-foreground">No {lockType ?? "service"}s yet.</TableCell></TableRow>}
               {(services ?? []).map((s: any) => {
                 const days = daysUntil(s.expiry_date);
+                const detailTo = s.type === "domain" ? "/domains/$domainId" : "/services/$serviceId";
+                const detailParams = s.type === "domain" ? { domainId: s.id } : { serviceId: s.id };
                 return (
-                  <TableRow key={s.id}>
+                  <ClickableRow key={s.id} to={detailTo} params={detailParams}>
                     <TableCell className="font-medium">
-                      {s.type === "domain"
-                        ? <Link to="/domains/$domainId" params={{ domainId: s.id }} className="text-primary hover:underline">{s.name}</Link>
-                        : <Link to="/services/$serviceId" params={{ serviceId: s.id }} className="text-primary hover:underline">{s.name}</Link>}
+                      <span className="text-primary font-semibold">{s.name}</span>
                       <div className="text-xs text-muted-foreground">{s.details}</div>
                     </TableCell>
                     {!lockType && <TableCell><Badge variant="outline" className="capitalize">{s.type}</Badge></TableCell>}
                     {role === "admin" && <TableCell>{s.profiles?.full_name ?? s.profiles?.email ?? "—"}</TableCell>}
-                    <TableCell>{s.projects?.name ? <Link to="/projects/$projectId" params={{ projectId: s.projects.id }} className="text-xs hover:underline">{s.projects.name}</Link> : <span className="text-xs text-muted-foreground">—</span>}</TableCell>
+                    <TableCell>{s.projects?.name ? <StopClick><Link to="/projects/$projectId" params={{ projectId: s.projects.id }} className="text-xs hover:underline">{s.projects.name}</Link></StopClick> : <span className="text-xs text-muted-foreground">—</span>}</TableCell>
                     <TableCell>
                       {formatDate(s.expiry_date)}
                       {days != null && (
@@ -123,19 +125,20 @@ export function ServicesManager({
                     <TableCell>{formatBDT(s.sale_price)}</TableCell>
                     <TableCell><Badge variant={s.status === "active" ? "default" : "secondary"} className="capitalize">{s.status}</Badge></TableCell>
                     <TableCell className="text-right">
-                      {s.type === "domain"
-                        ? <Button size="icon" variant="ghost" asChild><Link to="/domains/$domainId" params={{ domainId: s.id }}><ExternalLink className="h-4 w-4" /></Link></Button>
-                        : <Button size="icon" variant="ghost" asChild><Link to="/services/$serviceId" params={{ serviceId: s.id }}><ExternalLink className="h-4 w-4" /></Link></Button>}
-                      {role === "admin" && (
-                        <>
-                          <Button size="icon" variant="ghost" onClick={() => { setEditing(s); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
-                          <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete?")) del.mutate(s.id); }}><Trash2 className="h-4 w-4" /></Button>
-                        </>
-                      )}
+                      <StopClick>
+                        <Button size="sm" variant="outline" asChild className="mr-1"><Link to={detailTo} params={detailParams as any}><Eye className="mr-1 h-3.5 w-3.5" />View</Link></Button>
+                        {role === "admin" && (
+                          <>
+                            <Button size="icon" variant="ghost" onClick={() => { setEditing(s); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
+                            <Button size="icon" variant="ghost" className="hover:bg-rose-100 hover:text-rose-700" onClick={() => { if (confirm("Delete?")) del.mutate(s.id); }}><Trash2 className="h-4 w-4" /></Button>
+                          </>
+                        )}
+                      </StopClick>
                     </TableCell>
-                  </TableRow>
+                  </ClickableRow>
                 );
               })}
+
             </TableBody>
           </Table>
         </CardContent>
