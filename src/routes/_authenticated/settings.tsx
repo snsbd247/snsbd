@@ -82,6 +82,8 @@ function SettingsPage() {
     email: "",
     phone: "",
     address: "",
+    facebook_url: "",
+    website: "",
     footer_copyright: "",
     late_fee_percent: "2",
   });
@@ -95,6 +97,8 @@ function SettingsPage() {
         email: data.email ?? "",
         phone: data.phone ?? "",
         address: data.address ?? "",
+        facebook_url: data.facebook_url ?? "",
+        website: data.website ?? "",
         footer_copyright: data.footer_copyright ?? "",
         late_fee_percent: String(data.late_fee_percent ?? 2),
       });
@@ -111,6 +115,8 @@ function SettingsPage() {
         email: f.email.trim() || null,
         phone: f.phone.trim() || null,
         address: f.address.trim() || null,
+        facebook_url: f.facebook_url.trim() || null,
+        website: f.website.trim() || null,
         footer_copyright: f.footer_copyright.trim() || null,
         late_fee_percent: Math.max(0, Number(f.late_fee_percent) || 0),
       };
