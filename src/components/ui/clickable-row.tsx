@@ -41,7 +41,10 @@ export function StopClick({
 }) {
   const stop = (e: MouseEvent) => e.stopPropagation();
   return (
-    <span className={className} onClick={stop}>
+    <span
+      className={cn("inline-flex items-center gap-1 whitespace-nowrap", className)}
+      onClick={stop}
+    >
       {children}
     </span>
   );
