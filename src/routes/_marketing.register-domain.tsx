@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/marketing/section";
-import { tlds } from "@/content/plans";
+import { useDomainPricing } from "@/hooks/use-marketing-data";
 import { Globe, Search } from "lucide-react";
 
 export const Route = createFileRoute("/_marketing/register-domain")({
@@ -18,6 +18,7 @@ export const Route = createFileRoute("/_marketing/register-domain")({
 });
 
 function Page() {
+  const { data: tlds = [] } = useDomainPricing();
   return (
     <>
       <section className="bg-gradient-to-br from-[#0B1220] to-[#0F172A] py-20 text-white">
@@ -52,9 +53,9 @@ function Page() {
               {tlds.map((t) => (
                 <tr key={t.tld} className="hover:bg-slate-50">
                   <td className="px-6 py-3 font-bold text-slate-900">{t.tld}</td>
-                  <td className="px-6 py-3 text-emerald-600 font-semibold">{t.register}</td>
-                  <td className="px-6 py-3 text-slate-700">{t.renew}</td>
-                  <td className="px-6 py-3 text-slate-700">{t.transfer}</td>
+                  <td className="px-6 py-3 text-emerald-600 font-semibold">৳{Number(t.register_price).toLocaleString("en-BD")}</td>
+                  <td className="px-6 py-3 text-slate-700">৳{Number(t.renew_price).toLocaleString("en-BD")}</td>
+                  <td className="px-6 py-3 text-slate-700">৳{Number(t.transfer_price).toLocaleString("en-BD")}</td>
                 </tr>
               ))}
             </tbody>
