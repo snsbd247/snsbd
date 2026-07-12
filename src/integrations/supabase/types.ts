@@ -179,6 +179,48 @@ export type Database = {
         }
         Relationships: []
       }
+      coupons: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          discount_amount: number | null
+          discount_percent: number | null
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          max_uses: number | null
+          updated_at: string
+          used_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          discount_amount?: number | null
+          discount_percent?: number | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          updated_at?: string
+          used_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          discount_amount?: number | null
+          discount_percent?: number | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          updated_at?: string
+          used_count?: number
+        }
+        Relationships: []
+      }
       currencies: {
         Row: {
           code: string
@@ -943,6 +985,50 @@ export type Database = {
           },
         ]
       }
+      product_addons: {
+        Row: {
+          billing_cycle: string
+          created_at: string
+          description: string | null
+          hosting_package_id: string | null
+          id: string
+          is_active: boolean
+          name: string
+          price: number
+          updated_at: string
+        }
+        Insert: {
+          billing_cycle?: string
+          created_at?: string
+          description?: string | null
+          hosting_package_id?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          price?: number
+          updated_at?: string
+        }
+        Update: {
+          billing_cycle?: string
+          created_at?: string
+          description?: string | null
+          hosting_package_id?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_addons_hosting_package_id_fkey"
+            columns: ["hosting_package_id"]
+            isOneToOne: false
+            referencedRelation: "hosting_packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           address: string | null
@@ -1144,6 +1230,36 @@ export type Database = {
           },
         ]
       }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       referral_commissions: {
         Row: {
           amount: number
@@ -1187,6 +1303,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      reseller_branding: {
+        Row: {
+          company_name: string | null
+          created_at: string
+          custom_hostname: string | null
+          logo_url: string | null
+          primary_color: string | null
+          reseller_id: string
+          support_email: string | null
+          updated_at: string
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string
+          custom_hostname?: string | null
+          logo_url?: string | null
+          primary_color?: string | null
+          reseller_id: string
+          support_email?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string
+          custom_hostname?: string | null
+          logo_url?: string | null
+          primary_color?: string | null
+          reseller_id?: string
+          support_email?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       reseller_customers: {
         Row: {
@@ -1281,6 +1430,45 @@ export type Database = {
             columns: ["team_member_id"]
             isOneToOne: false
             referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_addons: {
+        Row: {
+          addon_id: string
+          created_at: string
+          id: string
+          price_snapshot: number
+          service_id: string
+        }
+        Insert: {
+          addon_id: string
+          created_at?: string
+          id?: string
+          price_snapshot?: number
+          service_id: string
+        }
+        Update: {
+          addon_id?: string
+          created_at?: string
+          id?: string
+          price_snapshot?: number
+          service_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_addons_addon_id_fkey"
+            columns: ["addon_id"]
+            isOneToOne: false
+            referencedRelation: "product_addons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_addons_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
             referencedColumns: ["id"]
           },
         ]

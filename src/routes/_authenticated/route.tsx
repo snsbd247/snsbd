@@ -10,7 +10,7 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   LayoutDashboard, Users, Globe, HardDrive, Package, FileText, FolderKanban,
-  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server, ChevronRight, LifeBuoy, RefreshCw, BarChart3, BookOpen, Bell, KeyRound, Webhook, Store,
+  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server, ChevronRight, LifeBuoy, RefreshCw, BarChart3, BookOpen, Bell, KeyRound, Webhook, Store, Palette, Tag, Puzzle,
 } from "lucide-react";
 import { NotificationsBell } from "@/components/notifications-bell";
 import { useI18n } from "@/lib/i18n";
@@ -86,6 +86,7 @@ function AuthedLayout() {
                 <NavItem to="/tickets" icon={LifeBuoy} label={isAdmin ? "Support Tickets" : "Support"} />
                 <NavItem to="/api-keys" icon={KeyRound} label="API Keys" />
                 <NavItem to="/webhooks" icon={Webhook} label="Webhooks" />
+                <NavItem to="/branding" icon={Palette} label="Branding" />
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -143,6 +144,8 @@ function AuthedLayout() {
                         { to: "/hosting-packages", label: "Hosting Packages" },
                         { to: "/domain-pricing", label: "Domain Pricing" },
                         { to: "/service-catalog", label: "Service Catalog" },
+                        { to: "/addons", label: "Add-ons" },
+                        { to: "/coupons", label: "Coupons" },
                       ]}
                     />
                     <NavGroup

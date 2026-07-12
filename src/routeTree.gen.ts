@@ -57,9 +57,12 @@ import { Route as AuthenticatedDomainsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedDomainPricingRouteImport } from './routes/_authenticated/domain-pricing'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
+import { Route as AuthenticatedCouponsRouteImport } from './routes/_authenticated/coupons'
+import { Route as AuthenticatedBrandingRouteImport } from './routes/_authenticated/branding'
 import { Route as AuthenticatedAuditLogRouteImport } from './routes/_authenticated/audit-log'
 import { Route as AuthenticatedApiKeysRouteImport } from './routes/_authenticated/api-keys'
 import { Route as AuthenticatedAnnouncementsRouteImport } from './routes/_authenticated/announcements'
+import { Route as AuthenticatedAddonsRouteImport } from './routes/_authenticated/addons'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects.index'
 import { Route as MarketingHelpSlugRouteImport } from './routes/_marketing.help.$slug'
 import { Route as AuthenticatedTicketsTicketIdRouteImport } from './routes/_authenticated/tickets_.$ticketId'
@@ -328,6 +331,16 @@ const AuthenticatedCustomersRoute = AuthenticatedCustomersRouteImport.update({
   path: '/customers',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCouponsRoute = AuthenticatedCouponsRouteImport.update({
+  id: '/coupons',
+  path: '/coupons',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedBrandingRoute = AuthenticatedBrandingRouteImport.update({
+  id: '/branding',
+  path: '/branding',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAuditLogRoute = AuthenticatedAuditLogRouteImport.update({
   id: '/audit-log',
   path: '/audit-log',
@@ -344,6 +357,11 @@ const AuthenticatedAnnouncementsRoute =
     path: '/announcements',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAddonsRoute = AuthenticatedAddonsRouteImport.update({
+  id: '/addons',
+  path: '/addons',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedProjectsIndexRoute =
   AuthenticatedProjectsIndexRouteImport.update({
     id: '/projects/',
@@ -473,9 +491,12 @@ export interface FileRoutesByFullPath {
   '/client': typeof ClientRouteWithChildren
   '/portal': typeof PortalRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/addons': typeof AuthenticatedAddonsRoute
   '/announcements': typeof AuthenticatedAnnouncementsRoute
   '/api-keys': typeof AuthenticatedApiKeysRoute
   '/audit-log': typeof AuthenticatedAuditLogRoute
+  '/branding': typeof AuthenticatedBrandingRoute
+  '/coupons': typeof AuthenticatedCouponsRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/domain-pricing': typeof AuthenticatedDomainPricingRoute
@@ -545,9 +566,12 @@ export interface FileRoutesByTo {
   '/client': typeof ClientRouteWithChildren
   '/portal': typeof PortalRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/addons': typeof AuthenticatedAddonsRoute
   '/announcements': typeof AuthenticatedAnnouncementsRoute
   '/api-keys': typeof AuthenticatedApiKeysRoute
   '/audit-log': typeof AuthenticatedAuditLogRoute
+  '/branding': typeof AuthenticatedBrandingRoute
+  '/coupons': typeof AuthenticatedCouponsRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/domain-pricing': typeof AuthenticatedDomainPricingRoute
@@ -619,9 +643,12 @@ export interface FileRoutesById {
   '/client': typeof ClientRouteWithChildren
   '/portal': typeof PortalRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/_authenticated/addons': typeof AuthenticatedAddonsRoute
   '/_authenticated/announcements': typeof AuthenticatedAnnouncementsRoute
   '/_authenticated/api-keys': typeof AuthenticatedApiKeysRoute
   '/_authenticated/audit-log': typeof AuthenticatedAuditLogRoute
+  '/_authenticated/branding': typeof AuthenticatedBrandingRoute
+  '/_authenticated/coupons': typeof AuthenticatedCouponsRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/domain-pricing': typeof AuthenticatedDomainPricingRoute
@@ -694,9 +721,12 @@ export interface FileRouteTypes {
     | '/client'
     | '/portal'
     | '/sitemap.xml'
+    | '/addons'
     | '/announcements'
     | '/api-keys'
     | '/audit-log'
+    | '/branding'
+    | '/coupons'
     | '/customers'
     | '/dashboard'
     | '/domain-pricing'
@@ -766,9 +796,12 @@ export interface FileRouteTypes {
     | '/client'
     | '/portal'
     | '/sitemap.xml'
+    | '/addons'
     | '/announcements'
     | '/api-keys'
     | '/audit-log'
+    | '/branding'
+    | '/coupons'
     | '/customers'
     | '/dashboard'
     | '/domain-pricing'
@@ -839,9 +872,12 @@ export interface FileRouteTypes {
     | '/client'
     | '/portal'
     | '/sitemap.xml'
+    | '/_authenticated/addons'
     | '/_authenticated/announcements'
     | '/_authenticated/api-keys'
     | '/_authenticated/audit-log'
+    | '/_authenticated/branding'
+    | '/_authenticated/coupons'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
     | '/_authenticated/domain-pricing'
@@ -1261,6 +1297,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCustomersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/coupons': {
+      id: '/_authenticated/coupons'
+      path: '/coupons'
+      fullPath: '/coupons'
+      preLoaderRoute: typeof AuthenticatedCouponsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/branding': {
+      id: '/_authenticated/branding'
+      path: '/branding'
+      fullPath: '/branding'
+      preLoaderRoute: typeof AuthenticatedBrandingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/audit-log': {
       id: '/_authenticated/audit-log'
       path: '/audit-log'
@@ -1280,6 +1330,13 @@ declare module '@tanstack/react-router' {
       path: '/announcements'
       fullPath: '/announcements'
       preLoaderRoute: typeof AuthenticatedAnnouncementsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/addons': {
+      id: '/_authenticated/addons'
+      path: '/addons'
+      fullPath: '/addons'
+      preLoaderRoute: typeof AuthenticatedAddonsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/projects/': {
@@ -1433,9 +1490,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAddonsRoute: typeof AuthenticatedAddonsRoute
   AuthenticatedAnnouncementsRoute: typeof AuthenticatedAnnouncementsRoute
   AuthenticatedApiKeysRoute: typeof AuthenticatedApiKeysRoute
   AuthenticatedAuditLogRoute: typeof AuthenticatedAuditLogRoute
+  AuthenticatedBrandingRoute: typeof AuthenticatedBrandingRoute
+  AuthenticatedCouponsRoute: typeof AuthenticatedCouponsRoute
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDomainPricingRoute: typeof AuthenticatedDomainPricingRoute
@@ -1476,9 +1536,12 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAddonsRoute: AuthenticatedAddonsRoute,
   AuthenticatedAnnouncementsRoute: AuthenticatedAnnouncementsRoute,
   AuthenticatedApiKeysRoute: AuthenticatedApiKeysRoute,
   AuthenticatedAuditLogRoute: AuthenticatedAuditLogRoute,
+  AuthenticatedBrandingRoute: AuthenticatedBrandingRoute,
+  AuthenticatedCouponsRoute: AuthenticatedCouponsRoute,
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDomainPricingRoute: AuthenticatedDomainPricingRoute,
