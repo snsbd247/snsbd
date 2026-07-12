@@ -50,6 +50,7 @@ import { Route as AuthenticatedDomainPricingRouteImport } from './routes/_authen
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects.index'
+import { Route as AuthenticatedTicketsTicketIdRouteImport } from './routes/_authenticated/tickets_.$ticketId'
 import { Route as AuthenticatedTeamMemberIdRouteImport } from './routes/_authenticated/team_.$memberId'
 import { Route as AuthenticatedServicesServiceIdRouteImport } from './routes/_authenticated/services.$serviceId'
 import { Route as AuthenticatedReceiptsPaymentIdRouteImport } from './routes/_authenticated/receipts.$paymentId'
@@ -275,6 +276,12 @@ const AuthenticatedProjectsIndexRoute =
     path: '/projects/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedTicketsTicketIdRoute =
+  AuthenticatedTicketsTicketIdRouteImport.update({
+    id: '/tickets_/$ticketId',
+    path: '/tickets/$ticketId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedTeamMemberIdRoute =
   AuthenticatedTeamMemberIdRouteImport.update({
     id: '/team_/$memberId',
@@ -408,6 +415,7 @@ export interface FileRoutesByFullPath {
   '/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/team/$memberId': typeof AuthenticatedTeamMemberIdRoute
+  '/tickets/$ticketId': typeof AuthenticatedTicketsTicketIdRoute
   '/projects/': typeof AuthenticatedProjectsIndexRoute
   '/order/hosting/$packageId': typeof AuthenticatedOrderHostingPackageIdRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
@@ -463,6 +471,7 @@ export interface FileRoutesByTo {
   '/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/team/$memberId': typeof AuthenticatedTeamMemberIdRoute
+  '/tickets/$ticketId': typeof AuthenticatedTicketsTicketIdRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
   '/order/hosting/$packageId': typeof AuthenticatedOrderHostingPackageIdRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
@@ -521,6 +530,7 @@ export interface FileRoutesById {
   '/_authenticated/receipts/$paymentId': typeof AuthenticatedReceiptsPaymentIdRoute
   '/_authenticated/services/$serviceId': typeof AuthenticatedServicesServiceIdRoute
   '/_authenticated/team_/$memberId': typeof AuthenticatedTeamMemberIdRoute
+  '/_authenticated/tickets_/$ticketId': typeof AuthenticatedTicketsTicketIdRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
   '/_authenticated/order/hosting/$packageId': typeof AuthenticatedOrderHostingPackageIdRoute
   '/api/public/hooks/enforce-overdue': typeof ApiPublicHooksEnforceOverdueRoute
@@ -578,6 +588,7 @@ export interface FileRouteTypes {
     | '/receipts/$paymentId'
     | '/services/$serviceId'
     | '/team/$memberId'
+    | '/tickets/$ticketId'
     | '/projects/'
     | '/order/hosting/$packageId'
     | '/api/public/hooks/enforce-overdue'
@@ -633,6 +644,7 @@ export interface FileRouteTypes {
     | '/receipts/$paymentId'
     | '/services/$serviceId'
     | '/team/$memberId'
+    | '/tickets/$ticketId'
     | '/projects'
     | '/order/hosting/$packageId'
     | '/api/public/hooks/enforce-overdue'
@@ -690,6 +702,7 @@ export interface FileRouteTypes {
     | '/_authenticated/receipts/$paymentId'
     | '/_authenticated/services/$serviceId'
     | '/_authenticated/team_/$memberId'
+    | '/_authenticated/tickets_/$ticketId'
     | '/_authenticated/projects/'
     | '/_authenticated/order/hosting/$packageId'
     | '/api/public/hooks/enforce-overdue'
@@ -1000,6 +1013,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProjectsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/tickets_/$ticketId': {
+      id: '/_authenticated/tickets_/$ticketId'
+      path: '/tickets/$ticketId'
+      fullPath: '/tickets/$ticketId'
+      preLoaderRoute: typeof AuthenticatedTicketsTicketIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/team_/$memberId': {
       id: '/_authenticated/team_/$memberId'
       path: '/team/$memberId'
@@ -1128,6 +1148,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedReceiptsPaymentIdRoute: typeof AuthenticatedReceiptsPaymentIdRoute
   AuthenticatedServicesServiceIdRoute: typeof AuthenticatedServicesServiceIdRoute
   AuthenticatedTeamMemberIdRoute: typeof AuthenticatedTeamMemberIdRoute
+  AuthenticatedTicketsTicketIdRoute: typeof AuthenticatedTicketsTicketIdRoute
   AuthenticatedProjectsIndexRoute: typeof AuthenticatedProjectsIndexRoute
   AuthenticatedOrderHostingPackageIdRoute: typeof AuthenticatedOrderHostingPackageIdRoute
 }
@@ -1159,6 +1180,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedReceiptsPaymentIdRoute: AuthenticatedReceiptsPaymentIdRoute,
   AuthenticatedServicesServiceIdRoute: AuthenticatedServicesServiceIdRoute,
   AuthenticatedTeamMemberIdRoute: AuthenticatedTeamMemberIdRoute,
+  AuthenticatedTicketsTicketIdRoute: AuthenticatedTicketsTicketIdRoute,
   AuthenticatedProjectsIndexRoute: AuthenticatedProjectsIndexRoute,
   AuthenticatedOrderHostingPackageIdRoute:
     AuthenticatedOrderHostingPackageIdRoute,
