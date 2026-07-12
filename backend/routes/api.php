@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CompanySettingsController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -13,5 +14,10 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-// Module routes will be added here as each module is migrated:
-// Route::middleware('auth:sanctum')->group(function () { ... });
+// Company settings — public read, admin write
+Route::get('company-settings', [CompanySettingsController::class, 'show']);
+Route::middleware(['auth:sanctum', 'permission:admin'])->group(function () {
+    Route::put('company-settings', [CompanySettingsController::class, 'update']);
+    Route::post('company-settings/logo', [CompanySettingsController::class, 'uploadLogo']);
+});
+
