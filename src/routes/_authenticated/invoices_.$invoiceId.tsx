@@ -240,6 +240,14 @@ function InvoiceDetailPage() {
           )}
         </CardContent>
       </Card>
+
+      <style>{`
+        @media print {
+          @page { size: A4 portrait; margin: 12mm; }
+          body { background: white !important; }
+          .print\\:hidden { display: none !important; }
+        }
+      `}</style>
     </div>
   );
 }
