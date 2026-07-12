@@ -14,6 +14,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { toast } from "sonner";
 import { formatBDT, formatDate } from "@/lib/format";
 import { SiteFooter } from "@/components/site-footer";
+import { validateDomain } from "@/lib/domain-validate";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/client")({
   ssr: false,
