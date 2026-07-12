@@ -12,7 +12,7 @@ import { ArrowLeft, Download, Printer, Loader2, Trash2, Receipt as ReceiptIcon }
 import { downloadElementAsPdf, printElementAsPdf } from "@/lib/pdf";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
-import { useCompanySettings } from "@/lib/company-settings";
+import { useCompanySettings, amountInWords } from "@/lib/company-settings";
 import { formatBDT, formatDate } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/invoices_/$invoiceId")({
@@ -121,104 +121,160 @@ function InvoiceDetailPage() {
         </div>
       </div>
 
-      <Card id="invoice-pdf" className="print:shadow-none print:border-0 overflow-hidden border-0 shadow-lg">
-        <div className="h-3 w-full" style={{ background: "linear-gradient(90deg, #0e3a5f 0%, #1e6091 50%, #f39c1f 100%)" }} />
-        <CardContent className="p-8 space-y-6 bg-gradient-to-br from-white via-slate-50 to-orange-50/30">
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-4xl font-extrabold tracking-tight" style={{ color: "#0e3a5f" }}>INVOICE</h1>
-              <div className="mt-1 font-mono text-sm text-muted-foreground">{inv.invoice_number}</div>
-              <Badge variant={statusVariant(inv.status)} className="capitalize mt-2">{inv.status}</Badge>
-            </div>
-            <div className="text-right">
-              {company?.logo_url && <img src={company.logo_url} alt={`${company.company_name} logo`} className="h-10 ml-auto mb-2 object-contain" />}
-              <div className="font-semibold">{company?.company_name ?? "Company"}</div>
-              {company?.address && <div className="text-xs text-muted-foreground whitespace-pre-line">{company.address}</div>}
-              {company?.phone && <div className="text-xs text-muted-foreground">{company.phone}</div>}
-              {company?.email && <div className="text-xs text-muted-foreground">{company.email}</div>}
-            </div>
+      <div id="invoice-pdf" className="bg-white text-slate-900 mx-auto shadow-lg print:shadow-none relative overflow-hidden" style={{ width: "100%", maxWidth: 900 }}>
+        {/* subtle hex background pattern */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='64' viewBox='0 0 56 64'><path d='M28 2 L54 17 L54 47 L28 62 L2 47 L2 17 Z' fill='none' stroke='%23c0392b' stroke-width='1'/></svg>\")",
+            backgroundSize: "56px 64px",
+          }}
+        />
+
+        {/* TOP BAR — dark with red angular clip on left */}
+        <div className="relative h-[72px] w-full" style={{ background: "#1f1f1f" }}>
+          <div
+            className="absolute inset-y-0 left-0 flex items-center pl-6"
+            style={{ width: "34%", background: "#c0392b", clipPath: "polygon(0 0, 100% 0, 82% 100%, 0 100%)" }}
+          >
+            {company?.logo_url ? (
+              <img src={company.logo_url} alt={`${company.company_name} logo`} className="h-12 object-contain" />
+            ) : (
+              <div className="text-white">
+                <div className="text-2xl font-black leading-none">SN</div>
+                <div className="text-[10px] font-semibold tracking-[0.25em]">SOFTWARE Inc</div>
+              </div>
+            )}
           </div>
-
-          <div className="grid grid-cols-2 gap-6 text-sm">
-            <div>
-              <div className="text-muted-foreground uppercase text-xs tracking-wider">Bill to</div>
-              <div className="font-medium mt-1">{inv.profiles?.full_name ?? inv.profiles?.email}</div>
-              {inv.profiles?.company && <div>{inv.profiles.company}</div>}
-              {inv.profiles?.address && <div className="text-muted-foreground">{inv.profiles.address}</div>}
-              {inv.profiles?.phone && <div className="text-muted-foreground">{inv.profiles.phone}</div>}
-              {inv.profiles?.email && <div className="text-muted-foreground">{inv.profiles.email}</div>}
-            </div>
-            <div className="text-right">
-              <div><span className="text-muted-foreground">Issued:</span> {formatDate(inv.issue_date)}</div>
-              <div><span className="text-muted-foreground">Due:</span> {formatDate(inv.due_date)}</div>
-              {inv.projects && (
-                <div className="mt-2"><span className="text-muted-foreground">Project:</span>{" "}
-                  <Link to="/projects/$projectId" params={{ projectId: inv.projects.id }} className="hover:underline print:no-underline">{inv.projects.name}</Link>
-                </div>
-              )}
-            </div>
+          <div className="absolute inset-y-0 right-6 flex items-center gap-6 text-white text-[12px]">
+            {company?.phone && <span className="flex items-center gap-1.5"><span className="inline-block h-4 w-4 rounded-full border border-white/70 text-center leading-[14px] text-[10px]">☎</span>{company.phone}</span>}
+            {company?.email && <span className="flex items-center gap-1.5"><span className="inline-block h-4 w-4 rounded-full border border-white/70 text-center leading-[14px] text-[10px]">@</span>{company.email}</span>}
           </div>
+        </div>
 
-          <Table>
-            <TableHeader>
-              <TableRow style={{ background: "#0e3a5f" }} className="hover:bg-[#0e3a5f]">
-                <TableHead className="text-white font-semibold">Description</TableHead>
-                <TableHead className="text-white font-semibold">Linked</TableHead>
-                <TableHead className="text-right text-white font-semibold">Qty</TableHead>
-                <TableHead className="text-right text-white font-semibold">Unit</TableHead>
-                <TableHead className="text-right text-white font-semibold">Total</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.items.map((it: any) => (
-                <TableRow key={it.id}>
-                  <TableCell>{it.description}</TableCell>
-                  <TableCell className="text-xs">
-                    {it.services ? (
-                      <Link to="/services/$serviceId" params={{ serviceId: it.services.id }} className="hover:underline print:no-underline">
-                        <Badge variant="outline" className="capitalize mr-1">{it.services.type}</Badge>
-                        {it.services.name}
-                      </Link>
-                    ) : <span className="text-muted-foreground">—</span>}
-                  </TableCell>
-                  <TableCell className="text-right">{it.quantity}</TableCell>
-                  <TableCell className="text-right">{formatBDT(it.unit_price)}</TableCell>
-                  <TableCell className="text-right font-medium">{formatBDT(it.total)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        {/* SALES INVOICE badge */}
+        <div className="relative flex justify-center pt-6 pb-4">
+          <div className="px-8 py-2 rounded-md text-white font-bold tracking-wide" style={{ background: "#1f1f1f" }}>SALES INVOICE</div>
+        </div>
 
-          <div className="flex justify-end">
-            <div className="w-64 space-y-1 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatBDT(inv.subtotal)}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Tax</span><span>{formatBDT(inv.tax)}</span></div>
-              <div className="flex justify-between font-bold text-base border-t pt-1"><span>Total</span><span>{formatBDT(inv.total)}</span></div>
-              <div className="flex justify-between text-success"><span>Paid</span><span>{formatBDT(inv.amount_paid)}</span></div>
-              <div className="flex justify-between font-semibold text-destructive"><span>Balance</span><span>{formatBDT(balance)}</span></div>
-            </div>
+        {/* CUSTOMER / INVOICE META */}
+        <div className="relative grid grid-cols-2 gap-6 px-8 pb-4 text-[13px]">
+          <div className="space-y-1">
+            <div><span className="font-bold">Customer ID:</span> SN-{String(inv.profiles?.id ?? "").slice(0, 6).toUpperCase()}</div>
+            <div><span className="font-bold">Customer Name:</span> {inv.profiles?.full_name ?? inv.profiles?.email ?? "—"}</div>
+            {inv.profiles?.address && <div><span className="font-bold">Customer Address:</span> {inv.profiles.address}</div>}
+            {inv.profiles?.phone && <div><span className="font-bold">Customer Phone:</span> {inv.profiles.phone}</div>}
           </div>
-
-          {inv.notes && (
-            <div className="text-sm border-t pt-4">
-              <div className="text-muted-foreground uppercase text-xs tracking-wider mb-1">Notes</div>
-              <p className="whitespace-pre-wrap">{inv.notes}</p>
-            </div>
-          )}
-
-          <div className="border-t pt-3 mt-2 text-[11px] text-muted-foreground flex items-center justify-between gap-4">
-            <div className="truncate">
-              {company?.company_name}
-              {company?.email && <> · {company.email}</>}
-              {company?.phone && <> · {company.phone}</>}
-            </div>
-            <div className="whitespace-nowrap">Issued {formatDate(inv.issue_date)} · Page 1 of 1</div>
+          <div className="space-y-1 text-right">
+            <div><span className="font-bold">Invoice No:</span> {inv.invoice_number}</div>
+            <div><span className="font-bold">Date:</span> {formatDate(inv.issue_date)}</div>
+            <div><span className="font-bold">Invoice by:</span> {company?.company_name ?? "—"}</div>
           </div>
-          {company?.footer_copyright && (
-            <div className="text-center text-[10px] text-muted-foreground">{company.footer_copyright}</div>
-          )}
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* ITEMS TABLE with watermark */}
+        <div className="relative px-8 pb-4">
+          <div className="relative border border-slate-300">
+            {company?.logo_url && (
+              <img
+                src={company.logo_url}
+                alt=""
+                aria-hidden
+                className="absolute inset-0 m-auto opacity-10 pointer-events-none object-contain"
+                style={{ maxHeight: "60%", maxWidth: "60%" }}
+              />
+            )}
+            <table className="w-full text-[13px] border-collapse relative">
+              <thead>
+                <tr style={{ background: "#dcdcdc" }} className="text-slate-900">
+                  <th className="border border-slate-300 py-2 w-12 text-center font-bold">SL</th>
+                  <th className="border border-slate-300 py-2 text-center font-bold">Product & Service</th>
+                  <th className="border border-slate-300 py-2 w-24 text-center font-bold">Rate</th>
+                  <th className="border border-slate-300 py-2 w-20 text-center font-bold">QTY</th>
+                  <th className="border border-slate-300 py-2 w-28 text-center font-bold">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.items.map((it: any, idx: number) => (
+                  <tr key={it.id}>
+                    <td className="border border-slate-300 px-2 py-1.5 text-center">{idx + 1}</td>
+                    <td className="border border-slate-300 px-2 py-1.5">{it.description}</td>
+                    <td className="border border-slate-300 px-2 py-1.5 text-right">{formatBDT(it.unit_price)}</td>
+                    <td className="border border-slate-300 px-2 py-1.5 text-center">{it.quantity}</td>
+                    <td className="border border-slate-300 px-2 py-1.5 text-right">{formatBDT(it.total)}</td>
+                  </tr>
+                ))}
+                {Array.from({ length: Math.max(0, 8 - data.items.length) }).map((_, i) => (
+                  <tr key={`sp-${i}`}>
+                    <td className="border border-slate-300 px-2 py-1.5">&nbsp;</td>
+                    <td className="border border-slate-300 px-2 py-1.5">&nbsp;</td>
+                    <td className="border border-slate-300 px-2 py-1.5">&nbsp;</td>
+                    <td className="border border-slate-300 px-2 py-1.5">&nbsp;</td>
+                    <td className="border border-slate-300 px-2 py-1.5">&nbsp;</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot className="text-[13px]">
+                <tr>
+                  <td colSpan={3} className="border-0" />
+                  <td className="border border-slate-300 px-2 py-1.5 text-right font-bold" style={{ background: "#dcdcdc" }}>Total</td>
+                  <td className="border border-slate-300 px-2 py-1.5 text-right">{formatBDT(inv.subtotal)}</td>
+                </tr>
+                <tr>
+                  <td colSpan={3} className="border-0" />
+                  <td className="border border-slate-300 px-2 py-1.5 text-right font-bold" style={{ background: "#dcdcdc" }}>SD (0%)</td>
+                  <td className="border border-slate-300 px-2 py-1.5 text-right">-</td>
+                </tr>
+                <tr>
+                  <td colSpan={3} className="border-0" />
+                  <td className="border border-slate-300 px-2 py-1.5 text-right font-bold" style={{ background: "#dcdcdc" }}>VAT (15%)</td>
+                  <td className="border border-slate-300 px-2 py-1.5 text-right">{formatBDT(inv.tax)}</td>
+                </tr>
+                <tr>
+                  <td colSpan={3} className="border-0" />
+                  <td className="border border-slate-300 px-2 py-1.5 text-right font-bold" style={{ background: "#dcdcdc" }}>Discount</td>
+                  <td className="border border-slate-300 px-2 py-1.5 text-right">-</td>
+                </tr>
+                <tr>
+                  <td colSpan={3} className="border-0" />
+                  <td className="border border-slate-300 px-2 py-1.5 text-right font-extrabold">&nbsp;</td>
+                  <td className="border border-slate-300 px-2 py-1.5 text-right font-extrabold">{formatBDT(inv.total)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        {/* IN WORDS */}
+        <div className="relative px-8 py-3 text-[13px]">
+          <span className="font-bold">In Word:</span> {amountInWords(Number(inv.total))} Taka Only.
+        </div>
+
+        {/* NOTES */}
+        {inv.notes && (
+          <div className="relative px-8 pb-2 text-[12px] text-slate-700 whitespace-pre-wrap">
+            <span className="font-bold">Notes: </span>{inv.notes}
+          </div>
+        )}
+
+        {/* Signature line */}
+        <div className="relative px-8 pt-8 pb-4 text-center text-[12px] text-slate-700">
+          This is a software generated invoice and no signature required.
+        </div>
+
+        {/* Footer — red angular bottom-right band with address */}
+        <div className="relative h-[64px] w-full">
+          <div
+            className="absolute inset-y-0 right-0 flex items-center justify-end pr-6 text-white text-[12px] leading-tight text-right"
+            style={{ width: "55%", background: "#c0392b", clipPath: "polygon(12% 0, 100% 0, 100% 100%, 0 100%)" }}
+          >
+            {company?.address && <div className="whitespace-pre-line">{company.address}</div>}
+          </div>
+        </div>
+      </div>
+
 
       <Card className="print:hidden">
         <CardHeader><CardTitle className="text-base">Payments</CardTitle></CardHeader>
