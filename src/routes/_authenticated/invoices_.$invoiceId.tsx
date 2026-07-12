@@ -119,7 +119,7 @@ function InvoiceDetailPage() {
         <CardContent className="p-8 space-y-6 bg-gradient-to-br from-white via-slate-50 to-orange-50/30">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-3xl font-bold">INVOICE</h1>
+              <h1 className="text-4xl font-extrabold tracking-tight" style={{ color: "#0e3a5f" }}>INVOICE</h1>
               <div className="mt-1 font-mono text-sm text-muted-foreground">{inv.invoice_number}</div>
               <Badge variant={statusVariant(inv.status)} className="capitalize mt-2">{inv.status}</Badge>
             </div>
