@@ -113,10 +113,11 @@ function Page() {
             <TableHead>Featured</TableHead><TableHead>Active</TableHead><TableHead></TableHead>
           </TableRow></TableHeader>
           <TableBody>
-            {(rows ?? []).map((r) => <EditableRow key={r.id} row={r} onSave={(patch) => update.mutate({ id: r.id, ...patch })} onDelete={() => remove.mutate(r.id)} />)}
+            {pg.paged.map((r) => <EditableRow key={r.id} row={r} onSave={(patch) => update.mutate({ id: r.id, ...patch })} onDelete={() => remove.mutate(r.id)} />)}
             {rows && rows.length === 0 && <TableRow><TableCell colSpan={8} className="text-center text-sm text-muted-foreground py-8">No TLDs yet.</TableCell></TableRow>}
           </TableBody>
         </Table>
+        <PaginationControls {...pg} />
       </CardContent></Card>
     </div>
   );
