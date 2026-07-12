@@ -311,6 +311,9 @@ function InvoiceDetailPage() {
         </div>
 
       </div>
+      </div>
+
+
 
 
       <Card className="print:hidden">
