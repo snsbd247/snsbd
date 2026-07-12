@@ -327,6 +327,57 @@ export type Database = {
           },
         ]
       }
+      leads: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          ip_address: string | null
+          message: string | null
+          name: string | null
+          notes: string | null
+          phone: string | null
+          plan_name: string | null
+          source: string
+          status: string
+          subject: string | null
+          updated_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          ip_address?: string | null
+          message?: string | null
+          name?: string | null
+          notes?: string | null
+          phone?: string | null
+          plan_name?: string | null
+          source?: string
+          status?: string
+          subject?: string | null
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          ip_address?: string | null
+          message?: string | null
+          name?: string | null
+          notes?: string | null
+          phone?: string | null
+          plan_name?: string | null
+          source?: string
+          status?: string
+          subject?: string | null
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       payment_gateways: {
         Row: {
           app_key: string | null
