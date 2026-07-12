@@ -154,12 +154,12 @@ function InvoiceDetailPage() {
 
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Description</TableHead>
-                <TableHead>Linked</TableHead>
-                <TableHead className="text-right">Qty</TableHead>
-                <TableHead className="text-right">Unit</TableHead>
-                <TableHead className="text-right">Total</TableHead>
+              <TableRow style={{ background: "#0e3a5f" }} className="hover:bg-[#0e3a5f]">
+                <TableHead className="text-white font-semibold">Description</TableHead>
+                <TableHead className="text-white font-semibold">Linked</TableHead>
+                <TableHead className="text-right text-white font-semibold">Qty</TableHead>
+                <TableHead className="text-right text-white font-semibold">Unit</TableHead>
+                <TableHead className="text-right text-white font-semibold">Total</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
