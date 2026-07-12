@@ -88,7 +88,7 @@ export const bkashCreatePayment = createServerFn({ method: "POST" })
       throw new Error(body.statusMessage || body.errorMessage || "bKash create failed");
     }
 
-    await context.db.from("payment_transactions").insert({
+    await context.supabase.from("payment_transactions").insert({
       invoice_id: inv.id,
       customer_id: context.userId,
       provider: "bkash",
