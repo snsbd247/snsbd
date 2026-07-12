@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, Printer, Loader2 } from "lucide-react";
-import { downloadElementAsPdf } from "@/lib/pdf";
+import { downloadElementAsPdf, printElementAsPdf } from "@/lib/pdf";
 import { useCompanySettings, amountInWords } from "@/lib/company-settings";
 import { formatBDT, formatDate } from "@/lib/format";
 
