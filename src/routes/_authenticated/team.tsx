@@ -87,6 +87,7 @@ function TeamPage() {
               {(members ?? []).length === 0 && <TableRow><TableCell colSpan={7} className="py-8 text-center text-sm text-muted-foreground">No team members yet.</TableCell></TableRow>}
             </TableBody>
           </Table>
+          <PaginationControls {...pg} />
         </CardContent>
       </Card>
 
