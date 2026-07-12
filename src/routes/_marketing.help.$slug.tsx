@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getPublicArticle } from "@/lib/kb.functions";
-import { Section } from "@/components/marketing/section";
+const Section = ({ children }: { children: React.ReactNode }) => <section className="container mx-auto px-4 py-16">{children}</section>;
 import { ChevronLeft } from "lucide-react";
 
 export const Route = createFileRoute("/_marketing/help/$slug")({
