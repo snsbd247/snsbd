@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/expenses")({
   component: ExpensesPage,
@@ -29,11 +29,11 @@ function ExpensesPage() {
 
   const { data } = useQuery({
     queryKey: ["expenses"],
-    queryFn: async () => (await supabase.from("expenses").select("*").order("expense_date", { ascending: false })).data ?? [],
+    queryFn: async () => (await db.from("expenses").select("*").order("expense_date", { ascending: false })).data ?? [],
   });
 
   const del = useMutation({
-    mutationFn: async (id: string) => { const { error } = await supabase.from("expenses").delete().eq("id", id); if (error) throw error; },
+    mutationFn: async (id: string) => { const { error } = await db.from("expenses").delete().eq("id", id); if (error) throw error; },
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["expenses"] }); },
   });
 
@@ -102,8 +102,8 @@ function ExpenseDialog({ open, onOpenChange, editing }: any) {
   const save = useMutation({
     mutationFn: async () => {
       const payload = { ...f, amount: Number(f.amount) || 0 };
-      if (editing) { const { error } = await supabase.from("expenses").update(payload).eq("id", editing.id); if (error) throw error; }
-      else { const { error } = await supabase.from("expenses").insert(payload); if (error) throw error; }
+      if (editing) { const { error } = await db.from("expenses").update(payload).eq("id", editing.id); if (error) throw error; }
+      else { const { error } = await db.from("expenses").insert(payload); if (error) throw error; }
     },
     onSuccess: () => { toast.success("Saved"); qc.invalidateQueries({ queryKey: ["expenses"] }); onOpenChange(false); },
     onError: (e: Error) => toast.error(e.message),

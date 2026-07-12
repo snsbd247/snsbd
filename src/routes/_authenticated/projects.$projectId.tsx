@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +13,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
 import { generateInvoiceDraft } from "@/lib/generate-invoice";
+import { db } from "@/lib/db-shim";
 
 
 export const Route = createFileRoute("/_authenticated/projects/$projectId")({
@@ -30,7 +30,7 @@ function ProjectDetailPage() {
   const { data: project, isLoading } = useQuery({
     queryKey: ["project", projectId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("projects").select("*, profiles(full_name, email)").eq("id", projectId).single();
+      const { data, error } = await db.from("projects").select("*, profiles(full_name, email)").eq("id", projectId).single();
       if (error) throw error;
       return data;
     },
@@ -38,22 +38,22 @@ function ProjectDetailPage() {
 
   const { data: milestones } = useQuery({
     queryKey: ["project-milestones", projectId],
-    queryFn: async () => (await supabase.from("project_milestones").select("*").eq("project_id", projectId).order("sort_order").order("due_date", { ascending: true, nullsFirst: false }).order("created_at")).data ?? [],
+    queryFn: async () => (await db.from("project_milestones").select("*").eq("project_id", projectId).order("sort_order").order("due_date", { ascending: true, nullsFirst: false }).order("created_at")).data ?? [],
   });
 
   const { data: activity } = useQuery({
     queryKey: ["project-activity", projectId],
-    queryFn: async () => (await supabase.from("project_activity_log").select("*").eq("project_id", projectId).order("created_at", { ascending: false }).limit(50)).data ?? [],
+    queryFn: async () => (await db.from("project_activity_log").select("*").eq("project_id", projectId).order("created_at", { ascending: false }).limit(50)).data ?? [],
   });
 
   const { data: projectServices } = useQuery({
     queryKey: ["project-services", projectId],
-    queryFn: async () => (await supabase.from("services").select("*").eq("project_id", projectId).order("created_at")).data ?? [],
+    queryFn: async () => (await db.from("services").select("*").eq("project_id", projectId).order("created_at")).data ?? [],
   });
 
   const { data: projectInvoices } = useQuery({
     queryKey: ["project-invoices", projectId],
-    queryFn: async () => (await supabase.from("invoices").select("id, invoice_number, status, issue_date, total").eq("project_id", projectId).order("issue_date", { ascending: false })).data ?? [],
+    queryFn: async () => (await db.from("invoices").select("id, invoice_number, status, issue_date, total").eq("project_id", projectId).order("issue_date", { ascending: false })).data ?? [],
   });
 
   const [selectedServices, setSelectedServices] = useState<Record<string, boolean>>({});
@@ -101,7 +101,7 @@ function ProjectDetailPage() {
   const add = useMutation({
     mutationFn: async () => {
       const nextOrder = (milestones ?? []).reduce((mx: number, m: any) => Math.max(mx, m.sort_order ?? 0), 0) + 10;
-      const { error } = await supabase.from("project_milestones").insert({
+      const { error } = await db.from("project_milestones").insert({
         project_id: projectId, title, description: description || null, due_date: dueDate || null, sort_order: nextOrder,
       });
       if (error) throw error;
@@ -112,7 +112,7 @@ function ProjectDetailPage() {
 
   const toggle = useMutation({
     mutationFn: async (m: any) => {
-      const { error } = await supabase.from("project_milestones").update({
+      const { error } = await db.from("project_milestones").update({
         completed: !m.completed, completed_at: !m.completed ? new Date().toISOString() : null,
       }).eq("id", m.id);
       if (error) throw error;
@@ -123,7 +123,7 @@ function ProjectDetailPage() {
 
   const remove = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("project_milestones").delete().eq("id", id);
+      const { error } = await db.from("project_milestones").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: invalidate,
@@ -139,7 +139,7 @@ function ProjectDetailPage() {
 
   const update = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("project_milestones").update({
+      const { error } = await db.from("project_milestones").update({
         title: editTitle, description: editDesc || null, due_date: editDue || null,
       }).eq("id", editingId!);
       if (error) throw error;
@@ -157,8 +157,8 @@ function ProjectDetailPage() {
       const other: any = list[j];
       const a = m.sort_order ?? 0, b = other.sort_order ?? 0;
       const [na, nb] = a === b ? [b - 1, b + 1] : [b, a];
-      const { error: e1 } = await supabase.from("project_milestones").update({ sort_order: na }).eq("id", m.id); if (e1) throw e1;
-      const { error: e2 } = await supabase.from("project_milestones").update({ sort_order: nb }).eq("id", other.id); if (e2) throw e2;
+      const { error: e1 } = await db.from("project_milestones").update({ sort_order: na }).eq("id", m.id); if (e1) throw e1;
+      const { error: e2 } = await db.from("project_milestones").update({ sort_order: nb }).eq("id", other.id); if (e2) throw e2;
     },
     onSuccess: invalidate,
     onError: (e: Error) => toast.error(e.message),

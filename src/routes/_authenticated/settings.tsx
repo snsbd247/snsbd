@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useCompanySettings } from "@/lib/company-settings";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -11,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2, Upload, X } from "lucide-react";
+import { db } from "@/lib/db-shim";
 
 function ImageUpload({
   value, onChange, previewClass, maxKB,
@@ -120,7 +120,7 @@ function SettingsPage() {
         footer_copyright: f.footer_copyright.trim() || null,
         late_fee_percent: Math.max(0, Number(f.late_fee_percent) || 0),
       };
-      const { error } = await supabase.from("company_settings").upsert(payload);
+      const { error } = await db.from("company_settings").upsert(payload);
       if (error) throw error;
     },
     onSuccess: () => {

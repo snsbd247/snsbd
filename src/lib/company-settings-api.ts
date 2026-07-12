@@ -3,6 +3,7 @@
  */
 import { supabase } from '@/integrations/supabase/client';
 import { isLaravelMode, laravelApi } from '@/lib/laravel-auth';
+import { db } from "@/lib/db-shim";
 
 export interface CompanySettings {
   id: number | boolean;
@@ -22,7 +23,7 @@ export async function getCompanySettings(): Promise<CompanySettings | null> {
   if (isLaravelMode()) {
     return await laravelApi<CompanySettings>('/company-settings', { auth: false });
   }
-  const { data, error } = await supabase.from('company_settings').select('*').maybeSingle();
+  const { data, error } = await db.from('company_settings').select('*').maybeSingle();
   if (error) throw error;
   return data as CompanySettings | null;
 }

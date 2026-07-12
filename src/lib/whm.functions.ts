@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { db } from "@/lib/db-shim";
 
 type WhmServer = {
   id: string;
@@ -36,7 +37,7 @@ async function whmGet(s: WhmServer, path: string) {
 }
 
 async function loadServer(supabase: any, id: string): Promise<WhmServer> {
-  const { data, error } = await supabase.from("whm_servers").select("*").eq("id", id).maybeSingle();
+  const { data, error } = await db.from("whm_servers").select("*").eq("id", id).maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) throw new Error("WHM server not found");
   return data as WhmServer;

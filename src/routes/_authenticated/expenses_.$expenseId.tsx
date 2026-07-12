@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +12,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/expenses_/$expenseId")({
   component: ExpenseDetail,
@@ -27,7 +27,7 @@ function ExpenseDetail() {
   const { data: expense, isLoading } = useQuery({
     queryKey: ["expense", expenseId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("expenses").select("*").eq("id", expenseId).single();
+      const { data, error } = await db.from("expenses").select("*").eq("id", expenseId).single();
       if (error) throw error;
       return data;
     },
@@ -45,7 +45,7 @@ function ExpenseDetail() {
   const save = useMutation({
     mutationFn: async () => {
       const payload = { ...f, amount: Number(f.amount) || 0 };
-      const { error } = await supabase.from("expenses").update(payload).eq("id", expenseId);
+      const { error } = await db.from("expenses").update(payload).eq("id", expenseId);
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Saved"); qc.invalidateQueries({ queryKey: ["expense", expenseId] }); qc.invalidateQueries({ queryKey: ["expenses"] }); },
@@ -53,7 +53,7 @@ function ExpenseDetail() {
   });
 
   const del = useMutation({
-    mutationFn: async () => { const { error } = await supabase.from("expenses").delete().eq("id", expenseId); if (error) throw error; },
+    mutationFn: async () => { const { error } = await db.from("expenses").delete().eq("id", expenseId); if (error) throw error; },
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["expenses"] }); navigate({ to: "/expenses" }); },
   });
 

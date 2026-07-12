@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatBDT, formatDate, daysUntil } from "@/lib/format";
@@ -21,11 +20,11 @@ function AdminDashboard() {
     queryKey: ["admin-stats"],
     queryFn: async () => {
       const [customers, services, invoices, expenses, expiring] = await Promise.all([
-        supabase.from("profiles").select("id", { count: "exact", head: true }),
-        supabase.from("services").select("id", { count: "exact", head: true }).eq("status", "active"),
-        supabase.from("invoices").select("total, amount_paid, status"),
-        supabase.from("expenses").select("amount"),
-        supabase.from("services").select("id, name, type, expiry_date, customer_id, profiles(full_name, email)")
+        db.from("profiles").select("id", { count: "exact", head: true }),
+        db.from("services").select("id", { count: "exact", head: true }).eq("status", "active"),
+        db.from("invoices").select("total, amount_paid, status"),
+        db.from("expenses").select("amount"),
+        db.from("services").select("id, name, type, expiry_date, customer_id, profiles(full_name, email)")
           .gte("expiry_date", new Date().toISOString().slice(0, 10))
           .lte("expiry_date", new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10))
           .order("expiry_date", { ascending: true }),
@@ -100,9 +99,9 @@ function CustomerDashboard({ uid }: { uid: string }) {
     enabled: !!uid,
     queryFn: async () => {
       const [services, invoices, projects] = await Promise.all([
-        supabase.from("services").select("*").eq("customer_id", uid).order("expiry_date"),
-        supabase.from("invoices").select("*").eq("customer_id", uid).order("issue_date", { ascending: false }),
-        supabase.from("projects").select("*").eq("customer_id", uid),
+        db.from("services").select("*").eq("customer_id", uid).order("expiry_date"),
+        db.from("invoices").select("*").eq("customer_id", uid).order("issue_date", { ascending: false }),
+        db.from("projects").select("*").eq("customer_id", uid),
       ]);
       const invRows = invoices.data ?? [];
       const outstanding = invRows.reduce((s, i) => s + (Number(i.total) - Number(i.amount_paid)), 0);
@@ -157,6 +156,7 @@ function CustomerDashboard({ uid }: { uid: string }) {
 }
 
 import { FolderKanban as FolderKanbanIcon } from "lucide-react";
+import { db } from "@/lib/db-shim";
 
 function StatCard({ icon: Icon, label, value, tone }: { icon: any; label: string; value: string; tone?: "success" | "warning" | "destructive" }) {
   const toneClass = tone === "success" ? "text-success" : tone === "warning" ? "text-warning" : tone === "destructive" ? "text-destructive" : "text-foreground";

@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/lib/db-shim";
 
 type Item = { description: string; quantity: number; unit_price: number; service_id?: string | null };
 
@@ -10,7 +10,7 @@ export async function generateInvoiceDraft(opts: {
 }): Promise<string> {
   const subtotal = opts.items.reduce((s, it) => s + Number(it.quantity) * Number(it.unit_price), 0);
   const invoice_number = "INV-" + Date.now().toString().slice(-8);
-  const { data: inv, error } = await supabase.from("invoices").insert({
+  const { data: inv, error } = await db.from("invoices").insert({
     customer_id: opts.customer_id,
     project_id: opts.project_id ?? null,
     invoice_number,
@@ -26,7 +26,7 @@ export async function generateInvoiceDraft(opts: {
       unit_price: Number(it.unit_price),
       total: Number(it.quantity) * Number(it.unit_price),
     }));
-    const { error: e2 } = await supabase.from("invoice_items").insert(rows);
+    const { error: e2 } = await db.from("invoice_items").insert(rows);
     if (e2) throw e2;
   }
   return inv.id as string;

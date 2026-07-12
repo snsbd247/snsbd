@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/team")({
   component: TeamPage,
@@ -30,16 +30,16 @@ function TeamPage() {
 
   const { data: members } = useQuery({
     queryKey: ["team"],
-    queryFn: async () => (await supabase.from("team_members").select("*").order("created_at", { ascending: false })).data ?? [],
+    queryFn: async () => (await db.from("team_members").select("*").order("created_at", { ascending: false })).data ?? [],
   });
 
   const { data: payments } = useQuery({
     queryKey: ["salary-payments"],
-    queryFn: async () => (await supabase.from("salary_payments").select("*, team_members(full_name)").order("paid_at", { ascending: false })).data ?? [],
+    queryFn: async () => (await db.from("salary_payments").select("*, team_members(full_name)").order("paid_at", { ascending: false })).data ?? [],
   });
 
   const del = useMutation({
-    mutationFn: async (id: string) => { const { error } = await supabase.from("team_members").delete().eq("id", id); if (error) throw error; },
+    mutationFn: async (id: string) => { const { error } = await db.from("team_members").delete().eq("id", id); if (error) throw error; },
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["team"] }); },
   });
 
@@ -123,8 +123,8 @@ function MemberDialog({ open, onOpenChange, editing }: any) {
   const save = useMutation({
     mutationFn: async () => {
       const payload = { ...f, monthly_salary: Number(f.monthly_salary) || 0, joined_at: f.joined_at || null };
-      if (editing) { const { error } = await supabase.from("team_members").update(payload).eq("id", editing.id); if (error) throw error; }
-      else { const { error } = await supabase.from("team_members").insert(payload); if (error) throw error; }
+      if (editing) { const { error } = await db.from("team_members").update(payload).eq("id", editing.id); if (error) throw error; }
+      else { const { error } = await db.from("team_members").insert(payload); if (error) throw error; }
     },
     onSuccess: () => { toast.success("Saved"); qc.invalidateQueries({ queryKey: ["team"] }); onOpenChange(false); },
     onError: (e: Error) => toast.error(e.message),
@@ -166,7 +166,7 @@ function PayDialog({ member, onClose }: any) {
   const [notes, setNotes] = useState("");
   const pay = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("salary_payments").insert({
+      const { error } = await db.from("salary_payments").insert({
         team_member_id: member.id, amount: Number(amount), pay_period: period, notes,
       });
       if (error) throw error;

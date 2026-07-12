@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/payment-settings")({
   component: PaymentSettingsPage,
@@ -35,7 +35,7 @@ function GatewayCard({ provider, label }: { provider: "bkash" | "nagad"; label: 
   const qc = useQueryClient();
   const { data } = useQuery({
     queryKey: ["payment_gateway", provider],
-    queryFn: async () => (await supabase.from("payment_gateways").select("*").eq("provider", provider).maybeSingle()).data,
+    queryFn: async () => (await db.from("payment_gateways").select("*").eq("provider", provider).maybeSingle()).data,
   });
   const [f, setF] = useState({
     mode: "sandbox" as "sandbox" | "live",
@@ -56,7 +56,7 @@ function GatewayCard({ provider, label }: { provider: "bkash" | "nagad"; label: 
   const save = useMutation({
     mutationFn: async () => {
       const payload = { provider, ...f };
-      const { error } = await supabase.from("payment_gateways").upsert(payload, { onConflict: "provider" });
+      const { error } = await db.from("payment_gateways").upsert(payload, { onConflict: "provider" });
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Saved"); qc.invalidateQueries({ queryKey: ["payment_gateway", provider] }); },

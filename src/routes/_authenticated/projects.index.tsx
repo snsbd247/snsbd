@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/projects/")({
   component: ProjectsPage,
@@ -34,14 +34,14 @@ function ProjectsPage() {
   const { data: projects, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
-      const { data } = await supabase.from("projects").select("*, profiles(full_name, email)").order("created_at", { ascending: false });
+      const { data } = await db.from("projects").select("*, profiles(full_name, email)").order("created_at", { ascending: false });
       return data ?? [];
     },
   });
 
   const { data: allMilestones } = useQuery({
     queryKey: ["all-milestones"],
-    queryFn: async () => (await supabase.from("project_milestones").select("project_id,title,due_date,completed,sort_order").order("sort_order").order("due_date", { ascending: true, nullsFirst: false })).data ?? [],
+    queryFn: async () => (await db.from("project_milestones").select("project_id,title,due_date,completed,sort_order").order("sort_order").order("due_date", { ascending: true, nullsFirst: false })).data ?? [],
   });
   const progressByProject = (allMilestones ?? []).reduce<Record<string, { total: number; done: number; next: any }>>((acc, m: any) => {
     const g = acc[m.project_id] ?? { total: 0, done: 0, next: null };
@@ -52,11 +52,11 @@ function ProjectsPage() {
 
   const { data: customers } = useQuery({
     queryKey: ["customer-list"], enabled: role === "admin",
-    queryFn: async () => (await supabase.from("profiles").select("id, full_name, email")).data ?? [],
+    queryFn: async () => (await db.from("profiles").select("id, full_name, email")).data ?? [],
   });
 
   const del = useMutation({
-    mutationFn: async (id: string) => { const { error } = await supabase.from("projects").delete().eq("id", id); if (error) throw error; },
+    mutationFn: async (id: string) => { const { error } = await db.from("projects").delete().eq("id", id); if (error) throw error; },
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["projects"] }); },
   });
 
@@ -133,8 +133,8 @@ function ProjectDialog({ open, onOpenChange, editing, customers }: any) {
   const save = useMutation({
     mutationFn: async () => {
       const payload = { ...f, budget: Number(f.budget) || 0, start_date: f.start_date || null, end_date: f.end_date || null };
-      if (editing) { const { error } = await supabase.from("projects").update(payload).eq("id", editing.id); if (error) throw error; }
-      else { const { error } = await supabase.from("projects").insert(payload); if (error) throw error; }
+      if (editing) { const { error } = await db.from("projects").update(payload).eq("id", editing.id); if (error) throw error; }
+      else { const { error } = await db.from("projects").insert(payload); if (error) throw error; }
     },
     onSuccess: () => { toast.success("Saved"); qc.invalidateQueries({ queryKey: ["projects"] }); onOpenChange(false); },
     onError: (e: Error) => toast.error(e.message),
@@ -190,7 +190,7 @@ function TimelineDialog({ project, onOpenChange, canEdit }: { project: any; onOp
     queryKey: ["project-milestones", project?.id],
     enabled: open,
     queryFn: async () => {
-      const { data } = await supabase.from("project_milestones").select("*").eq("project_id", project.id).order("sort_order", { ascending: true }).order("due_date", { ascending: true, nullsFirst: false }).order("created_at", { ascending: true });
+      const { data } = await db.from("project_milestones").select("*").eq("project_id", project.id).order("sort_order", { ascending: true }).order("due_date", { ascending: true, nullsFirst: false }).order("created_at", { ascending: true });
       return data ?? [];
     },
   });
@@ -204,13 +204,13 @@ function TimelineDialog({ project, onOpenChange, canEdit }: { project: any; onOp
   const { data: activity } = useQuery({
     queryKey: ["project-activity", project?.id],
     enabled: open,
-    queryFn: async () => (await supabase.from("project_activity_log").select("*").eq("project_id", project.id).order("created_at", { ascending: false }).limit(50)).data ?? [],
+    queryFn: async () => (await db.from("project_activity_log").select("*").eq("project_id", project.id).order("created_at", { ascending: false }).limit(50)).data ?? [],
   });
 
   const add = useMutation({
     mutationFn: async () => {
       const nextOrder = (milestones ?? []).reduce((mx: number, m: any) => Math.max(mx, m.sort_order ?? 0), 0) + 10;
-      const { error } = await supabase.from("project_milestones").insert({
+      const { error } = await db.from("project_milestones").insert({
         project_id: project.id, title, description: description || null, due_date: dueDate || null, sort_order: nextOrder,
       });
       if (error) throw error;
@@ -221,7 +221,7 @@ function TimelineDialog({ project, onOpenChange, canEdit }: { project: any; onOp
 
   const toggle = useMutation({
     mutationFn: async (m: any) => {
-      const { error } = await supabase.from("project_milestones").update({
+      const { error } = await db.from("project_milestones").update({
         completed: !m.completed, completed_at: !m.completed ? new Date().toISOString() : null,
       }).eq("id", m.id);
       if (error) throw error;
@@ -232,7 +232,7 @@ function TimelineDialog({ project, onOpenChange, canEdit }: { project: any; onOp
 
   const remove = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("project_milestones").delete().eq("id", id);
+      const { error } = await db.from("project_milestones").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: invalidate,
@@ -248,9 +248,9 @@ function TimelineDialog({ project, onOpenChange, canEdit }: { project: any; onOp
       const other: any = list[j];
       const a = m.sort_order ?? 0, b = other.sort_order ?? 0;
       const [na, nb] = a === b ? [b - 1, b + 1] : [b, a];
-      const { error: e1 } = await supabase.from("project_milestones").update({ sort_order: na }).eq("id", m.id);
+      const { error: e1 } = await db.from("project_milestones").update({ sort_order: na }).eq("id", m.id);
       if (e1) throw e1;
-      const { error: e2 } = await supabase.from("project_milestones").update({ sort_order: nb }).eq("id", other.id);
+      const { error: e2 } = await db.from("project_milestones").update({ sort_order: nb }).eq("id", other.id);
       if (e2) throw e2;
     },
     onSuccess: invalidate,

@@ -1,6 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +9,7 @@ import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate, daysUntil } from "@/lib/format";
 import { generateInvoiceDraft } from "@/lib/generate-invoice";
 import { useState } from "react";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/services/$serviceId")({
   component: ServiceDetailPage,
@@ -59,7 +59,7 @@ function ServiceDetailPage() {
   const { data: service, isLoading } = useQuery({
     queryKey: ["service", serviceId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("services")
+      const { data, error } = await db.from("services")
         .select("*, profiles(id, full_name, email, company), projects(id, name)")
         .eq("id", serviceId).single();
       if (error) throw error;
@@ -70,7 +70,7 @@ function ServiceDetailPage() {
   const { data: invoices } = useQuery({
     queryKey: ["service-invoices", serviceId],
     queryFn: async () => {
-      const { data } = await supabase.from("invoice_items")
+      const { data } = await db.from("invoice_items")
         .select("invoice_id, total, invoices(id, invoice_number, status, issue_date, total)")
         .eq("service_id", serviceId);
       return data ?? [];
@@ -81,7 +81,7 @@ function ServiceDetailPage() {
     queryKey: ["service-package-changes", serviceId],
     enabled: !!service && service.type === "hosting",
     queryFn: async () => {
-      const { data } = await (supabase as any).from("service_package_changes")
+      const { data } = await db.from("service_package_changes")
         .select("id, old_package_name, new_package_name, actor_id, created_at, profiles:actor_id(full_name, email)")
         .eq("service_id", serviceId)
         .order("created_at", { ascending: false });

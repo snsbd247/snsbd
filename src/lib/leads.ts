@@ -1,5 +1,5 @@
-import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
+import { db } from "@/lib/db-shim";
 
 export const leadSchema = z.object({
   name: z.string().trim().max(120).optional(),
@@ -15,7 +15,7 @@ export type LeadInput = z.infer<typeof leadSchema>;
 
 export async function submitLead(input: LeadInput) {
   const parsed = leadSchema.parse(input);
-  const { error } = await supabase.from("leads").insert({
+  const { error } = await db.from("leads").insert({
     name: parsed.name ?? null,
     email: parsed.email,
     phone: parsed.phone ?? null,

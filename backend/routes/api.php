@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanySettingsController;
 use App\Http\Controllers\CustomerOrderController;
+use App\Http\Controllers\DbController;
 use App\Http\Controllers\DomainPricingController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\HostingPackageController;
@@ -40,6 +41,9 @@ Route::get('hosting-packages/{id}', [HostingPackageController::class, 'show']);
 Route::get('domain-pricing', [DomainPricingController::class, 'index']);
 Route::get('service-catalog', [ServiceCatalogController::class, 'index']);
 Route::get('team-members', [TeamMemberController::class, 'index']);
+
+/* ---------------- Generic Supabase-compatible DB endpoint ---------------- */
+Route::middleware('auth:sanctum')->post('db/query', [DbController::class, 'query']);
 
 /* ---------------- Admin-only ---------------- */
 Route::middleware(['auth:sanctum', 'permission:admin'])->group(function () {

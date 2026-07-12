@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { Badge } from "@/components/ui/badge";
 import { whmSync, whmTest } from "@/lib/whm.functions";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/whm-servers")({
   component: WhmServersPage,
@@ -31,7 +31,7 @@ function WhmServersPage() {
   const { data: rows } = useQuery({
     queryKey: ["whm_servers"],
     enabled: role === "admin",
-    queryFn: async () => (await (supabase as any).from("whm_servers").select("*").order("created_at", { ascending: false })).data ?? [],
+    queryFn: async () => (await db.from("whm_servers").select("*").order("created_at", { ascending: false })).data ?? [],
   });
 
   useEffect(() => {
@@ -50,8 +50,8 @@ function WhmServersPage() {
     mutationFn: async () => {
       const payload = { ...f, port: Number(f.port) || 2087 };
       const q = editing
-        ? (supabase as any).from("whm_servers").update(payload).eq("id", editing.id)
-        : (supabase as any).from("whm_servers").insert(payload);
+        ? db.from("whm_servers").update(payload).eq("id", editing.id)
+        : db.from("whm_servers").insert(payload);
       const { error } = await q;
       if (error) throw error;
     },
@@ -60,7 +60,7 @@ function WhmServersPage() {
   });
 
   const del = useMutation({
-    mutationFn: async (id: string) => { const { error } = await (supabase as any).from("whm_servers").delete().eq("id", id); if (error) throw error; },
+    mutationFn: async (id: string) => { const { error } = await db.from("whm_servers").delete().eq("id", id); if (error) throw error; },
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["whm_servers"] }); },
     onError: (e: any) => toast.error(e.message),
   });

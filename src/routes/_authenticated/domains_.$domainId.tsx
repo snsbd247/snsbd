@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +13,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate, daysUntil } from "@/lib/format";
 import { generateInvoiceDraft } from "@/lib/generate-invoice";
+import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/domains_/$domainId")({
   component: DomainDetailPage,
@@ -29,7 +29,7 @@ function DomainDetailPage() {
   const { data: domain, isLoading } = useQuery({
     queryKey: ["domain", domainId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("services")
+      const { data, error } = await db.from("services")
         .select("*, profiles(id, full_name, email), projects(id, name), linked_hosting:linked_hosting_id(id, name)")
         .eq("id", domainId).single();
       if (error) throw error;
@@ -39,7 +39,7 @@ function DomainDetailPage() {
 
   const { data: invoices } = useQuery({
     queryKey: ["service-invoices", domainId],
-    queryFn: async () => (await supabase.from("invoice_items")
+    queryFn: async () => (await db.from("invoice_items")
       .select("invoice_id, invoices(id, invoice_number, status, issue_date, total)")
       .eq("service_id", domainId)).data ?? [],
   });
@@ -47,7 +47,7 @@ function DomainDetailPage() {
   const { data: hostings } = useQuery({
     queryKey: ["hosting-options", domain?.customer_id],
     enabled: isAdmin && !!domain?.customer_id,
-    queryFn: async () => (await supabase.from("services").select("id, name").eq("type", "hosting").eq("customer_id", domain!.customer_id).order("name")).data ?? [],
+    queryFn: async () => (await db.from("services").select("id, name").eq("type", "hosting").eq("customer_id", domain!.customer_id).order("name")).data ?? [],
   });
 
   const [f, setF] = useState<any>(null);
@@ -71,7 +71,7 @@ function DomainDetailPage() {
         cost_price: Number(f.cost_price) || 0,
         sale_price: Number(f.sale_price) || 0,
       };
-      const { error } = await supabase.from("services").update(payload).eq("id", domainId);
+      const { error } = await db.from("services").update(payload).eq("id", domainId);
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Saved"); qc.invalidateQueries({ queryKey: ["domain", domainId] }); qc.invalidateQueries({ queryKey: ["services"] }); },
@@ -80,7 +80,7 @@ function DomainDetailPage() {
 
   const del = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("services").delete().eq("id", domainId);
+      const { error } = await db.from("services").delete().eq("id", domainId);
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["services"] }); navigate({ to: "/domains" }); },
