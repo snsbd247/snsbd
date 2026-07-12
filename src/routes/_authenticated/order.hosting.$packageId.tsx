@@ -190,7 +190,7 @@ function OrderPage() {
 
       <div className="flex justify-end gap-2">
         <Button variant="outline" onClick={() => navigate({ to: "/" })}>Cancel</Button>
-        <Button onClick={() => submit.mutate()} disabled={submit.isPending || !domain.trim()}>
+        <Button onClick={() => submit.mutate()} disabled={submit.isPending || !validateDomain(domain).ok}>
           {submit.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Place order
         </Button>
