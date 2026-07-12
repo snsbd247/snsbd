@@ -12,7 +12,7 @@ import { ArrowLeft, Download, Printer, Loader2, Trash2, Receipt as ReceiptIcon }
 import { downloadElementAsPdf, printElementAsPdf } from "@/lib/pdf";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
-import { useCompanySettings } from "@/lib/company-settings";
+import { useCompanySettings, amountInWords } from "@/lib/company-settings";
 import { formatBDT, formatDate } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/invoices_/$invoiceId")({
