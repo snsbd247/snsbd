@@ -26,9 +26,18 @@ export function usePagination<T>(items: T[], initialPageSize = 10) {
   };
 }
 
+export type PaginationState = {
+  page: number;
+  setPage: (n: number) => void;
+  pageSize: number;
+  setPageSize: (n: number) => void;
+  pageCount: number;
+  total: number;
+};
+
 export function PaginationControls({
   page, setPage, pageSize, setPageSize, pageCount, total,
-}: ReturnType<typeof usePagination<unknown>>) {
+}: PaginationState) {
   if (total === 0) return null;
   const from = (page - 1) * pageSize + 1;
   const to = Math.min(page * pageSize, total);
