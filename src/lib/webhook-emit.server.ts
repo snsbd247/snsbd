@@ -21,11 +21,11 @@ export async function emitWebhookEvent(userId: string, event: string, payload: R
         });
         const text = await res.text().catch(() => "");
         await supabaseAdmin.from("webhook_deliveries").insert({
-          webhook_id: h.id, event, payload, status_code: res.status, response_body: text.slice(0, 2000),
+          webhook_id: h.id, event, payload: payload as any, status_code: res.status, response_body: text.slice(0, 2000),
         });
       } catch (e: any) {
         await supabaseAdmin.from("webhook_deliveries").insert({
-          webhook_id: h.id, event, payload, error: String(e?.message ?? e),
+          webhook_id: h.id, event, payload: payload as any, error: String(e?.message ?? e),
         });
       }
     }

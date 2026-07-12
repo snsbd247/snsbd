@@ -34,10 +34,12 @@ import { Route as MarketingContactRouteImport } from './routes/_marketing.contac
 import { Route as MarketingBdixHostingRouteImport } from './routes/_marketing.bdix-hosting'
 import { Route as MarketingAboutRouteImport } from './routes/_marketing.about'
 import { Route as AuthenticatedWhmServersRouteImport } from './routes/_authenticated/whm-servers'
+import { Route as AuthenticatedWebhooksRouteImport } from './routes/_authenticated/webhooks'
 import { Route as AuthenticatedTicketsRouteImport } from './routes/_authenticated/tickets'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedServiceCatalogRouteImport } from './routes/_authenticated/service-catalog'
+import { Route as AuthenticatedResellersRouteImport } from './routes/_authenticated/resellers'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedRenewalsRouteImport } from './routes/_authenticated/renewals'
 import { Route as AuthenticatedReferralsAdminRouteImport } from './routes/_authenticated/referrals-admin'
@@ -56,6 +58,7 @@ import { Route as AuthenticatedDomainPricingRouteImport } from './routes/_authen
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedAuditLogRouteImport } from './routes/_authenticated/audit-log'
+import { Route as AuthenticatedApiKeysRouteImport } from './routes/_authenticated/api-keys'
 import { Route as AuthenticatedAnnouncementsRouteImport } from './routes/_authenticated/announcements'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects.index'
 import { Route as MarketingHelpSlugRouteImport } from './routes/_marketing.help.$slug'
@@ -70,6 +73,8 @@ import { Route as AuthenticatedInvoicesInvoiceIdRouteImport } from './routes/_au
 import { Route as AuthenticatedExpensesExpenseIdRouteImport } from './routes/_authenticated/expenses_.$expenseId'
 import { Route as AuthenticatedDomainsDomainIdRouteImport } from './routes/_authenticated/domains_.$domainId'
 import { Route as AuthenticatedCustomersCustomerIdRouteImport } from './routes/_authenticated/customers_.$customerId'
+import { Route as ApiPublicV1ServicesRouteImport } from './routes/api/public/v1/services'
+import { Route as ApiPublicV1InvoicesRouteImport } from './routes/api/public/v1/invoices'
 import { Route as ApiPublicHooksRenewalsRouteImport } from './routes/api/public/hooks/renewals'
 import { Route as ApiPublicHooksRenewInvoicesRouteImport } from './routes/api/public/hooks/renew-invoices'
 import { Route as ApiPublicHooksRegistrarCallbackRouteImport } from './routes/api/public/hooks/registrar-callback'
@@ -201,6 +206,11 @@ const AuthenticatedWhmServersRoute = AuthenticatedWhmServersRouteImport.update({
   path: '/whm-servers',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedWebhooksRoute = AuthenticatedWebhooksRouteImport.update({
+  id: '/webhooks',
+  path: '/webhooks',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedTicketsRoute = AuthenticatedTicketsRouteImport.update({
   id: '/tickets',
   path: '/tickets',
@@ -222,6 +232,11 @@ const AuthenticatedServiceCatalogRoute =
     path: '/service-catalog',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedResellersRoute = AuthenticatedResellersRouteImport.update({
+  id: '/resellers',
+  path: '/resellers',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
@@ -318,6 +333,11 @@ const AuthenticatedAuditLogRoute = AuthenticatedAuditLogRouteImport.update({
   path: '/audit-log',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedApiKeysRoute = AuthenticatedApiKeysRouteImport.update({
+  id: '/api-keys',
+  path: '/api-keys',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAnnouncementsRoute =
   AuthenticatedAnnouncementsRouteImport.update({
     id: '/announcements',
@@ -401,6 +421,16 @@ const AuthenticatedCustomersCustomerIdRoute =
     path: '/customers/$customerId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicV1ServicesRoute = ApiPublicV1ServicesRouteImport.update({
+  id: '/api/public/v1/services',
+  path: '/api/public/v1/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicV1InvoicesRoute = ApiPublicV1InvoicesRouteImport.update({
+  id: '/api/public/v1/invoices',
+  path: '/api/public/v1/invoices',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksRenewalsRoute = ApiPublicHooksRenewalsRouteImport.update({
   id: '/api/public/hooks/renewals',
   path: '/api/public/hooks/renewals',
@@ -444,6 +474,7 @@ export interface FileRoutesByFullPath {
   '/portal': typeof PortalRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/announcements': typeof AuthenticatedAnnouncementsRoute
+  '/api-keys': typeof AuthenticatedApiKeysRoute
   '/audit-log': typeof AuthenticatedAuditLogRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -462,10 +493,12 @@ export interface FileRoutesByFullPath {
   '/referrals-admin': typeof AuthenticatedReferralsAdminRoute
   '/renewals': typeof AuthenticatedRenewalsRoute
   '/reports': typeof AuthenticatedReportsRoute
+  '/resellers': typeof AuthenticatedResellersRoute
   '/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
   '/tickets': typeof AuthenticatedTicketsRoute
+  '/webhooks': typeof AuthenticatedWebhooksRoute
   '/whm-servers': typeof AuthenticatedWhmServersRoute
   '/about': typeof MarketingAboutRoute
   '/bdix-hosting': typeof MarketingBdixHostingRoute
@@ -503,6 +536,8 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/registrar-callback': typeof ApiPublicHooksRegistrarCallbackRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
   '/api/public/hooks/renewals': typeof ApiPublicHooksRenewalsRoute
+  '/api/public/v1/invoices': typeof ApiPublicV1InvoicesRoute
+  '/api/public/v1/services': typeof ApiPublicV1ServicesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof MarketingIndexRoute
@@ -511,6 +546,7 @@ export interface FileRoutesByTo {
   '/portal': typeof PortalRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/announcements': typeof AuthenticatedAnnouncementsRoute
+  '/api-keys': typeof AuthenticatedApiKeysRoute
   '/audit-log': typeof AuthenticatedAuditLogRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -529,10 +565,12 @@ export interface FileRoutesByTo {
   '/referrals-admin': typeof AuthenticatedReferralsAdminRoute
   '/renewals': typeof AuthenticatedRenewalsRoute
   '/reports': typeof AuthenticatedReportsRoute
+  '/resellers': typeof AuthenticatedResellersRoute
   '/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
   '/tickets': typeof AuthenticatedTicketsRoute
+  '/webhooks': typeof AuthenticatedWebhooksRoute
   '/whm-servers': typeof AuthenticatedWhmServersRoute
   '/about': typeof MarketingAboutRoute
   '/bdix-hosting': typeof MarketingBdixHostingRoute
@@ -570,6 +608,8 @@ export interface FileRoutesByTo {
   '/api/public/hooks/registrar-callback': typeof ApiPublicHooksRegistrarCallbackRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
   '/api/public/hooks/renewals': typeof ApiPublicHooksRenewalsRoute
+  '/api/public/v1/invoices': typeof ApiPublicV1InvoicesRoute
+  '/api/public/v1/services': typeof ApiPublicV1ServicesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -580,6 +620,7 @@ export interface FileRoutesById {
   '/portal': typeof PortalRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/announcements': typeof AuthenticatedAnnouncementsRoute
+  '/_authenticated/api-keys': typeof AuthenticatedApiKeysRoute
   '/_authenticated/audit-log': typeof AuthenticatedAuditLogRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -598,10 +639,12 @@ export interface FileRoutesById {
   '/_authenticated/referrals-admin': typeof AuthenticatedReferralsAdminRoute
   '/_authenticated/renewals': typeof AuthenticatedRenewalsRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
+  '/_authenticated/resellers': typeof AuthenticatedResellersRoute
   '/_authenticated/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/_authenticated/tickets': typeof AuthenticatedTicketsRoute
+  '/_authenticated/webhooks': typeof AuthenticatedWebhooksRoute
   '/_authenticated/whm-servers': typeof AuthenticatedWhmServersRoute
   '/_marketing/about': typeof MarketingAboutRoute
   '/_marketing/bdix-hosting': typeof MarketingBdixHostingRoute
@@ -640,6 +683,8 @@ export interface FileRoutesById {
   '/api/public/hooks/registrar-callback': typeof ApiPublicHooksRegistrarCallbackRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
   '/api/public/hooks/renewals': typeof ApiPublicHooksRenewalsRoute
+  '/api/public/v1/invoices': typeof ApiPublicV1InvoicesRoute
+  '/api/public/v1/services': typeof ApiPublicV1ServicesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -650,6 +695,7 @@ export interface FileRouteTypes {
     | '/portal'
     | '/sitemap.xml'
     | '/announcements'
+    | '/api-keys'
     | '/audit-log'
     | '/customers'
     | '/dashboard'
@@ -668,10 +714,12 @@ export interface FileRouteTypes {
     | '/referrals-admin'
     | '/renewals'
     | '/reports'
+    | '/resellers'
     | '/service-catalog'
     | '/settings'
     | '/team'
     | '/tickets'
+    | '/webhooks'
     | '/whm-servers'
     | '/about'
     | '/bdix-hosting'
@@ -709,6 +757,8 @@ export interface FileRouteTypes {
     | '/api/public/hooks/registrar-callback'
     | '/api/public/hooks/renew-invoices'
     | '/api/public/hooks/renewals'
+    | '/api/public/v1/invoices'
+    | '/api/public/v1/services'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -717,6 +767,7 @@ export interface FileRouteTypes {
     | '/portal'
     | '/sitemap.xml'
     | '/announcements'
+    | '/api-keys'
     | '/audit-log'
     | '/customers'
     | '/dashboard'
@@ -735,10 +786,12 @@ export interface FileRouteTypes {
     | '/referrals-admin'
     | '/renewals'
     | '/reports'
+    | '/resellers'
     | '/service-catalog'
     | '/settings'
     | '/team'
     | '/tickets'
+    | '/webhooks'
     | '/whm-servers'
     | '/about'
     | '/bdix-hosting'
@@ -776,6 +829,8 @@ export interface FileRouteTypes {
     | '/api/public/hooks/registrar-callback'
     | '/api/public/hooks/renew-invoices'
     | '/api/public/hooks/renewals'
+    | '/api/public/v1/invoices'
+    | '/api/public/v1/services'
   id:
     | '__root__'
     | '/_authenticated'
@@ -785,6 +840,7 @@ export interface FileRouteTypes {
     | '/portal'
     | '/sitemap.xml'
     | '/_authenticated/announcements'
+    | '/_authenticated/api-keys'
     | '/_authenticated/audit-log'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
@@ -803,10 +859,12 @@ export interface FileRouteTypes {
     | '/_authenticated/referrals-admin'
     | '/_authenticated/renewals'
     | '/_authenticated/reports'
+    | '/_authenticated/resellers'
     | '/_authenticated/service-catalog'
     | '/_authenticated/settings'
     | '/_authenticated/team'
     | '/_authenticated/tickets'
+    | '/_authenticated/webhooks'
     | '/_authenticated/whm-servers'
     | '/_marketing/about'
     | '/_marketing/bdix-hosting'
@@ -845,6 +903,8 @@ export interface FileRouteTypes {
     | '/api/public/hooks/registrar-callback'
     | '/api/public/hooks/renew-invoices'
     | '/api/public/hooks/renewals'
+    | '/api/public/v1/invoices'
+    | '/api/public/v1/services'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -859,6 +919,8 @@ export interface RootRouteChildren {
   ApiPublicHooksRegistrarCallbackRoute: typeof ApiPublicHooksRegistrarCallbackRoute
   ApiPublicHooksRenewInvoicesRoute: typeof ApiPublicHooksRenewInvoicesRoute
   ApiPublicHooksRenewalsRoute: typeof ApiPublicHooksRenewalsRoute
+  ApiPublicV1InvoicesRoute: typeof ApiPublicV1InvoicesRoute
+  ApiPublicV1ServicesRoute: typeof ApiPublicV1ServicesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1038,6 +1100,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWhmServersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/webhooks': {
+      id: '/_authenticated/webhooks'
+      path: '/webhooks'
+      fullPath: '/webhooks'
+      preLoaderRoute: typeof AuthenticatedWebhooksRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/tickets': {
       id: '/_authenticated/tickets'
       path: '/tickets'
@@ -1064,6 +1133,13 @@ declare module '@tanstack/react-router' {
       path: '/service-catalog'
       fullPath: '/service-catalog'
       preLoaderRoute: typeof AuthenticatedServiceCatalogRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/resellers': {
+      id: '/_authenticated/resellers'
+      path: '/resellers'
+      fullPath: '/resellers'
+      preLoaderRoute: typeof AuthenticatedResellersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/reports': {
@@ -1192,6 +1268,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAuditLogRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/api-keys': {
+      id: '/_authenticated/api-keys'
+      path: '/api-keys'
+      fullPath: '/api-keys'
+      preLoaderRoute: typeof AuthenticatedApiKeysRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/announcements': {
       id: '/_authenticated/announcements'
       path: '/announcements'
@@ -1290,6 +1373,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCustomersCustomerIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/v1/services': {
+      id: '/api/public/v1/services'
+      path: '/api/public/v1/services'
+      fullPath: '/api/public/v1/services'
+      preLoaderRoute: typeof ApiPublicV1ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/v1/invoices': {
+      id: '/api/public/v1/invoices'
+      path: '/api/public/v1/invoices'
+      fullPath: '/api/public/v1/invoices'
+      preLoaderRoute: typeof ApiPublicV1InvoicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/renewals': {
       id: '/api/public/hooks/renewals'
       path: '/api/public/hooks/renewals'
@@ -1337,6 +1434,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAnnouncementsRoute: typeof AuthenticatedAnnouncementsRoute
+  AuthenticatedApiKeysRoute: typeof AuthenticatedApiKeysRoute
   AuthenticatedAuditLogRoute: typeof AuthenticatedAuditLogRoute
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
@@ -1355,10 +1453,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedReferralsAdminRoute: typeof AuthenticatedReferralsAdminRoute
   AuthenticatedRenewalsRoute: typeof AuthenticatedRenewalsRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
+  AuthenticatedResellersRoute: typeof AuthenticatedResellersRoute
   AuthenticatedServiceCatalogRoute: typeof AuthenticatedServiceCatalogRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
   AuthenticatedTicketsRoute: typeof AuthenticatedTicketsRoute
+  AuthenticatedWebhooksRoute: typeof AuthenticatedWebhooksRoute
   AuthenticatedWhmServersRoute: typeof AuthenticatedWhmServersRoute
   AuthenticatedCustomersCustomerIdRoute: typeof AuthenticatedCustomersCustomerIdRoute
   AuthenticatedDomainsDomainIdRoute: typeof AuthenticatedDomainsDomainIdRoute
@@ -1377,6 +1477,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAnnouncementsRoute: AuthenticatedAnnouncementsRoute,
+  AuthenticatedApiKeysRoute: AuthenticatedApiKeysRoute,
   AuthenticatedAuditLogRoute: AuthenticatedAuditLogRoute,
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
@@ -1395,10 +1496,12 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedReferralsAdminRoute: AuthenticatedReferralsAdminRoute,
   AuthenticatedRenewalsRoute: AuthenticatedRenewalsRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
+  AuthenticatedResellersRoute: AuthenticatedResellersRoute,
   AuthenticatedServiceCatalogRoute: AuthenticatedServiceCatalogRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
   AuthenticatedTicketsRoute: AuthenticatedTicketsRoute,
+  AuthenticatedWebhooksRoute: AuthenticatedWebhooksRoute,
   AuthenticatedWhmServersRoute: AuthenticatedWhmServersRoute,
   AuthenticatedCustomersCustomerIdRoute: AuthenticatedCustomersCustomerIdRoute,
   AuthenticatedDomainsDomainIdRoute: AuthenticatedDomainsDomainIdRoute,
@@ -1507,6 +1610,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksRegistrarCallbackRoute: ApiPublicHooksRegistrarCallbackRoute,
   ApiPublicHooksRenewInvoicesRoute: ApiPublicHooksRenewInvoicesRoute,
   ApiPublicHooksRenewalsRoute: ApiPublicHooksRenewalsRoute,
+  ApiPublicV1InvoicesRoute: ApiPublicV1InvoicesRoute,
+  ApiPublicV1ServicesRoute: ApiPublicV1ServicesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
