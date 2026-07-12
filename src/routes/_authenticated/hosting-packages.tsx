@@ -27,6 +27,7 @@ export const Route = createFileRoute("/_authenticated/hosting-packages")({
 const empty = {
   name: "", description: "", disk_space: "", bandwidth: "",
   features: "", price: "0", billing_cycle: "yearly", is_active: true, sort_order: "0",
+  whm_package_name: "",
 };
 
 function PackagesPage() {
