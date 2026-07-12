@@ -133,21 +133,27 @@ function InvoiceDetailPage() {
           }}
         />
 
-        {/* TOP BAR — dark with red angular clip on left */}
+        {/* TOP BAR — dark with red angular clip on left (red extends below with a tail) */}
         <div className="relative h-[84px] w-full" style={{ background: "#1f1f1f" }}>
           <div
-            className="absolute inset-y-0 left-0 flex items-center pl-6"
-            style={{ width: "32%", background: "#c0392b", clipPath: "polygon(0 0, 100% 0, 78% 100%, 0 100%)" }}
+            className="absolute left-0 top-0 flex items-center pl-6 z-10"
+            style={{
+              width: "32%",
+              height: "108px",
+              background: "#c0392b",
+              clipPath: "polygon(0 0, 100% 0, 72% 78%, 66% 100%, 60% 78%, 0 78%)",
+            }}
           >
             {company?.logo_url ? (
-              <img src={company.logo_url} alt={`${company.company_name} logo`} className="h-14 object-contain" />
+              <img src={company.logo_url} alt={`${company.company_name} logo`} className="h-14 object-contain" style={{ marginTop: "-14px" }} />
             ) : (
-              <div className="text-white">
+              <div className="text-white" style={{ marginTop: "-14px" }}>
                 <div className="text-3xl font-black leading-none tracking-tight">SN</div>
                 <div className="text-[10px] font-semibold tracking-[0.3em] mt-1">SOFTWARE Inc</div>
               </div>
             )}
           </div>
+
           <div
             className="absolute inset-y-0 right-6 grid grid-cols-2 gap-x-10 gap-y-2 text-white text-[12px] content-center"
           >
