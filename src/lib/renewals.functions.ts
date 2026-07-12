@@ -108,7 +108,7 @@ export async function processRenewalsBatch(): Promise<{
     .from("services")
     .select("id, name, customer_id, project_id, sale_price, expiry_date, renewal_reminder_stage, status, profiles!services_customer_id_fkey(email, full_name)")
     .eq("renewable", true)
-    .in("status", ["active", "grace"])
+    .eq("status", "active")
     .not("expiry_date", "is", null)
     .lte("expiry_date", horizonStr);
   if (error) throw new Error(error.message);
