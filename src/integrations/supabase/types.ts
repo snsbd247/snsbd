@@ -50,6 +50,42 @@ export type Database = {
         }
         Relationships: []
       }
+      api_keys: {
+        Row: {
+          created_at: string
+          id: string
+          key_hash: string
+          key_prefix: string
+          last_used_at: string | null
+          name: string
+          revoked_at: string | null
+          scopes: string[]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key_hash: string
+          key_prefix: string
+          last_used_at?: string | null
+          name: string
+          revoked_at?: string | null
+          scopes?: string[]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key_hash?: string
+          key_prefix?: string
+          last_used_at?: string | null
+          name?: string
+          revoked_at?: string | null
+          scopes?: string[]
+          user_id?: string
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: string
@@ -140,6 +176,36 @@ export type Database = {
           updated_at?: string
           vat_percent?: number
           website?: string | null
+        }
+        Relationships: []
+      }
+      currencies: {
+        Row: {
+          code: string
+          created_at: string
+          is_active: boolean
+          name: string
+          rate_to_bdt: number
+          symbol: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          is_active?: boolean
+          name: string
+          rate_to_bdt?: number
+          symbol: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          is_active?: boolean
+          name?: string
+          rate_to_bdt?: number
+          symbol?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -698,6 +764,39 @@ export type Database = {
           },
         ]
       }
+      outbound_webhooks: {
+        Row: {
+          created_at: string
+          events: string[]
+          id: string
+          is_active: boolean
+          secret: string
+          updated_at: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          events?: string[]
+          id?: string
+          is_active?: boolean
+          secret: string
+          updated_at?: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          events?: string[]
+          id?: string
+          is_active?: boolean
+          secret?: string
+          updated_at?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payment_gateways: {
         Row: {
           app_key: string | null
@@ -854,6 +953,8 @@ export type Database = {
           full_name: string | null
           id: string
           phone: string | null
+          preferred_currency: string
+          preferred_language: string
           referral_code: string | null
           referred_by: string | null
           updated_at: string
@@ -868,6 +969,8 @@ export type Database = {
           full_name?: string | null
           id: string
           phone?: string | null
+          preferred_currency?: string
+          preferred_language?: string
           referral_code?: string | null
           referred_by?: string | null
           updated_at?: string
@@ -882,12 +985,21 @@ export type Database = {
           full_name?: string | null
           id?: string
           phone?: string | null
+          preferred_currency?: string
+          preferred_language?: string
           referral_code?: string | null
           referred_by?: string | null
           updated_at?: string
           username?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "profiles_preferred_currency_fkey"
+            columns: ["preferred_currency"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
           {
             foreignKeyName: "profiles_referred_by_fkey"
             columns: ["referred_by"]
@@ -1072,6 +1184,65 @@ export type Database = {
             columns: ["invoice_id"]
             isOneToOne: false
             referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reseller_customers: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          reseller_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          reseller_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          reseller_id?: string
+        }
+        Relationships: []
+      }
+      reseller_pricing: {
+        Row: {
+          created_at: string
+          hosting_package_id: string
+          id: string
+          markup_percent: number
+          override_price: number | null
+          reseller_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          hosting_package_id: string
+          id?: string
+          markup_percent?: number
+          override_price?: number | null
+          reseller_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          hosting_package_id?: string
+          id?: string
+          markup_percent?: number
+          override_price?: number | null
+          reseller_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reseller_pricing_hosting_package_id_fkey"
+            columns: ["hosting_package_id"]
+            isOneToOne: false
+            referencedRelation: "hosting_packages"
             referencedColumns: ["id"]
           },
         ]
@@ -1526,6 +1697,47 @@ export type Database = {
         }
         Relationships: []
       }
+      webhook_deliveries: {
+        Row: {
+          created_at: string
+          error: string | null
+          event: string
+          id: string
+          payload: Json
+          response_body: string | null
+          status_code: number | null
+          webhook_id: string
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          event: string
+          id?: string
+          payload: Json
+          response_body?: string | null
+          status_code?: number | null
+          webhook_id: string
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          event?: string
+          id?: string
+          payload?: Json
+          response_body?: string | null
+          status_code?: number | null
+          webhook_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_deliveries_webhook_id_fkey"
+            columns: ["webhook_id"]
+            isOneToOne: false
+            referencedRelation: "outbound_webhooks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       whm_servers: {
         Row: {
           api_token: string
@@ -1597,7 +1809,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "customer"
+      app_role: "admin" | "customer" | "reseller"
       customer_order_status:
         | "pending"
         | "processing"
@@ -1764,7 +1976,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "customer"],
+      app_role: ["admin", "customer", "reseller"],
       customer_order_status: [
         "pending",
         "processing",
