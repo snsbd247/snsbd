@@ -58,6 +58,8 @@ function InvoicesPage() {
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["invoices"] }); },
   });
 
+  const pg = usePagination((invoices ?? []) as any[]);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
