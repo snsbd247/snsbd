@@ -8,7 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye } from "lucide-react";
+import { ClickableRow, StopClick } from "@/components/ui/clickable-row";
+
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatDate } from "@/lib/format";
@@ -131,16 +133,14 @@ function CustomersPage() {
               {customers.map((c: any, i: number) => {
                 const grad = gradients[i % gradients.length];
                 return (
-                  <TableRow key={c.id} className="group transition-colors hover:bg-gradient-to-r hover:from-indigo-50/60 hover:to-fuchsia-50/60 dark:hover:from-indigo-950/30 dark:hover:to-fuchsia-950/30">
+                  <ClickableRow key={c.id} to="/customers/$customerId" params={{ customerId: c.id }}>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
                         <div className={`h-9 w-9 shrink-0 rounded-full bg-gradient-to-br ${grad} text-white flex items-center justify-center text-xs font-bold shadow-sm ring-2 ring-white dark:ring-slate-900`}>
                           {initials(c.full_name, c.email)}
                         </div>
                         <div className="min-w-0">
-                          <Link to="/customers/$customerId" params={{ customerId: c.id }} className="text-primary hover:underline font-semibold">
-                            {c.full_name ?? "—"}
-                          </Link>
+                          <span className="text-primary font-semibold">{c.full_name ?? "—"}</span>
                           {c.roles?.includes("admin") && <Badge variant="outline" className="ml-2 border-amber-400 text-amber-600">admin</Badge>}
                         </div>
                       </div>
@@ -158,12 +158,16 @@ function CustomersPage() {
                     </TableCell>
                     <TableCell className="text-slate-500 dark:text-slate-400 text-sm">{formatDate(c.created_at)}</TableCell>
                     <TableCell className="text-right">
-                      <Button size="icon" variant="ghost" className="hover:bg-indigo-100 hover:text-indigo-700 dark:hover:bg-indigo-950/40" onClick={() => { setEditing(c); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
-                      <Button size="icon" variant="ghost" className="hover:bg-rose-100 hover:text-rose-700 dark:hover:bg-rose-950/40" onClick={() => { if (confirm("Delete this customer? Their auth user remains.")) del.mutate(c.id); }}><Trash2 className="h-4 w-4" /></Button>
+                      <StopClick>
+                        <Button size="sm" variant="outline" asChild className="mr-1"><Link to="/customers/$customerId" params={{ customerId: c.id }}><Eye className="mr-1 h-3.5 w-3.5" />View</Link></Button>
+                        <Button size="icon" variant="ghost" className="hover:bg-indigo-100 hover:text-indigo-700 dark:hover:bg-indigo-950/40" onClick={() => { setEditing(c); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
+                        <Button size="icon" variant="ghost" className="hover:bg-rose-100 hover:text-rose-700 dark:hover:bg-rose-950/40" onClick={() => { if (confirm("Delete this customer? Their auth user remains.")) del.mutate(c.id); }}><Trash2 className="h-4 w-4" /></Button>
+                      </StopClick>
                     </TableCell>
-                  </TableRow>
+                  </ClickableRow>
                 );
               })}
+
             </TableBody>
           </Table>
         </CardContent>

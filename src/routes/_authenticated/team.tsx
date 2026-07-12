@@ -8,7 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, Wallet } from "lucide-react";
+import { Plus, Pencil, Trash2, Wallet, Eye } from "lucide-react";
+import { ClickableRow, StopClick } from "@/components/ui/clickable-row";
+
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
@@ -61,20 +63,24 @@ function TeamPage() {
             </TableRow></TableHeader>
             <TableBody>
               {(members ?? []).map((m: any) => (
-                <TableRow key={m.id}>
-                  <TableCell className="font-medium"><Link to="/team/$memberId" params={{ memberId: m.id }} className="text-primary hover:underline">{m.full_name}</Link></TableCell>
+                <ClickableRow key={m.id} to="/team/$memberId" params={{ memberId: m.id }}>
+                  <TableCell className="font-semibold text-primary">{m.full_name}</TableCell>
                   <TableCell>{m.role ?? "—"}</TableCell>
                   <TableCell className="text-xs">{m.email}<br />{m.phone}</TableCell>
                   <TableCell>{formatBDT(m.monthly_salary)}</TableCell>
                   <TableCell>{formatDate(m.joined_at)}</TableCell>
                   <TableCell><Badge variant={m.active ? "default" : "secondary"}>{m.active ? "active" : "inactive"}</Badge></TableCell>
                   <TableCell className="text-right">
-                    <Button size="icon" variant="ghost" onClick={() => setPayOpen(m)}><Wallet className="h-4 w-4" /></Button>
-                    <Button size="icon" variant="ghost" onClick={() => { setEditing(m); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
-                    <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete?")) del.mutate(m.id); }}><Trash2 className="h-4 w-4" /></Button>
+                    <StopClick>
+                      <Button size="sm" variant="outline" asChild className="mr-1"><Link to="/team/$memberId" params={{ memberId: m.id }}><Eye className="mr-1 h-3.5 w-3.5" />View</Link></Button>
+                      <Button size="icon" variant="ghost" onClick={() => setPayOpen(m)}><Wallet className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => { setEditing(m); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" className="hover:bg-rose-100 hover:text-rose-700" onClick={() => { if (confirm("Delete?")) del.mutate(m.id); }}><Trash2 className="h-4 w-4" /></Button>
+                    </StopClick>
                   </TableCell>
-                </TableRow>
+                </ClickableRow>
               ))}
+
               {(members ?? []).length === 0 && <TableRow><TableCell colSpan={7} className="py-8 text-center text-sm text-muted-foreground">No team members yet.</TableCell></TableRow>}
             </TableBody>
           </Table>

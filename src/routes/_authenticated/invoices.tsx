@@ -15,6 +15,8 @@ import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { db } from "@/lib/db-shim";
+import { ClickableRow, StopClick } from "@/components/ui/clickable-row";
+
 
 export const Route = createFileRoute("/_authenticated/invoices")({
   component: InvoicesPage,
@@ -84,8 +86,8 @@ function InvoicesPage() {
               {isLoading && <TableRow><TableCell colSpan={8} className="py-8 text-center text-sm text-muted-foreground">Loading…</TableCell></TableRow>}
               {!isLoading && (invoices ?? []).length === 0 && <TableRow><TableCell colSpan={8} className="py-8 text-center text-sm text-muted-foreground">No invoices.</TableCell></TableRow>}
               {(invoices ?? []).map((i: any) => (
-                <TableRow key={i.id}>
-                  <TableCell className="font-mono text-xs"><Link to="/invoices/$invoiceId" params={{ invoiceId: i.id }} className="text-primary hover:underline">{i.invoice_number}</Link></TableCell>
+                <ClickableRow key={i.id} to="/invoices/$invoiceId" params={{ invoiceId: i.id }}>
+                  <TableCell className="font-mono text-xs text-primary font-semibold">{i.invoice_number}</TableCell>
                   {role === "admin" && <TableCell>{i.profiles?.full_name ?? i.profiles?.email ?? "—"}</TableCell>}
                   <TableCell>{formatDate(i.issue_date)}</TableCell>
                   <TableCell>{formatDate(i.due_date)}</TableCell>
@@ -93,13 +95,16 @@ function InvoicesPage() {
                   <TableCell className="text-success">{formatBDT(i.amount_paid)}</TableCell>
                   <TableCell><Badge variant={statusVariant(i.status)} className="capitalize">{i.status}</Badge></TableCell>
                   <TableCell className="text-right">
-                    <Button size="icon" variant="ghost" asChild><Link to="/invoices/$invoiceId" params={{ invoiceId: i.id }}><Eye className="h-4 w-4" /></Link></Button>
-                    {role === "admin" && (
-                      <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete?")) del.mutate(i.id); }}><Trash2 className="h-4 w-4" /></Button>
-                    )}
+                    <StopClick>
+                      <Button size="sm" variant="outline" asChild className="mr-1"><Link to="/invoices/$invoiceId" params={{ invoiceId: i.id }}><Eye className="mr-1 h-3.5 w-3.5" />View</Link></Button>
+                      {role === "admin" && (
+                        <Button size="icon" variant="ghost" className="hover:bg-rose-100 hover:text-rose-700" onClick={() => { if (confirm("Delete?")) del.mutate(i.id); }}><Trash2 className="h-4 w-4" /></Button>
+                      )}
+                    </StopClick>
                   </TableCell>
-                </TableRow>
+                </ClickableRow>
               ))}
+
             </TableBody>
           </Table>
         </CardContent>

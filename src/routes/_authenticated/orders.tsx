@@ -14,6 +14,9 @@ import { activateHostingOrder } from "@/lib/orders.functions";
 import { useState } from "react";
 import { CheckCircle2, Copy, Loader2 } from "lucide-react";
 import { db } from "@/lib/db-shim";
+import { ClickableRow, StopClick } from "@/components/ui/clickable-row";
+import { Eye } from "lucide-react";
+
 
 export const Route = createFileRoute("/_authenticated/orders")({
   component: OrdersPage,
@@ -77,7 +80,7 @@ function OrdersPage() {
           </TableRow></TableHeader>
           <TableBody>
             {(rows ?? []).map((o: any) => (
-              <TableRow key={o.id}>
+              <ClickableRow key={o.id} to="/orders/$orderId" params={{ orderId: o.id }}>
                 <TableCell className="text-xs">{formatDate(o.created_at)}</TableCell>
                 <TableCell className="text-sm">{o.profiles?.full_name ?? o.profiles?.email ?? "—"}</TableCell>
                 <TableCell className="capitalize">
@@ -96,23 +99,28 @@ function OrdersPage() {
                 </TableCell>
                 <TableCell>{formatBDT(o.quoted_price)}</TableCell>
                 <TableCell>
-                  <Select value={o.status} onValueChange={(v) => update.mutate({ id: o.id, status: v })}>
-                    <SelectTrigger className="h-8 w-32"><SelectValue /></SelectTrigger>
-                    <SelectContent>{STATUSES.map((s) => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}</SelectContent>
-                  </Select>
+                  <StopClick>
+                    <Select value={o.status} onValueChange={(v) => update.mutate({ id: o.id, status: v })}>
+                      <SelectTrigger className="h-8 w-32"><SelectValue /></SelectTrigger>
+                      <SelectContent>{STATUSES.map((s) => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </StopClick>
                 </TableCell>
                 <TableCell className="space-x-2 whitespace-nowrap">
-                  <Button asChild size="sm" variant="outline">
-                    <Link to="/orders/$orderId" params={{ orderId: o.id }}>Details</Link>
-                  </Button>
-                  {o.order_type === "hosting" && o.status !== "completed" && (
-                    <Button size="sm" onClick={() => { setActivate(o); setWhmServerId(""); setResult(null); }}>
-                      <CheckCircle2 className="mr-1 h-3 w-3" />Activate
+                  <StopClick>
+                    <Button asChild size="sm" variant="outline">
+                      <Link to="/orders/$orderId" params={{ orderId: o.id }}><Eye className="mr-1 h-3.5 w-3.5" />View</Link>
                     </Button>
-                  )}
+                    {o.order_type === "hosting" && o.status !== "completed" && (
+                      <Button size="sm" onClick={() => { setActivate(o); setWhmServerId(""); setResult(null); }}>
+                        <CheckCircle2 className="mr-1 h-3 w-3" />Activate
+                      </Button>
+                    )}
+                  </StopClick>
                 </TableCell>
-              </TableRow>
+              </ClickableRow>
             ))}
+
             {rows && rows.length === 0 && <TableRow><TableCell colSpan={8} className="text-center text-sm text-muted-foreground py-8">No orders yet.</TableCell></TableRow>}
           </TableBody>
         </Table>
