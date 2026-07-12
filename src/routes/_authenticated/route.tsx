@@ -52,7 +52,7 @@ function AuthedLayout() {
             <img
               src={company?.logo_url || "/favicon.png"}
               alt={`${company?.company_name ?? "Company"} logo`}
-              className="h-8 w-8 rounded-md bg-white object-contain"
+              className="h-8 w-auto object-contain bg-transparent"
             />
             <div>
               <div className="font-semibold text-sm">{company?.company_name ?? "Company"}</div>
@@ -84,6 +84,7 @@ function AuthedLayout() {
                   <NavItem to="/orders" icon={ShoppingCart} label="Customer Orders" />
 
                   <NavItem to="/hosting-packages" icon={HardDrive} label="Hosting Packages" />
+                  <NavItem to="/domain-pricing" icon={Globe} label="Domain Pricing" />
                   <NavItem to="/service-catalog" icon={Package} label="Service Catalog" />
                   <NavItem to="/team" icon={UserCog} label="Team & Salary" />
                   <NavItem to="/expenses" icon={Receipt} label="Expenses" />

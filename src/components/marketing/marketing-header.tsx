@@ -29,9 +29,13 @@ export function MarketingHeader() {
     <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0B1220]/90 backdrop-blur supports-[backdrop-filter]:bg-[#0B1220]/70">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
         <Link to="/" className="flex items-center gap-2 text-white">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 font-black text-[#0B1220]">
-            {brand.charAt(0)}
-          </span>
+          {data?.logo_url ? (
+            <img src={data.logo_url} alt={`${brand} logo`} className="h-9 w-auto object-contain bg-transparent" />
+          ) : (
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 font-black text-[#0B1220]">
+              {brand.charAt(0)}
+            </span>
+          )}
           <span className="hidden text-base font-bold sm:inline">{brand}</span>
         </Link>
 
