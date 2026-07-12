@@ -8,12 +8,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Loader2, Save, Trash2, FileText, Globe } from "lucide-react";
+import { ArrowLeft, Loader2, Save, Trash2, FileText, Globe, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate, daysUntil } from "@/lib/format";
 import { generateInvoiceDraft } from "@/lib/generate-invoice";
 import { db } from "@/lib/db-shim";
+import { registerDomainNamecheap } from "@/lib/namecheap.functions";
 
 export const Route = createFileRoute("/_authenticated/domains_/$domainId")({
   component: DomainDetailPage,
