@@ -235,12 +235,16 @@ function PortalPage() {
               );
             })}
           </TabsContent>
+          <TabsContent value="profile">
+            <ProfileTab profile={profile} onSaved={load} />
+          </TabsContent>
         </Tabs>
       </div>
       <SiteFooter />
     </div>
   );
 }
+
 
 function BkashPayButton({ invoiceId, amount }: { invoiceId: string; amount: number }) {
   const [busy, setBusy] = useState(false);
