@@ -104,7 +104,9 @@ function OrderDetailsPage() {
 
   if (role !== "admin") return <p className="text-sm text-muted-foreground">Admin only.</p>;
   if (isLoading) return <div className="p-6 text-sm text-muted-foreground flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" />Loading…</div>;
+  if (orderError) return <p className="text-sm text-destructive">Failed to load: {(orderError as any).message} <Link to="/orders" className="underline">Back</Link></p>;
   if (!order) return <p className="text-sm">Order not found. <Link to="/orders" className="underline">Back</Link></p>;
+
 
   const o: any = order;
   const svc = o.services;
