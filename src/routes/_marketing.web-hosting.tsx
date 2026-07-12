@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { PricingCard } from "@/components/marketing/pricing-card";
 import { SectionHeading, CtaBand } from "@/components/marketing/section";
 import { webHostingPlans } from "@/content/plans";
+import { useHostingPackages } from "@/hooks/use-marketing-data";
 import { Check } from "lucide-react";
 
 export const Route = createFileRoute("/_marketing/web-hosting")({
@@ -30,6 +31,9 @@ const includes = [
 ];
 
 function Page() {
+  const { data: plans } = useHostingPackages("web");
+  const list = plans && plans.length > 0 ? plans : webHostingPlans;
+
   return (
     <>
       <section className="bg-gradient-to-br from-[#0B1220] to-[#0F172A] py-20 text-white">
@@ -42,7 +46,7 @@ function Page() {
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="grid gap-6 lg:grid-cols-3">
-          {webHostingPlans.map((p) => <PricingCard key={p.name} plan={p} />)}
+          {list.map((p) => <PricingCard key={p.name} plan={p} />)}
         </div>
       </section>
 

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { PricingCard } from "@/components/marketing/pricing-card";
 import { SectionHeading, CtaBand } from "@/components/marketing/section";
 import { bdixHostingPlans } from "@/content/plans";
+import { useHostingPackages } from "@/hooks/use-marketing-data";
 import { Zap, Globe, Shield } from "lucide-react";
 
 export const Route = createFileRoute("/_marketing/bdix-hosting")({
@@ -19,6 +20,8 @@ export const Route = createFileRoute("/_marketing/bdix-hosting")({
 });
 
 function Page() {
+  const { data: plans } = useHostingPackages("bdix");
+  const list = plans && plans.length > 0 ? plans : bdixHostingPlans;
   return (
     <>
       <section className="bg-gradient-to-br from-[#0B1220] to-[#0F172A] py-20 text-white">
@@ -49,7 +52,7 @@ function Page() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <SectionHeading eyebrow="Pricing" title="BDIX plans for every stage" />
           <div className="mt-10 grid gap-6 lg:grid-cols-3">
-            {bdixHostingPlans.map((p) => <PricingCard key={p.name} plan={p} />)}
+            {list.map((p) => <PricingCard key={p.name} plan={p} />)}
           </div>
         </div>
       </section>
