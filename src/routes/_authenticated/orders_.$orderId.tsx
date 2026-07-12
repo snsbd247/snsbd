@@ -160,14 +160,25 @@ function OrderDetailsPage() {
           {canActivate && (
             <Button
               onClick={() => { setActivateOpen(true); setCreds(null); setWhmServerId(""); }}
-              disabled={!o.domain_name || !String(o.domain_name).includes(".")}
-              title={!o.domain_name ? "Add a domain first" : ""}
+              disabled={!validateDomain(o.domain_name ?? "").ok}
+              title={!validateDomain(o.domain_name ?? "").ok ? "একটি বৈধ ডোমেইন যোগ করুন" : ""}
             >
               <CheckCircle2 className="mr-2 h-4 w-4" />Verify &amp; Activate
             </Button>
           )}
         </div>
       </div>
+
+      {canActivate && !validateDomain(o.domain_name ?? "").ok && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Activation blocked — invalid domain</AlertTitle>
+          <AlertDescription>
+            {(validateDomain(o.domain_name ?? "") as { ok: false; error: string }).error}
+            {" "}উপরের "Domain" ঘরে সঠিক ডোমেইন সেভ করলে Activate বাটন সক্রিয় হবে।
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
