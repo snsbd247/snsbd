@@ -84,6 +84,8 @@ function AuthedLayout() {
                 <NavItem to="/other-services" icon={Package} label={isAdmin ? "Other Services" : "My Services"} />
                 <NavItem to="/invoices" icon={FileText} label={isAdmin ? "Invoices" : "My Invoices"} />
                 <NavItem to="/tickets" icon={LifeBuoy} label={isAdmin ? "Support Tickets" : "Support"} />
+                <NavItem to="/api-keys" icon={KeyRound} label="API Keys" />
+                <NavItem to="/webhooks" icon={Webhook} label="Webhooks" />
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -127,6 +129,7 @@ function AuthedLayout() {
                       label="Growth & Trust"
                       items={[
                         { to: "/referrals-admin", label: "Referral Commissions" },
+                        { to: "/resellers", label: "Resellers" },
                         { to: "/audit-log", label: "Audit Log" },
                       ]}
                     />
