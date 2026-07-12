@@ -14,6 +14,7 @@ import { useAuth } from "@/lib/auth";
 import { Badge } from "@/components/ui/badge";
 import { whmSync, whmTest } from "@/lib/whm.functions";
 import { db } from "@/lib/db-shim";
+import { usePagination, PaginationControls } from "@/components/ui/pagination-controls";
 
 export const Route = createFileRoute("/_authenticated/whm-servers")({
   component: WhmServersPage,
