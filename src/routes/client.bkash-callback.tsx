@@ -43,7 +43,7 @@ function Callback() {
         {state === "ok" && <CheckCircle2 className="mx-auto h-12 w-12 text-primary" />}
         {state === "fail" && <XCircle className="mx-auto h-12 w-12 text-destructive" />}
         <p className="text-sm">{msg}</p>
-        <Button onClick={() => (window.location.href = "/portal")}>Back to portal</Button>
+        <Button onClick={() => (window.location.href = "/client")}>Back to your dashboard</Button>
       </div>
     </div>
   );

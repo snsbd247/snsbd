@@ -91,7 +91,7 @@ function PortalPage() {
     })();
   }, []);
 
-  const signOut = async () => { await getPortalClient().auth.signOut(); window.close(); };
+  const signOut = async () => { await getPortalClient().auth.signOut(); window.location.href = "/"; };
 
   if (status === "loading") {
     return <div className="p-8 flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Signing you in…</div>;
@@ -244,7 +244,7 @@ function BkashPayButton({ invoiceId, amount }: { invoiceId: string; amount: numb
     setBusy(true);
     try {
       const { bkashCreatePayment } = await import("@/lib/bkash.functions");
-      const callback_url = `${window.location.origin}/portal/bkash-callback`;
+      const callback_url = `${window.location.origin}/client/bkash-callback`;
       const res = await bkashCreatePayment({ data: { invoice_id: invoiceId, amount, callback_url } });
       window.location.href = res.bkashURL;
     } catch (e: any) {
