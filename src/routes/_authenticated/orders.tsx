@@ -69,6 +69,8 @@ function OrdersPage() {
 
   if (role !== "admin") return <p className="text-sm text-muted-foreground">Admin only.</p>;
 
+  const pg = usePagination((rows ?? []) as any[]);
+
   return (
     <div className="space-y-6">
       <div><h1 className="text-2xl font-bold">Customer Orders</h1><p className="text-sm text-muted-foreground">Orders submitted from customer portals.</p></div>
