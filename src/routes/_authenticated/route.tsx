@@ -127,8 +127,8 @@ function AuthedLayout() {
                         { to: "/audit-log", label: "Audit Log" },
                       ]}
                     />
-                      ]}
-                    />
+
+
 
                     <NavGroup
                       icon={Package}
