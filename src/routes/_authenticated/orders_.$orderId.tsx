@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { db } from "@/lib/db-shim";
@@ -27,6 +28,8 @@ function OrderDetailsPage() {
   const nav = useNavigate();
   const qc = useQueryClient();
   const [notes, setNotes] = useState<string>("");
+  const [domainEdit, setDomainEdit] = useState<string>("");
+  const [editingDomain, setEditingDomain] = useState(false);
   const [whmServerId, setWhmServerId] = useState<string>("");
   const [activateOpen, setActivateOpen] = useState(false);
   const [creds, setCreds] = useState<{ cpanel_username: string; cpanel_password: string; whm_created: boolean; whm_error: string | null } | null>(null);
@@ -83,7 +86,7 @@ function OrderDetailsPage() {
   });
 
   const saveMeta = useMutation({
-    mutationFn: async (patch: { admin_notes?: string; status?: string }) => {
+    mutationFn: async (patch: { admin_notes?: string; status?: string; domain_name?: string }) => {
       const { error } = await db.from("customer_orders").update(patch as any).eq("id", orderId);
       if (error) throw error;
     },
@@ -123,7 +126,11 @@ function OrderDetailsPage() {
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="capitalize">{o.status}</Badge>
           {canActivate && (
-            <Button onClick={() => { setActivateOpen(true); setCreds(null); setWhmServerId(""); }}>
+            <Button
+              onClick={() => { setActivateOpen(true); setCreds(null); setWhmServerId(""); }}
+              disabled={!o.domain_name || !String(o.domain_name).includes(".")}
+              title={!o.domain_name ? "Add a domain first" : ""}
+            >
               <CheckCircle2 className="mr-2 h-4 w-4" />Verify &amp; Activate
             </Button>
           )}
@@ -136,9 +143,31 @@ function OrderDetailsPage() {
           <CardContent className="space-y-2 text-sm">
             <Row label="Type"><Badge variant="outline" className="capitalize">{o.order_type}</Badge></Row>
             <Row label="Item">{o.hosting_packages?.name ?? o.service_catalog?.name ?? o.domain_name ?? "—"}</Row>
-            {o.domain_name && <Row label="Domain">{o.domain_name} {o.domain_action && <span className="text-xs text-muted-foreground capitalize">({o.domain_action.replace("_", " ")})</span>}</Row>}
             <Row label="Quoted price"><span className="font-medium">{formatBDT(o.quoted_price)}</span></Row>
             {o.billing_cycle && <Row label="Billing">{o.billing_cycle}</Row>}
+            <div className="border-t pt-2">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs text-muted-foreground">Domain {o.order_type === "hosting" && <span className="text-destructive">*</span>}</span>
+                {!editingDomain && (
+                  <Button size="sm" variant="ghost" className="h-6 text-xs" onClick={() => { setDomainEdit(o.domain_name ?? ""); setEditingDomain(true); }}>
+                    {o.domain_name ? "Edit" : "Add"}
+                  </Button>
+                )}
+              </div>
+              {editingDomain ? (
+                <div className="flex gap-2">
+                  <Input value={domainEdit} onChange={(e) => setDomainEdit(e.target.value)} placeholder="example.com" className="h-8" />
+                  <Button size="sm" onClick={() => {
+                    const d = domainEdit.trim().toLowerCase();
+                    if (o.order_type === "hosting" && (!d || !d.includes("."))) { toast.error("Valid domain required"); return; }
+                    saveMeta.mutate({ domain_name: d || null as any }, { onSuccess: () => setEditingDomain(false) });
+                  }} disabled={saveMeta.isPending}>Save</Button>
+                  <Button size="sm" variant="ghost" onClick={() => setEditingDomain(false)}>Cancel</Button>
+                </div>
+              ) : (
+                <div className="text-sm">{o.domain_name || <span className="text-destructive italic">Missing — required for activation</span>} {o.domain_action && <span className="text-xs text-muted-foreground capitalize">({o.domain_action.replace("_", " ")})</span>}</div>
+              )}
+            </div>
             <Row label="Created">{formatDate(o.created_at)}</Row>
             {o.customer_notes && <div className="pt-2 border-t"><div className="text-xs text-muted-foreground">Customer notes</div><div className="italic">"{o.customer_notes}"</div></div>}
           </CardContent>
