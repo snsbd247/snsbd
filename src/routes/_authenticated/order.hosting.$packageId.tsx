@@ -11,6 +11,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { formatBDT } from "@/lib/format";
 import { createHostingOrder } from "@/lib/orders.functions";
+import { validateDomain } from "@/lib/domain-validate";
 import { bkashCreatePayment } from "@/lib/bkash.functions";
 import { useCompanySettings } from "@/lib/company-settings";
 import { Loader2, ArrowLeft, CheckCircle2 } from "lucide-react";
