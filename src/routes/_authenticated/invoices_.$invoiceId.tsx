@@ -147,11 +147,11 @@ function InvoiceDetailPage() {
             {company?.logo_url ? (
               <img src={company.logo_url} alt={`${company.company_name} logo`} className="h-14 object-contain" style={{ marginTop: "-18px" }} />
             ) : (
-              <div className="text-white" style={{ marginTop: "-18px" }}>
-                <div className="text-3xl font-black leading-none tracking-tight">SN</div>
-                <div className="text-[10px] font-semibold tracking-[0.3em] mt-1">SOFTWARE Inc</div>
+              <div className="text-white font-bold text-lg px-3" style={{ marginTop: "-18px" }}>
+                {company?.company_name ?? "Company"}
               </div>
             )}
+
           </div>
 
 
