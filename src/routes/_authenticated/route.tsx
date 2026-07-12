@@ -10,9 +10,12 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   LayoutDashboard, Users, Globe, HardDrive, Package, FileText, FolderKanban,
-  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server, ChevronRight, LifeBuoy, RefreshCw, BarChart3, BookOpen, Bell,
+  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server, ChevronRight, LifeBuoy, RefreshCw, BarChart3, BookOpen, Bell, KeyRound, Webhook, Store,
 } from "lucide-react";
 import { NotificationsBell } from "@/components/notifications-bell";
+import { useI18n } from "@/lib/i18n";
+import { useCurrency } from "@/lib/currency";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
 import { Button } from "@/components/ui/button";
@@ -81,6 +84,8 @@ function AuthedLayout() {
                 <NavItem to="/other-services" icon={Package} label={isAdmin ? "Other Services" : "My Services"} />
                 <NavItem to="/invoices" icon={FileText} label={isAdmin ? "Invoices" : "My Invoices"} />
                 <NavItem to="/tickets" icon={LifeBuoy} label={isAdmin ? "Support Tickets" : "Support"} />
+                <NavItem to="/api-keys" icon={KeyRound} label="API Keys" />
+                <NavItem to="/webhooks" icon={Webhook} label="Webhooks" />
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -124,6 +129,7 @@ function AuthedLayout() {
                       label="Growth & Trust"
                       items={[
                         { to: "/referrals-admin", label: "Referral Commissions" },
+                        { to: "/resellers", label: "Resellers" },
                         { to: "/audit-log", label: "Audit Log" },
                       ]}
                     />
@@ -170,6 +176,7 @@ function AuthedLayout() {
             <SidebarTrigger />
           </div>
           <div className="flex items-center gap-1">
+            <LangCurrencySwitcher />
             <NotificationsBell />
             <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -257,4 +264,27 @@ function NavGroup({
     </Collapsible>
   );
 }
+
+function LangCurrencySwitcher() {
+  const { lang, setLang } = useI18n();
+  const { currency, setCurrency, currencies } = useCurrency();
+  return (
+    <div className="flex items-center gap-1">
+      <Select value={lang} onValueChange={(v) => setLang(v as "en" | "bn")}>
+        <SelectTrigger className="h-8 w-[80px] text-xs"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          <SelectItem value="en">EN</SelectItem>
+          <SelectItem value="bn">বাংলা</SelectItem>
+        </SelectContent>
+      </Select>
+      <Select value={currency} onValueChange={setCurrency}>
+        <SelectTrigger className="h-8 w-[80px] text-xs"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          {currencies.map((c) => (<SelectItem key={c.code} value={c.code}>{c.code}</SelectItem>))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
 
