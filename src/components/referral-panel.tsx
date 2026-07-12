@@ -67,7 +67,7 @@ export function ReferralPanel() {
               {(d.commissions as any[]).slice(0, 8).map((c: any) => (
                 <li key={c.id} className="flex items-center justify-between py-2 text-sm">
                   <div className="min-w-0">
-                    <div className="truncate">{c.profiles?.email ?? c.referred_user_id}</div>
+                    <div className="truncate">{c.referred_user_id}</div>
                     <div className="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleDateString()}</div>
                   </div>
                   <div className="flex items-center gap-2">

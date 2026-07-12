@@ -58,8 +58,8 @@ function RefAdmin() {
             <TableBody>
               {items.map((c: any) => (
                 <TableRow key={c.id}>
-                  <TableCell className="text-sm">{c.referrer?.email ?? c.referrer_id}</TableCell>
-                  <TableCell className="text-sm">{c.referred?.email ?? c.referred_user_id}</TableCell>
+                  <TableCell className="text-sm">{c.referrer_id}</TableCell>
+                  <TableCell className="text-sm">{c.referred_user_id}</TableCell>
                   <TableCell>{Number(c.amount).toFixed(2)}</TableCell>
                   <TableCell>{Number(c.rate_percent).toFixed(0)}%</TableCell>
                   <TableCell>
