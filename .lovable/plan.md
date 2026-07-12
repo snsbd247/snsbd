@@ -1,139 +1,86 @@
-# ধাপ ১ — Migration Plan (শুধু পরিকল্পনা, কোনো কোড নয়)
+# WHMCS Alternative — Roadmap
 
-## বর্তমান Backend Inventory (Supabase)
+লক্ষ্য: এই সফটওয়্যারকে একটি পূর্ণাঙ্গ WHMCS বিকল্প বানানো — ক্লায়েন্ট, বিলিং, প্রোভিশনিং, সাপোর্ট, ডোমেইন, অটোমেশন সব একসাথে।
 
-### Tables (22টি — সব `public` schema-এ)
-
-| # | Supabase Table | ভূমিকা | MySQL Target Table |
-|---|---|---|---|
-| 1 | `profiles` | user profile (auth.users এর সাথে 1:1) | `users` (Laravel default) + extra columns |
-| 2 | `user_roles` | role assignment (admin/customer) | `user_custom_roles` |
-| 3 | `company_settings` | logo, brand, bKash number, address | `company_settings` |
-| 4 | `team_members` | staff list | `team_members` |
-| 5 | `leads` | CRM leads | `leads` |
-| 6 | `projects` | client projects | `projects` |
-| 7 | `project_milestones` | milestones | `project_milestones` |
-| 8 | `project_activity_log` | audit log (auto by trigger) | `project_activity_logs` (Laravel Observer) |
-| 9 | `services` | active hosting/domain services | `services` |
-| 10 | `service_catalog` | service definitions | `service_catalog` |
-| 11 | `service_package_changes` | upgrade/downgrade log | `service_package_changes` (Observer) |
-| 12 | `hosting_packages` | plan list (price, limits) | `hosting_packages` |
-| 13 | `domain_pricing` | TLD-wise price | `domain_pricing` |
-| 14 | `whm_servers` | WHM/cPanel server list | `whm_servers` |
-| 15 | `customer_orders` | order intake | `customer_orders` |
-| 16 | `invoices` | invoice header | `invoices` |
-| 17 | `invoice_items` | invoice lines | `invoice_items` |
-| 18 | `payments` | payment record | `payments` |
-| 19 | `payment_gateways` | gateway config | `payment_gateways` |
-| 20 | `payment_transactions` | transaction log | `payment_transactions` |
-| 21 | `expenses` | expense tracking | `expenses` |
-| 22 | `salary_payments` | staff salary | `salary_payments` |
-
-### Database Functions (7টি) — MySQL-এ কীভাবে map হবে
-
-| Supabase Function | ভূমিকা | Laravel Replacement |
-|---|---|---|
-| `has_role(uuid, app_role)` | role check | `User::hasRole()` (Gate/Policy) |
-| `is_admin(uuid)` | admin check | `User::isAdmin()` helper + middleware |
-| `email_for_username(text)` | username → email lookup | `AuthController::login()` এ query |
-| `handle_new_user()` | signup এ profile+role auto-create | `RegisterController` + first-user-admin logic |
-| `set_updated_at()` | updated_at trigger | Eloquent auto (`$timestamps=true`) |
-| `log_milestone_activity()` | milestone log trigger | `MilestoneObserver` |
-| `log_service_package_change()` | package change log trigger | `ServiceObserver` |
-
-### RLS Policies → Laravel Middleware Mapping
-
-Supabase RLS-এর সব policy Laravel-এ দুটো middleware দিয়ে handle হবে:
-- `auth:sanctum` — token verification
-- `CheckPermission` — role-based (admin/customer/staff) route guard
-- `BranchScope` (যদি multi-branch থাকে) — data isolation
-- Controller-এ `Gate::authorize()` — row-level (own data only)
-
-### Data Type Mapping (PostgreSQL → MySQL 8)
-
-| Postgres | MySQL |
-|---|---|
-| `uuid` (PK) | `CHAR(36)` + Laravel `HasUuids` trait, অথবা `BIGINT AUTO_INCREMENT` (recommended for FK performance) |
-| `text` | `TEXT` / `VARCHAR(255)` |
-| `jsonb` | `JSON` |
-| `timestamp with time zone` | `TIMESTAMP` |
-| `numeric` | `DECIMAL(12,2)` |
-| `boolean` | `TINYINT(1)` |
-| `app_role` (enum) | `ENUM('admin','customer','staff')` |
-| Array types | `JSON` |
-| `gen_random_uuid()` | `(UUID())` default অথবা Laravel trait |
-
-**Recommendation:** নতুন MySQL schema-এ `BIGINT AUTO_INCREMENT` PK ব্যবহার করব (আপনার rule #3 অনুযায়ী), UUID শুধু public-facing identifier যেখানে দরকার সেখানে extra column হিসেবে।
-
-### Storage / Files
-- Supabase Storage bucket: **নেই** (project-এ কোনো bucket configured নেই)
-- Logo upload: বর্তমানে `company_settings.logo_url` কলামে URL — Laravel-এ `storage/app/public/logos/` + `php artisan storage:link`
-
-### Edge Functions / Server Functions
-- বর্তমানে TanStack `createServerFn` ব্যবহৃত হচ্ছে (WHM account create, order activate, ইত্যাদি)
-- Laravel-এ এগুলো Controller action হবে (`ActivateOrderController@activate`, `WhmController@createAccount`)
-
-### Auth Flow পরিবর্তন
-- **এখন:** Supabase Auth (email/password + Google OAuth broker) + session-based
-- **নতুন:** Laravel Sanctum token — `POST /api/auth/login` → token → `Authorization: Bearer <token>` header
-- Google OAuth: Laravel Socialite package (`laravel/socialite`) দিয়ে re-implement
-
-## Frontend Bridge Strategy (Rule #2)
-
-```
-VITE_API_BASE_URL সেট আছে?
-   ├── হ্যাঁ → laravel-bridge.ts → fetch(`${BASE}/api/...`)
-   └── না  → বর্তমান supabase client (Lovable preview ভাঙবে না)
-```
-
-সব `supabase.from('table').select()` call কে `dataClient.table('table').select()` abstraction দিয়ে replace করা হবে ধীরে ধীরে, module by module।
-
-## Module Migration Priority (Suggestion)
-
-ছোট থেকে বড়, dependency অনুযায়ী:
-
-1. **Auth** (users, user_custom_roles) — সব কিছুর ভিত্তি
-2. **Company Settings** (logo, brand)
-3. **Hosting Packages + Domain Pricing** (marketing site দেখাবে)
-4. **Customer Orders + Payments** (order flow)
-5. **Services + WHM integration** (activation)
-6. **Invoices + Invoice Items**
-7. **Projects + Milestones + Activity Log**
-8. **Leads / CRM**
-9. **Team Members + Salary**
-10. **Expenses**
-
-## Deploy Target Stack (Rule confirmation)
-
-- Ubuntu 22.04/24.04, Nginx, PHP 8.2-FPM, MySQL 8, Node 20, Certbot
-- Frontend build (`npm run build`) → `backend/public/` (Laravel document root)
-- Domain: **syncsolutionbd.com** (আপনার confirm লাগবে)
+বর্তমান অবস্থা: Admin panel এ Projects, Customers, Orders, Invoices, Hosting Packages, Domain Pricing, Service Catalog, WHM Servers, Team, Expenses আছে। WHM package selection যুক্ত হয়েছে।
 
 ---
 
-## ⚠️ শুরু করার আগে আমার প্রশ্ন
+## Phase 1 — Client-Facing Portal (সবচেয়ে জরুরি)
+WHMCS এর মূল হচ্ছে client portal। এখন শুধু admin panel আছে।
 
-1. **VPS domain:** `syncsolutionbd.com` কি চূড়ান্ত? নাকি অন্য কিছু?
-2. **Module priority:** উপরের ক্রম ঠিক আছে, নাকি আপনি অন্য order চান?
-3. **Data migration:** বর্তমান Supabase data (orders, invoices, users, ইত্যাদি) নতুন MySQL-এ export/import করতে হবে, নাকি fresh start?
-4. **Super Admin:** username + email কী দেব seed-এ?
-5. **PK type:** `BIGINT AUTO_INCREMENT` (fast, recommended) নাকি `CHAR(36) UUID` (Supabase compatible)?
+1. **Client Signup/Login** — আলাদা `/client` area, self-registration
+2. **Client Dashboard** — নিজের services, domains, invoices, tickets একনজরে
+3. **Order/Cart System** — পাবলিক pricing pages থেকে hosting/domain কেনা
+   - Hosting package browse → configure → domain check → checkout
+   - Domain search + register/transfer
+4. **Client Profile** — contact info, password, 2FA
+
+## Phase 2 — Billing & Payments
+1. **Automated Invoice Generation** — recurring service এর জন্য (monthly/yearly/etc) cron দিয়ে auto invoice
+2. **Payment Gateway Integration** — Stripe/bKash/Nagad/SSLCommerz (Bangladesh)
+3. **Online Payment on Invoices** — client নিজে pay করতে পারবে, auto-mark paid
+4. **Credit Balance** — client account credit, refund handling
+5. **Late Fees & Suspension Automation** — overdue হলে auto suspend WHM account
+6. **Proforma/Tax Invoice, VAT** — BD context
+
+## Phase 3 — Provisioning Automation
+1. **Auto WHM Account Creation** — order paid → auto create cPanel account, send email
+2. **Suspend/Unsuspend/Terminate** — invoice status অনুযায়ী auto
+3. **Password Reset, Package Upgrade/Downgrade** — client portal থেকে
+4. **Server Load Balancing** — একাধিক WHM server, capacity অনুযায়ী distribute
+
+## Phase 4 — Domain Management
+1. **Domain Registrar Integration** — ResellerClub / Namecheap / Enom API
+2. **Auto Register/Renew/Transfer** — order থেকে
+3. **DNS Management** — client portal থেকে
+4. **Domain Expiry Reminders**
+
+## Phase 5 — Support System
+1. **Ticket System** — client submit, admin/staff reply, department, priority, status
+2. **Email Piping** — reply-by-email
+3. **Knowledgebase / Announcements**
+4. **Live chat (optional later)**
+
+## Phase 6 — Automation & Notifications
+1. **Cron Jobs** — invoice generation, reminders, suspensions, domain sync
+2. **Email Templates** — welcome, invoice, payment received, suspension, renewal reminder (customizable)
+3. **SMS Notifications** — BD context (bulk SMS gateway)
+
+## Phase 7 — Admin Enhancements
+1. **Reports & Analytics** — revenue, MRR, churn, overdue, server usage
+2. **Staff Roles & Permissions** — granular (billing, support, admin)
+3. **Activity Log / Audit Trail**
+4. **Product Addons & Upgrades**
+5. **Promo Codes / Coupons**
+6. **Affiliate System**
+
+## Phase 8 — Reseller & Advanced
+1. **Reseller Accounts** — sub-clients, custom pricing
+2. **API for third-party integration**
+3. **Multi-currency & Multi-language** (BN/EN toggle)
+4. **White-label branding**
 
 ---
 
-## ⚠️ Important Warning
+## প্রস্তাবিত ধাপ (শুরু করার ক্রম)
 
-এই কাজটি **এই বর্তমান Lovable project-এ করা যাবে না** নিরাপদভাবে — কারণ:
+আমি সুপারিশ করছি এই ক্রমে:
+1. **Phase 1** (Client Portal + Cart) — এটা ছাড়া WHMCS alternative অসম্ভব
+2. **Phase 2** (Billing automation + Payment gateway — bKash/Stripe)
+3. **Phase 3** (WHM full automation)
+4. **Phase 5** (Ticket) সমান্তরালভাবে
+5. **Phase 4** (Domain registrar)
+6. বাকিগুলো ধাপে ধাপে
 
-- Lovable Cloud + TanStack Start template Supabase-এর সাথে গভীরভাবে integrated
-- `backend/` folder + PHP files এই sandbox-এ run হবে না (Node/Vite only)
-- `install.sh`, VPS deploy scripts — এগুলো আপনার VPS-এ run হবে, Lovable-এ না
+---
 
-**সুরক্ষিত পথ:** আপনার prompt-এই লেখা আছে "নতুন প্রজেক্টে পেস্ট করুন" — অর্থাৎ এটা নতুন Lovable project-এ শুরু করা উচিত, অথবা সরাসরি লোকাল machine/VPS-এ। এই SNSBD project-এ যদি Laravel skeleton generate করি তাহলে বর্তমান working app ভেঙে যেতে পারে।
+## এখনই আপনার সিদ্ধান্ত দরকার
 
-**আপনার সিদ্ধান্ত দরকার:**
-- (a) এই বর্তমান project-এ backend/ folder generate করব (frontend অক্ষত থাকবে, শুধু নতুন folder যোগ হবে) — কিন্তু Lovable-এ Laravel চালানো/test করা যাবে না, শুধু code তৈরি হবে VPS-এ deploy-এর জন্য
-- (b) আপনি নতুন Lovable project খুলে এই prompt পেস্ট করবেন
-- (c) আমি শুধু full plan + file list দিয়ে দেব, আপনি local editor-এ কাজ করবেন
+1. **Phase 1 দিয়ে শুরু করব?** নাকি অন্য কোনো phase আগে?
+2. **Payment gateway** — কোনটা আগে? (Stripe / bKash / Nagad / SSLCommerz)
+3. **Domain registrar** — কোনটা ব্যবহার করবেন? (ResellerClub / Namecheap / অন্য)
+4. **Client portal** কি একই ডোমেইনে (`/client`) নাকি আলাদা subdomain?
+5. **BN/EN** — client portal Bangla-first নাকি English-first?
 
-উপরের প্রশ্নগুলোর উত্তর দিন, তারপর ধাপ ২ (backend skeleton) শুরু করব।
+আপনি approve করলে Phase 1 থেকে detailed implementation plan দিব এবং কাজ শুরু করব।
