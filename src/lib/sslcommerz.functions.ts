@@ -142,6 +142,10 @@ export const sslczValidatePayment = createServerFn({ method: "POST" })
           reference: body?.bank_tran_id ?? data.tran_id,
           paid_at: new Date().toISOString(),
         });
+        if (status === "paid") {
+          const { autoRenewOnInvoicePaid } = await import("@/lib/auto-renew.server");
+          await autoRenewOnInvoicePaid(inv.id);
+        }
       }
     }
 

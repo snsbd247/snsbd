@@ -10,8 +10,10 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   LayoutDashboard, Users, Globe, HardDrive, Package, FileText, FolderKanban,
-  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server, ChevronRight, LifeBuoy, RefreshCw,
+  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server, ChevronRight, LifeBuoy, RefreshCw, BarChart3, BookOpen, Bell,
 } from "lucide-react";
+import { NotificationsBell } from "@/components/notifications-bell";
+
 
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
@@ -106,8 +108,17 @@ function AuthedLayout() {
                         { to: "/expenses", label: "Expenses" },
                         { to: "/whm-servers", label: "WHM Servers" },
                         { to: "/renewals", label: "Renewals" },
+                        { to: "/reports", label: "Reports & Analytics" },
                       ]}
                     />
+                    <NavGroup
+                      icon={BookOpen}
+                      label="Content"
+                      items={[
+                        { to: "/kb", label: "Knowledge Base" },
+                      ]}
+                    />
+
                     <NavGroup
                       icon={Package}
                       label="Catalog & Pricing"
@@ -147,7 +158,9 @@ function AuthedLayout() {
           <div className="flex items-center gap-2">
             <SidebarTrigger />
           </div>
-          <DropdownMenu>
+          <div className="flex items-center gap-1">
+            <NotificationsBell />
+            <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="gap-2">
                 <Avatar className="h-6 w-6"><AvatarFallback className="text-[10px]">{initials}</AvatarFallback></Avatar>
@@ -163,7 +176,10 @@ function AuthedLayout() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          </div>
         </header>
+
+
         <main className="p-6 min-h-[calc(100vh-3.5rem)]">
           <Outlet />
         </main>
