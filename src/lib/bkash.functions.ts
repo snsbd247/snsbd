@@ -157,7 +157,10 @@ export const bkashExecutePayment = createServerFn({ method: "POST" })
           reference: body.trxID ?? data.paymentID,
           paid_at: new Date().toISOString(),
         });
-
+        if (status === "paid") {
+          const { autoRenewOnInvoicePaid } = await import("@/lib/auto-renew.server");
+          await autoRenewOnInvoicePaid(inv.id);
+        }
       }
     }
 
