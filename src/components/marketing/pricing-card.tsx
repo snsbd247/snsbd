@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "@tanstack/react-router";
+import { useAuth } from "@/lib/auth";
 import { EmailCaptureDialog } from "./email-capture-dialog";
 
 export type Plan = {
@@ -11,10 +13,27 @@ export type Plan = {
   features: string[];
   featured?: boolean;
   badge?: string;
+  packageId?: string;
 };
 
 export function PricingCard({ plan }: { plan: Plan }) {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const { session } = useAuth();
+
+  function handleOrder() {
+    if (plan.packageId) {
+      const target = `/order/hosting/${plan.packageId}`;
+      if (session) {
+        navigate({ to: "/order/hosting/$packageId", params: { packageId: plan.packageId } });
+      } else {
+        navigate({ to: "/auth", search: { mode: "signin", redirect: target } as any });
+      }
+    } else {
+      setOpen(true);
+    }
+  }
+
   return (
     <div
       className={`relative flex flex-col rounded-3xl border p-6 transition hover:-translate-y-1 hover:shadow-2xl ${
@@ -43,7 +62,7 @@ export function PricingCard({ plan }: { plan: Plan }) {
         ))}
       </ul>
       <Button
-        onClick={() => setOpen(true)}
+        onClick={handleOrder}
         className={`mt-6 ${plan.featured ? "bg-emerald-500 text-[#0B1220] hover:bg-emerald-400" : ""}`}
         variant={plan.featured ? "default" : "outline"}
       >
