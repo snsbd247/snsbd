@@ -10,7 +10,7 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   LayoutDashboard, Users, Globe, HardDrive, Package, FileText, FolderKanban,
-  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server, ChevronRight, LifeBuoy,
+  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server, ChevronRight, LifeBuoy, RefreshCw,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -105,6 +105,7 @@ function AuthedLayout() {
                         { to: "/orders", label: "Customer Orders" },
                         { to: "/expenses", label: "Expenses" },
                         { to: "/whm-servers", label: "WHM Servers" },
+                        { to: "/renewals", label: "Renewals" },
                       ]}
                     />
                     <NavGroup

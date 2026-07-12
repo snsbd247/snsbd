@@ -37,6 +37,7 @@ import { Route as AuthenticatedTicketsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedServiceCatalogRouteImport } from './routes/_authenticated/service-catalog'
+import { Route as AuthenticatedRenewalsRouteImport } from './routes/_authenticated/renewals'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedPaymentSettingsRouteImport } from './routes/_authenticated/payment-settings'
 import { Route as AuthenticatedOtherServicesRouteImport } from './routes/_authenticated/other-services'
@@ -60,6 +61,7 @@ import { Route as AuthenticatedInvoicesInvoiceIdRouteImport } from './routes/_au
 import { Route as AuthenticatedExpensesExpenseIdRouteImport } from './routes/_authenticated/expenses_.$expenseId'
 import { Route as AuthenticatedDomainsDomainIdRouteImport } from './routes/_authenticated/domains_.$domainId'
 import { Route as AuthenticatedCustomersCustomerIdRouteImport } from './routes/_authenticated/customers_.$customerId'
+import { Route as ApiPublicHooksRenewalsRouteImport } from './routes/api/public/hooks/renewals'
 import { Route as ApiPublicHooksRenewInvoicesRouteImport } from './routes/api/public/hooks/renew-invoices'
 import { Route as ApiPublicHooksRegistrarCallbackRouteImport } from './routes/api/public/hooks/registrar-callback'
 import { Route as ApiPublicHooksNotifyLeadRouteImport } from './routes/api/public/hooks/notify-lead'
@@ -206,6 +208,11 @@ const AuthenticatedServiceCatalogRoute =
     path: '/service-catalog',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedRenewalsRoute = AuthenticatedRenewalsRouteImport.update({
+  id: '/renewals',
+  path: '/renewals',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -336,6 +343,11 @@ const AuthenticatedCustomersCustomerIdRoute =
     path: '/customers/$customerId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicHooksRenewalsRoute = ApiPublicHooksRenewalsRouteImport.update({
+  id: '/api/public/hooks/renewals',
+  path: '/api/public/hooks/renewals',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksRenewInvoicesRoute =
   ApiPublicHooksRenewInvoicesRouteImport.update({
     id: '/api/public/hooks/renew-invoices',
@@ -385,6 +397,7 @@ export interface FileRoutesByFullPath {
   '/other-services': typeof AuthenticatedOtherServicesRoute
   '/payment-settings': typeof AuthenticatedPaymentSettingsRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/renewals': typeof AuthenticatedRenewalsRoute
   '/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
@@ -422,6 +435,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/notify-lead': typeof ApiPublicHooksNotifyLeadRoute
   '/api/public/hooks/registrar-callback': typeof ApiPublicHooksRegistrarCallbackRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
+  '/api/public/hooks/renewals': typeof ApiPublicHooksRenewalsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof MarketingIndexRoute
@@ -441,6 +455,7 @@ export interface FileRoutesByTo {
   '/other-services': typeof AuthenticatedOtherServicesRoute
   '/payment-settings': typeof AuthenticatedPaymentSettingsRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/renewals': typeof AuthenticatedRenewalsRoute
   '/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/team': typeof AuthenticatedTeamRoute
@@ -478,6 +493,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/notify-lead': typeof ApiPublicHooksNotifyLeadRoute
   '/api/public/hooks/registrar-callback': typeof ApiPublicHooksRegistrarCallbackRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
+  '/api/public/hooks/renewals': typeof ApiPublicHooksRenewalsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -499,6 +515,7 @@ export interface FileRoutesById {
   '/_authenticated/other-services': typeof AuthenticatedOtherServicesRoute
   '/_authenticated/payment-settings': typeof AuthenticatedPaymentSettingsRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/renewals': typeof AuthenticatedRenewalsRoute
   '/_authenticated/service-catalog': typeof AuthenticatedServiceCatalogRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/team': typeof AuthenticatedTeamRoute
@@ -537,6 +554,7 @@ export interface FileRoutesById {
   '/api/public/hooks/notify-lead': typeof ApiPublicHooksNotifyLeadRoute
   '/api/public/hooks/registrar-callback': typeof ApiPublicHooksRegistrarCallbackRoute
   '/api/public/hooks/renew-invoices': typeof ApiPublicHooksRenewInvoicesRoute
+  '/api/public/hooks/renewals': typeof ApiPublicHooksRenewalsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -558,6 +576,7 @@ export interface FileRouteTypes {
     | '/other-services'
     | '/payment-settings'
     | '/profile'
+    | '/renewals'
     | '/service-catalog'
     | '/settings'
     | '/team'
@@ -595,6 +614,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/notify-lead'
     | '/api/public/hooks/registrar-callback'
     | '/api/public/hooks/renew-invoices'
+    | '/api/public/hooks/renewals'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -614,6 +634,7 @@ export interface FileRouteTypes {
     | '/other-services'
     | '/payment-settings'
     | '/profile'
+    | '/renewals'
     | '/service-catalog'
     | '/settings'
     | '/team'
@@ -651,6 +672,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/notify-lead'
     | '/api/public/hooks/registrar-callback'
     | '/api/public/hooks/renew-invoices'
+    | '/api/public/hooks/renewals'
   id:
     | '__root__'
     | '/_authenticated'
@@ -671,6 +693,7 @@ export interface FileRouteTypes {
     | '/_authenticated/other-services'
     | '/_authenticated/payment-settings'
     | '/_authenticated/profile'
+    | '/_authenticated/renewals'
     | '/_authenticated/service-catalog'
     | '/_authenticated/settings'
     | '/_authenticated/team'
@@ -709,6 +732,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/notify-lead'
     | '/api/public/hooks/registrar-callback'
     | '/api/public/hooks/renew-invoices'
+    | '/api/public/hooks/renewals'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -722,6 +746,7 @@ export interface RootRouteChildren {
   ApiPublicHooksNotifyLeadRoute: typeof ApiPublicHooksNotifyLeadRoute
   ApiPublicHooksRegistrarCallbackRoute: typeof ApiPublicHooksRegistrarCallbackRoute
   ApiPublicHooksRenewInvoicesRoute: typeof ApiPublicHooksRenewInvoicesRoute
+  ApiPublicHooksRenewalsRoute: typeof ApiPublicHooksRenewalsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -922,6 +947,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedServiceCatalogRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/renewals': {
+      id: '/_authenticated/renewals'
+      path: '/renewals'
+      fullPath: '/renewals'
+      preLoaderRoute: typeof AuthenticatedRenewalsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
       path: '/profile'
@@ -1083,6 +1115,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCustomersCustomerIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/hooks/renewals': {
+      id: '/api/public/hooks/renewals'
+      path: '/api/public/hooks/renewals'
+      fullPath: '/api/public/hooks/renewals'
+      preLoaderRoute: typeof ApiPublicHooksRenewalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/renew-invoices': {
       id: '/api/public/hooks/renew-invoices'
       path: '/api/public/hooks/renew-invoices'
@@ -1134,6 +1173,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOtherServicesRoute: typeof AuthenticatedOtherServicesRoute
   AuthenticatedPaymentSettingsRoute: typeof AuthenticatedPaymentSettingsRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedRenewalsRoute: typeof AuthenticatedRenewalsRoute
   AuthenticatedServiceCatalogRoute: typeof AuthenticatedServiceCatalogRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
@@ -1166,6 +1206,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOtherServicesRoute: AuthenticatedOtherServicesRoute,
   AuthenticatedPaymentSettingsRoute: AuthenticatedPaymentSettingsRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedRenewalsRoute: AuthenticatedRenewalsRoute,
   AuthenticatedServiceCatalogRoute: AuthenticatedServiceCatalogRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
@@ -1262,6 +1303,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksNotifyLeadRoute: ApiPublicHooksNotifyLeadRoute,
   ApiPublicHooksRegistrarCallbackRoute: ApiPublicHooksRegistrarCallbackRoute,
   ApiPublicHooksRenewInvoicesRoute: ApiPublicHooksRenewInvoicesRoute,
+  ApiPublicHooksRenewalsRoute: ApiPublicHooksRenewalsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
