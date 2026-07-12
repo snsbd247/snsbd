@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas-pro";
+import { toast } from "sonner";
 
 type Size = "a4" | "a5";
 type Orient = "p" | "l";
@@ -41,12 +42,23 @@ export async function downloadElementAsPdf(
   size: Size = "a4",
   orientation: Orient = "p",
 ) {
+  const tid = toast.loading("Generating PDF…");
   try {
     const pdf = await buildPdf(elementId, size, orientation);
-    pdf.save(filename);
-  } catch (e) {
+    const blob = pdf.output("blob");
+    const blobUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = filename.endsWith(".pdf") ? filename : `${filename}.pdf`;
+    link.rel = "noopener";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
+    toast.success("PDF downloaded", { id: tid });
+  } catch (e: any) {
     console.error("PDF download failed", e);
-    throw e;
+    toast.error(`PDF download failed: ${e?.message ?? e}`, { id: tid });
   }
 }
 
@@ -55,38 +67,46 @@ export async function printElementAsPdf(
   size: Size = "a4",
   orientation: Orient = "p",
 ) {
-  const pdf = await buildPdf(elementId, size, orientation);
-  const blobUrl = pdf.output("bloburl");
-  const w = window.open(blobUrl, "_blank");
-  if (!w) {
-    // Popup blocked — fallback to iframe
-    const iframe = document.createElement("iframe");
+  const tid = toast.loading("Preparing PDF for print…");
+  let iframe: HTMLIFrameElement | null = null;
+  let blobUrl: string | null = null;
+  try {
+    const pdf = await buildPdf(elementId, size, orientation);
+    const blob = pdf.output("blob");
+    blobUrl = URL.createObjectURL(blob);
+
+    iframe = document.createElement("iframe");
     iframe.style.position = "fixed";
     iframe.style.right = "0";
     iframe.style.bottom = "0";
     iframe.style.width = "0";
     iframe.style.height = "0";
     iframe.style.border = "0";
-    iframe.src = String(blobUrl);
+    iframe.src = blobUrl;
     document.body.appendChild(iframe);
+
     iframe.onload = () => {
-      try {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
-      } catch (e) {
-        console.error(e);
-      }
+      setTimeout(() => {
+        try {
+          iframe!.contentWindow?.focus();
+          iframe!.contentWindow?.print();
+          toast.success("Print dialog opened", { id: tid });
+        } catch (err: any) {
+          console.error("Print failed", err);
+          toast.error(`Print failed: ${err?.message ?? err}`, { id: tid });
+        }
+      }, 300);
     };
-    return;
+    iframe.onerror = (err) => {
+      console.error("PDF load failed", err);
+      toast.error("Could not load PDF for print", { id: tid });
+      if (iframe) document.body.removeChild(iframe);
+      if (blobUrl) URL.revokeObjectURL(blobUrl);
+    };
+  } catch (e: any) {
+    console.error("PDF print failed", e);
+    toast.error(`PDF print failed: ${e?.message ?? e}`, { id: tid });
+    if (iframe && iframe.parentNode) iframe.parentNode.removeChild(iframe);
+    if (blobUrl) URL.revokeObjectURL(blobUrl);
   }
-  w.addEventListener("load", () => {
-    setTimeout(() => {
-      try {
-        w.focus();
-        w.print();
-      } catch (e) {
-        console.error(e);
-      }
-    }, 300);
-  });
 }
