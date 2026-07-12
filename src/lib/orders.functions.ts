@@ -116,6 +116,19 @@ export const activateHostingOrder = createServerFn({ method: "POST" })
       }
     }
 
+    let emailSent = false;
+    let emailError: string | null = null;
+    if (whmCreated) {
+      try {
+        const { sendWelcomeForService } = await import("@/lib/emails.functions");
+        const r = await sendWelcomeForService(svc.id, context.userId);
+        emailSent = !!r.ok;
+        if (!r.ok) emailError = r.error ?? "email failed";
+      } catch (e: any) {
+        emailError = e?.message ?? "email failed";
+      }
+    }
+
     await supabaseAdmin
       .from("customer_orders")
       .update({
