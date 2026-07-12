@@ -104,7 +104,7 @@ function CatalogPage() {
             <TableHead className="w-24" />
           </TableRow></TableHeader>
           <TableBody>
-            {(rows ?? []).map((r: any) => (
+            {pg.paged.map((r: any) => (
               <TableRow key={r.id}>
                 <TableCell className="font-medium">{r.name}</TableCell>
                 <TableCell className="text-xs text-muted-foreground">{r.category ?? "—"}</TableCell>
