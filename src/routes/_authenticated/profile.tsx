@@ -9,6 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { db } from "@/lib/db-shim";
+import { MfaSettings } from "@/components/mfa-settings";
+import { ReferralPanel } from "@/components/referral-panel";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   component: ProfilePage,
@@ -50,6 +52,8 @@ function ProfilePage() {
           <Button onClick={() => save.mutate()} disabled={save.isPending}>Save changes</Button>
         </CardContent>
       </Card>
+      <MfaSettings />
+      <ReferralPanel />
     </div>
   );
 }

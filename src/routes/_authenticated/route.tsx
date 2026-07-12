@@ -116,8 +116,19 @@ function AuthedLayout() {
                       label="Content"
                       items={[
                         { to: "/kb", label: "Knowledge Base" },
+                        { to: "/announcements", label: "Announcements" },
                       ]}
                     />
+                    <NavGroup
+                      icon={Users}
+                      label="Growth & Trust"
+                      items={[
+                        { to: "/referrals-admin", label: "Referral Commissions" },
+                        { to: "/audit-log", label: "Audit Log" },
+                      ]}
+                    />
+
+
 
                     <NavGroup
                       icon={Package}

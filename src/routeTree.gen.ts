@@ -40,6 +40,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedServiceCatalogRouteImport } from './routes/_authenticated/service-catalog'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedRenewalsRouteImport } from './routes/_authenticated/renewals'
+import { Route as AuthenticatedReferralsAdminRouteImport } from './routes/_authenticated/referrals-admin'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedPaymentSettingsRouteImport } from './routes/_authenticated/payment-settings'
 import { Route as AuthenticatedOtherServicesRouteImport } from './routes/_authenticated/other-services'
@@ -54,6 +55,8 @@ import { Route as AuthenticatedDomainsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedDomainPricingRouteImport } from './routes/_authenticated/domain-pricing'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
+import { Route as AuthenticatedAuditLogRouteImport } from './routes/_authenticated/audit-log'
+import { Route as AuthenticatedAnnouncementsRouteImport } from './routes/_authenticated/announcements'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects.index'
 import { Route as MarketingHelpSlugRouteImport } from './routes/_marketing.help.$slug'
 import { Route as AuthenticatedTicketsTicketIdRouteImport } from './routes/_authenticated/tickets_.$ticketId'
@@ -229,6 +232,12 @@ const AuthenticatedRenewalsRoute = AuthenticatedRenewalsRouteImport.update({
   path: '/renewals',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedReferralsAdminRoute =
+  AuthenticatedReferralsAdminRouteImport.update({
+    id: '/referrals-admin',
+    path: '/referrals-admin',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -304,6 +313,17 @@ const AuthenticatedCustomersRoute = AuthenticatedCustomersRouteImport.update({
   path: '/customers',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAuditLogRoute = AuthenticatedAuditLogRouteImport.update({
+  id: '/audit-log',
+  path: '/audit-log',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAnnouncementsRoute =
+  AuthenticatedAnnouncementsRouteImport.update({
+    id: '/announcements',
+    path: '/announcements',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProjectsIndexRoute =
   AuthenticatedProjectsIndexRouteImport.update({
     id: '/projects/',
@@ -423,6 +443,8 @@ export interface FileRoutesByFullPath {
   '/client': typeof ClientRouteWithChildren
   '/portal': typeof PortalRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/announcements': typeof AuthenticatedAnnouncementsRoute
+  '/audit-log': typeof AuthenticatedAuditLogRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/domain-pricing': typeof AuthenticatedDomainPricingRoute
@@ -437,6 +459,7 @@ export interface FileRoutesByFullPath {
   '/other-services': typeof AuthenticatedOtherServicesRoute
   '/payment-settings': typeof AuthenticatedPaymentSettingsRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/referrals-admin': typeof AuthenticatedReferralsAdminRoute
   '/renewals': typeof AuthenticatedRenewalsRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/service-catalog': typeof AuthenticatedServiceCatalogRoute
@@ -487,6 +510,8 @@ export interface FileRoutesByTo {
   '/client': typeof ClientRouteWithChildren
   '/portal': typeof PortalRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/announcements': typeof AuthenticatedAnnouncementsRoute
+  '/audit-log': typeof AuthenticatedAuditLogRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/domain-pricing': typeof AuthenticatedDomainPricingRoute
@@ -501,6 +526,7 @@ export interface FileRoutesByTo {
   '/other-services': typeof AuthenticatedOtherServicesRoute
   '/payment-settings': typeof AuthenticatedPaymentSettingsRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/referrals-admin': typeof AuthenticatedReferralsAdminRoute
   '/renewals': typeof AuthenticatedRenewalsRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/service-catalog': typeof AuthenticatedServiceCatalogRoute
@@ -553,6 +579,8 @@ export interface FileRoutesById {
   '/client': typeof ClientRouteWithChildren
   '/portal': typeof PortalRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/_authenticated/announcements': typeof AuthenticatedAnnouncementsRoute
+  '/_authenticated/audit-log': typeof AuthenticatedAuditLogRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/domain-pricing': typeof AuthenticatedDomainPricingRoute
@@ -567,6 +595,7 @@ export interface FileRoutesById {
   '/_authenticated/other-services': typeof AuthenticatedOtherServicesRoute
   '/_authenticated/payment-settings': typeof AuthenticatedPaymentSettingsRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/referrals-admin': typeof AuthenticatedReferralsAdminRoute
   '/_authenticated/renewals': typeof AuthenticatedRenewalsRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/service-catalog': typeof AuthenticatedServiceCatalogRoute
@@ -620,6 +649,8 @@ export interface FileRouteTypes {
     | '/client'
     | '/portal'
     | '/sitemap.xml'
+    | '/announcements'
+    | '/audit-log'
     | '/customers'
     | '/dashboard'
     | '/domain-pricing'
@@ -634,6 +665,7 @@ export interface FileRouteTypes {
     | '/other-services'
     | '/payment-settings'
     | '/profile'
+    | '/referrals-admin'
     | '/renewals'
     | '/reports'
     | '/service-catalog'
@@ -684,6 +716,8 @@ export interface FileRouteTypes {
     | '/client'
     | '/portal'
     | '/sitemap.xml'
+    | '/announcements'
+    | '/audit-log'
     | '/customers'
     | '/dashboard'
     | '/domain-pricing'
@@ -698,6 +732,7 @@ export interface FileRouteTypes {
     | '/other-services'
     | '/payment-settings'
     | '/profile'
+    | '/referrals-admin'
     | '/renewals'
     | '/reports'
     | '/service-catalog'
@@ -749,6 +784,8 @@ export interface FileRouteTypes {
     | '/client'
     | '/portal'
     | '/sitemap.xml'
+    | '/_authenticated/announcements'
+    | '/_authenticated/audit-log'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
     | '/_authenticated/domain-pricing'
@@ -763,6 +800,7 @@ export interface FileRouteTypes {
     | '/_authenticated/other-services'
     | '/_authenticated/payment-settings'
     | '/_authenticated/profile'
+    | '/_authenticated/referrals-admin'
     | '/_authenticated/renewals'
     | '/_authenticated/reports'
     | '/_authenticated/service-catalog'
@@ -1042,6 +1080,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRenewalsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/referrals-admin': {
+      id: '/_authenticated/referrals-admin'
+      path: '/referrals-admin'
+      fullPath: '/referrals-admin'
+      preLoaderRoute: typeof AuthenticatedReferralsAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
       path: '/profile'
@@ -1138,6 +1183,20 @@ declare module '@tanstack/react-router' {
       path: '/customers'
       fullPath: '/customers'
       preLoaderRoute: typeof AuthenticatedCustomersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/audit-log': {
+      id: '/_authenticated/audit-log'
+      path: '/audit-log'
+      fullPath: '/audit-log'
+      preLoaderRoute: typeof AuthenticatedAuditLogRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/announcements': {
+      id: '/_authenticated/announcements'
+      path: '/announcements'
+      fullPath: '/announcements'
+      preLoaderRoute: typeof AuthenticatedAnnouncementsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/projects/': {
@@ -1277,6 +1336,8 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAnnouncementsRoute: typeof AuthenticatedAnnouncementsRoute
+  AuthenticatedAuditLogRoute: typeof AuthenticatedAuditLogRoute
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDomainPricingRoute: typeof AuthenticatedDomainPricingRoute
@@ -1291,6 +1352,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOtherServicesRoute: typeof AuthenticatedOtherServicesRoute
   AuthenticatedPaymentSettingsRoute: typeof AuthenticatedPaymentSettingsRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedReferralsAdminRoute: typeof AuthenticatedReferralsAdminRoute
   AuthenticatedRenewalsRoute: typeof AuthenticatedRenewalsRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedServiceCatalogRoute: typeof AuthenticatedServiceCatalogRoute
@@ -1314,6 +1376,8 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAnnouncementsRoute: AuthenticatedAnnouncementsRoute,
+  AuthenticatedAuditLogRoute: AuthenticatedAuditLogRoute,
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDomainPricingRoute: AuthenticatedDomainPricingRoute,
@@ -1328,6 +1392,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOtherServicesRoute: AuthenticatedOtherServicesRoute,
   AuthenticatedPaymentSettingsRoute: AuthenticatedPaymentSettingsRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedReferralsAdminRoute: AuthenticatedReferralsAdminRoute,
   AuthenticatedRenewalsRoute: AuthenticatedRenewalsRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedServiceCatalogRoute: AuthenticatedServiceCatalogRoute,

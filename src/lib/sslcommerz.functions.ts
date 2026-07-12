@@ -145,6 +145,8 @@ export const sslczValidatePayment = createServerFn({ method: "POST" })
         if (status === "paid") {
           const { autoRenewOnInvoicePaid } = await import("@/lib/auto-renew.server");
           await autoRenewOnInvoicePaid(inv.id);
+          const { emitReferralCommission } = await import("@/lib/referrals.server");
+          await emitReferralCommission(inv.id);
         }
       }
     }
