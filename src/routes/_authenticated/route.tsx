@@ -10,9 +10,12 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   LayoutDashboard, Users, Globe, HardDrive, Package, FileText, FolderKanban,
-  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server, ChevronRight, LifeBuoy, RefreshCw, BarChart3, BookOpen, Bell,
+  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server, ChevronRight, LifeBuoy, RefreshCw, BarChart3, BookOpen, Bell, KeyRound, Webhook, Store,
 } from "lucide-react";
 import { NotificationsBell } from "@/components/notifications-bell";
+import { useI18n } from "@/lib/i18n";
+import { useCurrency } from "@/lib/currency";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
 import { Button } from "@/components/ui/button";
