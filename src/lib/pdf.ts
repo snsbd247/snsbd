@@ -18,12 +18,41 @@ async function buildPdf(elementId: string, size: Size, orientation: Orient) {
     /* ignore */
   }
 
-  const canvas = await html2canvas(el, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    logging: false,
-  });
+  // Force a fixed desktop-like layout width during capture so mobile viewports
+  // don't produce a squished/broken PDF. We render into an offscreen clone
+  // sized to the target width, then rasterise that.
+  const captureWidth = size === "a5" ? (orientation === "l" ? 1080 : 760) : 1080;
+
+  const wrapper = document.createElement("div");
+  wrapper.style.position = "fixed";
+  wrapper.style.left = "-10000px";
+  wrapper.style.top = "0";
+  wrapper.style.width = `${captureWidth}px`;
+  wrapper.style.background = "#ffffff";
+  wrapper.style.zIndex = "-1";
+  wrapper.style.pointerEvents = "none";
+
+  const clone = el.cloneNode(true) as HTMLElement;
+  clone.style.width = `${captureWidth}px`;
+  clone.style.maxWidth = "none";
+  clone.style.margin = "0";
+  clone.removeAttribute("id");
+  wrapper.appendChild(clone);
+  document.body.appendChild(wrapper);
+
+  let canvas: HTMLCanvasElement;
+  try {
+    canvas = await html2canvas(clone, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      logging: false,
+      width: captureWidth,
+      windowWidth: captureWidth,
+    });
+  } finally {
+    document.body.removeChild(wrapper);
+  }
 
   const pdf = new jsPDF(orientation, "mm", size);
   const pageW = pdf.internal.pageSize.getWidth();
@@ -44,6 +73,7 @@ async function buildPdf(elementId: string, size: Size, orientation: Orient) {
   }
   return pdf;
 }
+
 
 export async function downloadElementAsPdf(
   elementId: string,
