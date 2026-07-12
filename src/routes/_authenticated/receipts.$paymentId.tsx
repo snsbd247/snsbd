@@ -162,18 +162,8 @@ function ReceiptPage() {
           />
         </div>
 
-        <div className="flex items-center justify-between gap-4 px-10 py-2 text-[10px] text-slate-600">
-          <div className="truncate">
-            {company?.company_name}
-            {company?.email && <> · {company.email}</>}
-            {company?.phone && <> · {company.phone}</>}
-          </div>
-          <div className="whitespace-nowrap">Issued {formatDate(pay.paid_at)} · Page 1 of 1</div>
-        </div>
-        {company?.footer_copyright && (
-          <div className="text-center text-[10px] text-slate-500 pb-2 print:pb-0">{company.footer_copyright}</div>
-        )}
       </div>
+
       </div>
 
 
