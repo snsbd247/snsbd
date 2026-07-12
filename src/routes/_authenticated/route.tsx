@@ -186,3 +186,46 @@ function NavItem({ to, icon: Icon, label }: { to: string; icon: React.ComponentT
   );
 }
 
+function NavGroup({
+  icon: Icon,
+  label,
+  items,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  items: { to: string; label: string }[];
+}) {
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  const hasActive = items.some((i) => path === i.to || path.startsWith(i.to + "/"));
+  return (
+    <Collapsible defaultOpen={hasActive} className="group/collapsible">
+      <SidebarMenuItem>
+        <CollapsibleTrigger asChild>
+          <SidebarMenuButton
+            className="data-[state=open]:bg-sidebar-accent/40"
+            isActive={hasActive}
+          >
+            <Icon className="h-4 w-4" />
+            <span>{label}</span>
+            <ChevronRight className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarMenuSub>
+            {items.map((i) => {
+              const active = path === i.to || path.startsWith(i.to + "/");
+              return (
+                <SidebarMenuSubItem key={i.to}>
+                  <SidebarMenuSubButton asChild isActive={active}>
+                    <Link to={i.to}>{i.label}</Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              );
+            })}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
+  );
+}
+
