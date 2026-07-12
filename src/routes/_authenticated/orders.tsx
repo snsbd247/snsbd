@@ -16,6 +16,7 @@ import { CheckCircle2, Copy, Loader2 } from "lucide-react";
 import { db } from "@/lib/db-shim";
 import { ClickableRow, StopClick } from "@/components/ui/clickable-row";
 import { Eye } from "lucide-react";
+import { usePagination, PaginationControls } from "@/components/ui/pagination-controls";
 
 
 export const Route = createFileRoute("/_authenticated/orders")({
@@ -68,6 +69,8 @@ function OrdersPage() {
 
   if (role !== "admin") return <p className="text-sm text-muted-foreground">Admin only.</p>;
 
+  const pg = usePagination((rows ?? []) as any[]);
+
   return (
     <div className="space-y-6">
       <div><h1 className="text-2xl font-bold">Customer Orders</h1><p className="text-sm text-muted-foreground">Orders submitted from customer portals.</p></div>
@@ -79,7 +82,7 @@ function OrdersPage() {
             <TableHead>Status</TableHead><TableHead></TableHead>
           </TableRow></TableHeader>
           <TableBody>
-            {(rows ?? []).map((o: any) => (
+            {pg.paged.map((o: any) => (
               <ClickableRow key={o.id} to="/orders/$orderId" params={{ orderId: o.id }}>
                 <TableCell className="text-xs">{formatDate(o.created_at)}</TableCell>
                 <TableCell className="text-sm">{o.profiles?.full_name ?? o.profiles?.email ?? "—"}</TableCell>
@@ -124,6 +127,7 @@ function OrdersPage() {
             {rows && rows.length === 0 && <TableRow><TableCell colSpan={8} className="text-center text-sm text-muted-foreground py-8">No orders yet.</TableCell></TableRow>}
           </TableBody>
         </Table>
+        <PaginationControls {...pg} />
       </CardContent></Card>
 
       <Dialog open={!!activate} onOpenChange={(v) => { if (!v) { setActivate(null); setResult(null); } }}>

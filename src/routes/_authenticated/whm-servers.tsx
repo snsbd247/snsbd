@@ -14,6 +14,7 @@ import { useAuth } from "@/lib/auth";
 import { Badge } from "@/components/ui/badge";
 import { whmSync, whmTest } from "@/lib/whm.functions";
 import { db } from "@/lib/db-shim";
+import { usePagination, PaginationControls } from "@/components/ui/pagination-controls";
 
 export const Route = createFileRoute("/_authenticated/whm-servers")({
   component: WhmServersPage,
@@ -79,6 +80,8 @@ function WhmServersPage() {
 
   if (role !== "admin") return <p className="text-sm text-muted-foreground">Admin only.</p>;
 
+  const pg = usePagination((rows ?? []) as any[]);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -96,7 +99,7 @@ function WhmServersPage() {
             <TableHead>Last sync</TableHead><TableHead>Status</TableHead><TableHead className="w-48" />
           </TableRow></TableHeader>
           <TableBody>
-            {(rows ?? []).map((r: any) => (
+            {pg.paged.map((r: any) => (
               <TableRow key={r.id}>
                 <TableCell className="font-medium">{r.name}</TableCell>
                 <TableCell className="text-xs font-mono">{r.hostname}:{r.port}</TableCell>
@@ -117,6 +120,7 @@ function WhmServersPage() {
             {rows && rows.length === 0 && <TableRow><TableCell colSpan={6} className="text-center py-8 text-sm text-muted-foreground">No WHM servers yet.</TableCell></TableRow>}
           </TableBody>
         </Table>
+        <PaginationControls {...pg} />
       </CardContent></Card>
 
       <Dialog open={open} onOpenChange={setOpen}>

@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, Eye } from "lucide-react";
 import { ClickableRow, StopClick } from "@/components/ui/clickable-row";
+import { usePagination, PaginationControls } from "@/components/ui/pagination-controls";
 
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
@@ -67,6 +68,7 @@ function CustomersPage() {
   const total = customers.length;
   const withCompany = customers.filter((c) => c.company).length;
   const withPhone = customers.filter((c) => c.phone).length;
+  const pg = usePagination(customers);
 
   const gradients = [
     "from-fuchsia-500 to-pink-500",
@@ -130,7 +132,7 @@ function CustomersPage() {
             <TableBody>
               {isLoading && <TableRow><TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-8">Loading…</TableCell></TableRow>}
               {!isLoading && customers.length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-12">No customers yet. Add your first one! ✨</TableCell></TableRow>}
-              {customers.map((c: any, i: number) => {
+              {pg.paged.map((c: any, i: number) => {
                 const grad = gradients[i % gradients.length];
                 return (
                   <ClickableRow key={c.id} to="/customers/$customerId" params={{ customerId: c.id }}>
@@ -170,6 +172,7 @@ function CustomersPage() {
 
             </TableBody>
           </Table>
+          <PaginationControls {...pg} />
         </CardContent>
       </Card>
 

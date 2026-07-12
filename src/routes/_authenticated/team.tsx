@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Pencil, Trash2, Wallet, Eye } from "lucide-react";
 import { ClickableRow, StopClick } from "@/components/ui/clickable-row";
+import { usePagination, PaginationControls } from "@/components/ui/pagination-controls";
 
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
@@ -47,6 +48,8 @@ function TeamPage() {
 
   if (role !== "admin") return <p className="text-sm text-muted-foreground">Admin only.</p>;
 
+  const pg = usePagination((members ?? []) as any[]);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -62,7 +65,7 @@ function TeamPage() {
               <TableHead>Monthly salary</TableHead><TableHead>Joined</TableHead><TableHead>Status</TableHead><TableHead className="w-32" />
             </TableRow></TableHeader>
             <TableBody>
-              {(members ?? []).map((m: any) => (
+              {pg.paged.map((m: any) => (
                 <ClickableRow key={m.id} to="/team/$memberId" params={{ memberId: m.id }}>
                   <TableCell className="font-semibold text-primary">{m.full_name}</TableCell>
                   <TableCell>{m.role ?? "—"}</TableCell>
@@ -84,6 +87,7 @@ function TeamPage() {
               {(members ?? []).length === 0 && <TableRow><TableCell colSpan={7} className="py-8 text-center text-sm text-muted-foreground">No team members yet.</TableCell></TableRow>}
             </TableBody>
           </Table>
+          <PaginationControls {...pg} />
         </CardContent>
       </Card>
 

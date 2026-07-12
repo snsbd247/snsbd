@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Pencil, Trash2, ExternalLink, Check, ChevronsUpDown, Eye } from "lucide-react";
 import { ClickableRow, StopClick } from "@/components/ui/clickable-row";
+import { usePagination, PaginationControls } from "@/components/ui/pagination-controls";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
@@ -70,6 +71,7 @@ export function ServicesManager({
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["services"] }); },
     onError: (e: Error) => toast.error(e.message),
   });
+  const pg = usePagination((services ?? []) as any[]);
 
   return (
     <div className="space-y-6">
@@ -101,7 +103,7 @@ export function ServicesManager({
             <TableBody>
               {isLoading && <TableRow><TableCell colSpan={8} className="text-center py-8 text-sm text-muted-foreground">Loading…</TableCell></TableRow>}
               {!isLoading && (services ?? []).length === 0 && <TableRow><TableCell colSpan={8} className="text-center py-8 text-sm text-muted-foreground">No {lockType ?? "service"}s yet.</TableCell></TableRow>}
-              {(services ?? []).map((s: any) => {
+              {pg.paged.map((s: any) => {
                 const days = daysUntil(s.expiry_date);
                 const detailTo = s.type === "domain" ? "/domains/$domainId" : "/services/$serviceId";
                 const detailParams = s.type === "domain" ? { domainId: s.id } : { serviceId: s.id };
@@ -141,6 +143,7 @@ export function ServicesManager({
 
             </TableBody>
           </Table>
+          <PaginationControls {...pg} />
         </CardContent>
       </Card>
 

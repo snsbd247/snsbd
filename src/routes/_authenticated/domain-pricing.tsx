@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { Plus, Trash2, Save } from "lucide-react";
 import { db } from "@/lib/db-shim";
+import { usePagination, PaginationControls } from "@/components/ui/pagination-controls";
 
 export const Route = createFileRoute("/_authenticated/domain-pricing")({
   component: Page,
@@ -82,6 +83,8 @@ function Page() {
 
   if (role !== "admin") return <p className="text-sm text-muted-foreground">Admin only.</p>;
 
+  const pg = usePagination((rows ?? []) as Row[]);
+
   return (
     <div className="space-y-6">
       <div>
@@ -110,10 +113,11 @@ function Page() {
             <TableHead>Featured</TableHead><TableHead>Active</TableHead><TableHead></TableHead>
           </TableRow></TableHeader>
           <TableBody>
-            {(rows ?? []).map((r) => <EditableRow key={r.id} row={r} onSave={(patch) => update.mutate({ id: r.id, ...patch })} onDelete={() => remove.mutate(r.id)} />)}
+            {pg.paged.map((r) => <EditableRow key={r.id} row={r} onSave={(patch) => update.mutate({ id: r.id, ...patch })} onDelete={() => remove.mutate(r.id)} />)}
             {rows && rows.length === 0 && <TableRow><TableCell colSpan={8} className="text-center text-sm text-muted-foreground py-8">No TLDs yet.</TableCell></TableRow>}
           </TableBody>
         </Table>
+        <PaginationControls {...pg} />
       </CardContent></Card>
     </div>
   );

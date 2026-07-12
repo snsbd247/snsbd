@@ -16,6 +16,7 @@ import { useAuth } from "@/lib/auth";
 import { formatBDT } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { db } from "@/lib/db-shim";
+import { usePagination, PaginationControls } from "@/components/ui/pagination-controls";
 
 export const Route = createFileRoute("/_authenticated/hosting-packages")({
   component: PackagesPage,
@@ -91,6 +92,8 @@ function PackagesPage() {
 
   if (role !== "admin") return <p className="text-sm text-muted-foreground">Admin only.</p>;
 
+  const pg = usePagination((rows ?? []) as any[]);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -106,7 +109,7 @@ function PackagesPage() {
             <TableHead className="w-24" />
           </TableRow></TableHeader>
           <TableBody>
-            {(rows ?? []).map((r: any) => (
+            {pg.paged.map((r: any) => (
               <TableRow key={r.id}>
                 <TableCell className="font-medium">
                   <button className="text-primary hover:underline text-left" onClick={() => setUsageFor(r)}>{r.name}</button>
@@ -125,6 +128,7 @@ function PackagesPage() {
             {rows && rows.length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-8">No packages yet.</TableCell></TableRow>}
           </TableBody>
         </Table>
+        <PaginationControls {...pg} />
       </CardContent></Card>
 
       <Dialog open={open} onOpenChange={setOpen}>

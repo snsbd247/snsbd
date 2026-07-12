@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Pencil, Trash2, Eye } from "lucide-react";
 import { ClickableRow, StopClick } from "@/components/ui/clickable-row";
+import { usePagination, PaginationControls } from "@/components/ui/pagination-controls";
 
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
@@ -44,6 +45,7 @@ function ExpensesPage() {
   const total = (data ?? []).reduce((s: number, e: any) => s + Number(e.amount), 0);
   const byCat: Record<string, number> = {};
   (data ?? []).forEach((e: any) => { byCat[e.category] = (byCat[e.category] ?? 0) + Number(e.amount); });
+  const pg = usePagination((data ?? []) as any[]);
 
   return (
     <div className="space-y-6">
@@ -67,7 +69,7 @@ function ExpensesPage() {
               <TableHead>Vendor</TableHead><TableHead>Amount</TableHead><TableHead className="w-24" />
             </TableRow></TableHeader>
             <TableBody>
-              {(data ?? []).map((e: any) => (
+              {pg.paged.map((e: any) => (
                 <ClickableRow key={e.id} to="/expenses/$expenseId" params={{ expenseId: e.id }}>
                   <TableCell>{formatDate(e.expense_date)}</TableCell>
                   <TableCell><Badge variant="outline" className="capitalize">{e.category}</Badge></TableCell>
@@ -87,6 +89,7 @@ function ExpensesPage() {
 
             </TableBody>
           </Table>
+          <PaginationControls {...pg} />
         </CardContent>
       </Card>
 
