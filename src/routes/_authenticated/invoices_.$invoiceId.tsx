@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Download, Loader2, Trash2, Receipt as ReceiptIcon } from "lucide-react";
+import { ArrowLeft, Download, Printer, Loader2, Trash2, Receipt as ReceiptIcon } from "lucide-react";
 import { downloadElementAsPdf } from "@/lib/pdf";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
@@ -111,6 +111,7 @@ function InvoiceDetailPage() {
               </SelectContent>
             </Select>
           )}
+          <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4" />Print</Button>
           <Button onClick={() => downloadElementAsPdf("invoice-pdf", `${inv.invoice_number}.pdf`, "a4", "p")}><Download className="mr-2 h-4 w-4" />Download PDF</Button>
         </div>
       </div>
@@ -200,8 +201,16 @@ function InvoiceDetailPage() {
             </div>
           )}
 
+          <div className="border-t pt-3 mt-2 text-[11px] text-muted-foreground flex items-center justify-between gap-4">
+            <div className="truncate">
+              {company?.company_name}
+              {company?.email && <> · {company.email}</>}
+              {company?.phone && <> · {company.phone}</>}
+            </div>
+            <div className="whitespace-nowrap">Issued {formatDate(inv.issue_date)} · Page 1 of 1</div>
+          </div>
           {company?.footer_copyright && (
-            <div className="text-center text-[11px] text-muted-foreground border-t pt-3">{company.footer_copyright}</div>
+            <div className="text-center text-[10px] text-muted-foreground">{company.footer_copyright}</div>
           )}
         </CardContent>
       </Card>

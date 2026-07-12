@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Download, Loader2 } from "lucide-react";
+import { ArrowLeft, Download, Printer, Loader2 } from "lucide-react";
 import { downloadElementAsPdf } from "@/lib/pdf";
 import { useCompanySettings, amountInWords } from "@/lib/company-settings";
 import { formatBDT, formatDate } from "@/lib/format";
@@ -63,7 +63,10 @@ function ReceiptPage() {
         <Button variant="outline" size="sm" onClick={() => (inv ? navigate({ to: "/invoices/$invoiceId", params: { invoiceId: inv.id } }) : navigate({ to: "/invoices" }))}>
           <ArrowLeft className="mr-2 h-4 w-4" />Back to invoice
         </Button>
-        <Button onClick={() => downloadElementAsPdf("receipt-pdf", `${pay.receipt_number ?? "receipt"}.pdf`, "a5", "l")}><Download className="mr-2 h-4 w-4" />Download PDF</Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4" />Print</Button>
+          <Button onClick={() => downloadElementAsPdf("receipt-pdf", `${pay.receipt_number ?? "receipt"}.pdf`, "a5", "l")}><Download className="mr-2 h-4 w-4" />Download PDF</Button>
+        </div>
       </div>
 
       <div id="receipt-pdf" className="receipt bg-white text-slate-900 mx-auto" style={{ width: "100%", maxWidth: 1080 }}>
@@ -155,8 +158,16 @@ function ReceiptPage() {
           />
         </div>
 
+        <div className="flex items-center justify-between gap-4 px-10 py-2 text-[10px] text-slate-600">
+          <div className="truncate">
+            {company?.company_name}
+            {company?.email && <> · {company.email}</>}
+            {company?.phone && <> · {company.phone}</>}
+          </div>
+          <div className="whitespace-nowrap">Issued {formatDate(pay.paid_at)} · Page 1 of 1</div>
+        </div>
         {company?.footer_copyright && (
-          <div className="text-center text-[10px] text-slate-500 py-2 print:pb-0">{company.footer_copyright}</div>
+          <div className="text-center text-[10px] text-slate-500 pb-2 print:pb-0">{company.footer_copyright}</div>
         )}
       </div>
 
