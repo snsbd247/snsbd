@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PortalRouteImport } from './routes/portal'
 import { Route as ClientRouteImport } from './routes/client'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as MarketingRouteImport } from './routes/_marketing'
@@ -63,6 +64,11 @@ import { Route as AuthenticatedOrderHostingPackageIdRouteImport } from './routes
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalRoute = PortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ClientRoute = ClientRouteImport.update({
@@ -333,6 +339,7 @@ export interface FileRoutesByFullPath {
   '/': typeof MarketingIndexRoute
   '/auth': typeof AuthRoute
   '/client': typeof ClientRouteWithChildren
+  '/portal': typeof PortalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -383,6 +390,7 @@ export interface FileRoutesByTo {
   '/': typeof MarketingIndexRoute
   '/auth': typeof AuthRoute
   '/client': typeof ClientRouteWithChildren
+  '/portal': typeof PortalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -435,6 +443,7 @@ export interface FileRoutesById {
   '/_marketing': typeof MarketingRouteWithChildren
   '/auth': typeof AuthRoute
   '/client': typeof ClientRouteWithChildren
+  '/portal': typeof PortalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -488,6 +497,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/client'
+    | '/portal'
     | '/sitemap.xml'
     | '/customers'
     | '/dashboard'
@@ -538,6 +548,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/client'
+    | '/portal'
     | '/sitemap.xml'
     | '/customers'
     | '/dashboard'
@@ -589,6 +600,7 @@ export interface FileRouteTypes {
     | '/_marketing'
     | '/auth'
     | '/client'
+    | '/portal'
     | '/sitemap.xml'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
@@ -642,6 +654,7 @@ export interface RootRouteChildren {
   MarketingRoute: typeof MarketingRouteWithChildren
   AuthRoute: typeof AuthRoute
   ClientRoute: typeof ClientRouteWithChildren
+  PortalRoute: typeof PortalRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiPublicHooksEnforceOverdueRoute: typeof ApiPublicHooksEnforceOverdueRoute
   ApiPublicHooksNotifyLeadRoute: typeof ApiPublicHooksNotifyLeadRoute
@@ -655,6 +668,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal': {
+      id: '/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof PortalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/client': {
@@ -1121,6 +1141,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketingRoute: MarketingRouteWithChildren,
   AuthRoute: AuthRoute,
   ClientRoute: ClientRouteWithChildren,
+  PortalRoute: PortalRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiPublicHooksEnforceOverdueRoute: ApiPublicHooksEnforceOverdueRoute,
   ApiPublicHooksNotifyLeadRoute: ApiPublicHooksNotifyLeadRoute,
