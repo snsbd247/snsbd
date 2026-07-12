@@ -74,7 +74,9 @@ function ReceiptPage() {
         </div>
       </div>
 
-      <div id="receipt-pdf" className="receipt bg-white text-slate-900 mx-auto" style={{ width: "100%", maxWidth: 1080 }}>
+      <div className="w-full overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible print:overflow-visible print:mx-0 print:px-0">
+      <div id="receipt-pdf" className="receipt bg-white text-slate-900 mx-auto" style={{ width: 1080, maxWidth: "none" }}>
+
         {/* TOP BAND: navy (left ~38%) with slash into orange (right) */}
         <div className="relative h-[52px] w-full overflow-hidden">
           <div
