@@ -2,19 +2,21 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, CheckCircle2, Copy, Loader2 } from "lucide-react";
+import { AlertTriangle, ArrowLeft, CheckCircle2, Copy, History, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { db } from "@/lib/db-shim";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
-import { activateHostingOrder } from "@/lib/orders.functions";
+import { activateHostingOrder, updateOrderDomain } from "@/lib/orders.functions";
+import { validateDomain } from "@/lib/domain-validate";
 
 export const Route = createFileRoute("/_authenticated/orders_/$orderId")({
   component: OrderDetailsPage,
