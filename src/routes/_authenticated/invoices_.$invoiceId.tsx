@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Download, Loader2, Trash2, Receipt as ReceiptIcon } from "lucide-react";
+import { ArrowLeft, Download, Printer, Loader2, Trash2, Receipt as ReceiptIcon } from "lucide-react";
 import { downloadElementAsPdf } from "@/lib/pdf";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
