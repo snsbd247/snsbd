@@ -86,7 +86,7 @@ function OrderDetailsPage() {
   });
 
   const saveMeta = useMutation({
-    mutationFn: async (patch: { admin_notes?: string; status?: string }) => {
+    mutationFn: async (patch: { admin_notes?: string; status?: string; domain_name?: string }) => {
       const { error } = await db.from("customer_orders").update(patch as any).eq("id", orderId);
       if (error) throw error;
     },
