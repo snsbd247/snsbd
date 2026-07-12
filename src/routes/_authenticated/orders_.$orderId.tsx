@@ -31,17 +31,27 @@ function OrderDetailsPage() {
   const [activateOpen, setActivateOpen] = useState(false);
   const [creds, setCreds] = useState<{ cpanel_username: string; cpanel_password: string; whm_created: boolean; whm_error: string | null } | null>(null);
 
-  const { data: order, isLoading } = useQuery({
+  const { data: order, isLoading, error: orderError } = useQuery({
     queryKey: ["customer_order", orderId],
     queryFn: async () => {
       const { data, error } = await db.from("customer_orders")
-        .select("*, hosting_packages(name, price, billing_cycle), service_catalog(name, price), profiles!customer_orders_customer_id_fkey(id, full_name, email, phone, company), services!customer_orders_activated_service_id_fkey(id, name, cpanel_username, cpanel_password, whm_server_id, status, expiry_date)")
+        .select("*, hosting_packages(name, price, billing_cycle), service_catalog(name, price), profiles!customer_orders_customer_id_fkey(id, full_name, email, phone, company)")
         .eq("id", orderId).maybeSingle();
       if (error) throw error;
-      if (data && (data as any).admin_notes !== undefined) setNotes((data as any).admin_notes ?? "");
-      return data;
+      if (!data) return null;
+      if ((data as any).admin_notes !== undefined) setNotes((data as any).admin_notes ?? "");
+      const activatedId = (data as any).activated_service_id;
+      let svc: any = null;
+      if (activatedId) {
+        const { data: s } = await db.from("services")
+          .select("id, name, cpanel_username, cpanel_password, whm_server_id, status, expiry_date")
+          .eq("id", activatedId).maybeSingle();
+        svc = s ?? null;
+      }
+      return { ...(data as any), services: svc };
     },
   });
+
 
   const serviceId = (order as any)?.activated_service_id as string | undefined;
 
