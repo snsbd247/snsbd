@@ -88,7 +88,7 @@ function InvoicesPage() {
             <TableBody>
               {isLoading && <TableRow><TableCell colSpan={8} className="py-8 text-center text-sm text-muted-foreground">Loading…</TableCell></TableRow>}
               {!isLoading && (invoices ?? []).length === 0 && <TableRow><TableCell colSpan={8} className="py-8 text-center text-sm text-muted-foreground">No invoices.</TableCell></TableRow>}
-              {(invoices ?? []).map((i: any) => (
+              {pg.paged.map((i: any) => (
                 <ClickableRow key={i.id} to="/invoices/$invoiceId" params={{ invoiceId: i.id }}>
                   <TableCell className="font-mono text-xs text-primary font-semibold">{i.invoice_number}</TableCell>
                   {role === "admin" && <TableCell>{i.profiles?.full_name ?? i.profiles?.email ?? "—"}</TableCell>}
