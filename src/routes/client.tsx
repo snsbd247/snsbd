@@ -16,6 +16,7 @@ import { formatBDT, formatDate } from "@/lib/format";
 import { SiteFooter } from "@/components/site-footer";
 import { validateDomain } from "@/lib/domain-validate";
 import { supabase } from "@/integrations/supabase/client";
+import { checkDomains } from "@/lib/namecheap.functions";
 
 export const Route = createFileRoute("/client")({
   ssr: false,
