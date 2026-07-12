@@ -104,6 +104,15 @@ function DomainDetailPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const registerNC = useMutation({
+    mutationFn: async () => {
+      if (!domain) throw new Error("No domain");
+      return await registerDomainNamecheap({ data: { domain: domain.name, years: 1, serviceId: domain.id, customerId: domain.customer_id } });
+    },
+    onSuccess: (r) => { toast.success(`Registered via Namecheap${r.orderId ? ` (Order #${r.orderId})` : ""}`); qc.invalidateQueries({ queryKey: ["domain", domainId] }); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   if (isLoading || !f) return <div className="flex items-center gap-2 text-sm text-muted-foreground p-6"><Loader2 className="h-4 w-4 animate-spin" />Loading domain…</div>;
   if (!domain) return (
     <div className="space-y-4">
