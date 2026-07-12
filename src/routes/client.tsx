@@ -507,3 +507,88 @@ function CpanelActions({ service }: { service: any }) {
     </div>
   );
 }
+
+/* ---------- Profile ---------- */
+function ProfileTab({ profile, onSaved }: { profile: any; onSaved: () => void }) {
+  const [fullName, setFullName] = useState(profile?.full_name ?? "");
+  const [email, setEmail] = useState(profile?.email ?? "");
+  const [company, setCompany] = useState(profile?.company ?? "");
+  const [phone, setPhone] = useState(profile?.phone ?? "");
+  const [address, setAddress] = useState(profile?.address ?? "");
+  const [saving, setSaving] = useState(false);
+
+  const [pw, setPw] = useState("");
+  const [pw2, setPw2] = useState("");
+  const [pwBusy, setPwBusy] = useState(false);
+
+  useEffect(() => {
+    setFullName(profile?.full_name ?? "");
+    setEmail(profile?.email ?? "");
+    setCompany(profile?.company ?? "");
+    setPhone(profile?.phone ?? "");
+    setAddress(profile?.address ?? "");
+  }, [profile]);
+
+  async function saveProfile(e: React.FormEvent) {
+    e.preventDefault();
+    if (!fullName.trim()) return toast.error("Full name is required");
+    setSaving(true);
+    const client = getPortalClient();
+    const { data: u } = await client.auth.getUser();
+    if (!u.user) { setSaving(false); return toast.error("Session expired"); }
+    const { error } = await client.from("profiles").update({
+      full_name: fullName.trim(),
+      email: email.trim() || null,
+      company: company.trim() || null,
+      phone: phone.trim() || null,
+      address: address.trim() || null,
+    }).eq("id", u.user.id);
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    toast.success("Profile updated");
+    onSaved();
+  }
+
+  async function changePassword(e: React.FormEvent) {
+    e.preventDefault();
+    if (pw.length < 6) return toast.error("Password must be at least 6 characters");
+    if (pw !== pw2) return toast.error("Passwords do not match");
+    setPwBusy(true);
+    // Use main supabase client so the currently signed-in browser session updates.
+    const { error } = await supabase.auth.updateUser({ password: pw });
+    setPwBusy(false);
+    if (error) return toast.error(error.message);
+    toast.success("Password changed");
+    setPw(""); setPw2("");
+  }
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2">
+      <Card>
+        <CardHeader><CardTitle className="text-base">Profile information</CardTitle></CardHeader>
+        <CardContent>
+          <form onSubmit={saveProfile} className="space-y-3">
+            <div><Label>Full name</Label><Input value={fullName} onChange={(e) => setFullName(e.target.value)} /></div>
+            <div><Label>Email</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
+            <div><Label>Company</Label><Input value={company} onChange={(e) => setCompany(e.target.value)} /></div>
+            <div><Label>Phone</Label><Input value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
+            <div><Label>Address</Label><Textarea rows={2} value={address} onChange={(e) => setAddress(e.target.value)} /></div>
+            <Button type="submit" disabled={saving}>{saving ? "Saving…" : "Save profile"}</Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader><CardTitle className="text-base">Change password</CardTitle></CardHeader>
+        <CardContent>
+          <form onSubmit={changePassword} className="space-y-3">
+            <div><Label>New password</Label><Input type="password" value={pw} onChange={(e) => setPw(e.target.value)} autoComplete="new-password" /></div>
+            <div><Label>Confirm new password</Label><Input type="password" value={pw2} onChange={(e) => setPw2(e.target.value)} autoComplete="new-password" /></div>
+            <Button type="submit" disabled={pwBusy}>{pwBusy ? "Updating…" : "Change password"}</Button>
+            <p className="text-xs text-muted-foreground">Minimum 6 characters.</p>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
