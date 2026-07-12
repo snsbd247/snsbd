@@ -179,7 +179,7 @@ function AuthedLayout() {
           </div>
         </header>
 
-        </header>
+
         <main className="p-6 min-h-[calc(100vh-3.5rem)]">
           <Outlet />
         </main>
