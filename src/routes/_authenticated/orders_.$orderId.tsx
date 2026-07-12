@@ -139,8 +139,8 @@ function OrderDetailsPage() {
           <CardContent className="space-y-2 text-sm">
             <Row label="Type"><Badge variant="outline" className="capitalize">{o.order_type}</Badge></Row>
             <Row label="Item">{o.hosting_packages?.name ?? o.service_catalog?.name ?? o.domain_name ?? "—"}</Row>
-            {o.domain_name && <Row label="Domain">{o.domain_name} {o.domain_action && <span className="text-xs text-muted-foreground capitalize">({o.domain_action.replace("_", " ")})</span>}</Row>}
             <Row label="Quoted price"><span className="font-medium">{formatBDT(o.quoted_price)}</span></Row>
+            {o.billing_cycle && <Row label="Billing">{o.billing_cycle}</Row>}
             <div className="border-t pt-2">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs text-muted-foreground">Domain {o.order_type === "hosting" && <span className="text-destructive">*</span>}</span>
