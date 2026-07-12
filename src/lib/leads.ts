@@ -1,4 +1,3 @@
-import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import { db } from "@/lib/db-shim";
 

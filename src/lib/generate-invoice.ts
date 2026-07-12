@@ -1,4 +1,3 @@
-import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db-shim";
 
 type Item = { description: string; quantity: number; unit_price: number; service_id?: string | null };
