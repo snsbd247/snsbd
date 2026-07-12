@@ -69,7 +69,7 @@ function ExpensesPage() {
               <TableHead>Vendor</TableHead><TableHead>Amount</TableHead><TableHead className="w-24" />
             </TableRow></TableHeader>
             <TableBody>
-              {(data ?? []).map((e: any) => (
+              {pg.paged.map((e: any) => (
                 <ClickableRow key={e.id} to="/expenses/$expenseId" params={{ expenseId: e.id }}>
                   <TableCell>{formatDate(e.expense_date)}</TableCell>
                   <TableCell><Badge variant="outline" className="capitalize">{e.category}</Badge></TableCell>
