@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Printer, Loader2, Trash2, Receipt as ReceiptIcon } from "lucide-react";
+import { ArrowLeft, Download, Loader2, Trash2, Receipt as ReceiptIcon } from "lucide-react";
+import { downloadElementAsPdf } from "@/lib/pdf";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { useCompanySettings } from "@/lib/company-settings";
@@ -110,11 +111,11 @@ function InvoiceDetailPage() {
               </SelectContent>
             </Select>
           )}
-          <Button onClick={() => window.print()}><Printer className="mr-2 h-4 w-4" />Download PDF</Button>
+          <Button onClick={() => downloadElementAsPdf("invoice-pdf", `${inv.invoice_number}.pdf`, "a4", "p")}><Download className="mr-2 h-4 w-4" />Download PDF</Button>
         </div>
       </div>
 
-      <Card className="print:shadow-none print:border-0 overflow-hidden border-0 shadow-lg">
+      <Card id="invoice-pdf" className="print:shadow-none print:border-0 overflow-hidden border-0 shadow-lg">
         <div className="h-3 w-full" style={{ background: "linear-gradient(90deg, #0e3a5f 0%, #1e6091 50%, #f39c1f 100%)" }} />
         <CardContent className="p-8 space-y-6 bg-gradient-to-br from-white via-slate-50 to-orange-50/30">
           <div className="flex items-start justify-between">
