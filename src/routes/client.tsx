@@ -229,7 +229,12 @@ function PortalPage() {
                   <div className="flex items-center gap-3">
                     <Badge variant="outline" className="capitalize">{i.status}</Badge>
                     <span className="font-medium">{formatBDT(i.total)}</span>
-                    {outstanding > 0 && i.status !== "paid" && <BkashPayButton invoiceId={i.id} amount={outstanding} />}
+                    {outstanding > 0 && i.status !== "paid" && (
+                      <div className="flex gap-2">
+                        <BkashPayButton invoiceId={i.id} amount={outstanding} />
+                        <SslczPayButton invoiceId={i.id} amount={outstanding} />
+                      </div>
+                    )}
                   </div>
                 </CardContent></Card>
               );
