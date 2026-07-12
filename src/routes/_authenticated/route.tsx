@@ -85,16 +85,35 @@ function AuthedLayout() {
             <SidebarGroupContent>
               <SidebarMenu>
                 <NavItem to="/dashboard" icon={LayoutDashboard} label="Dashboard" />
-                <NavItem to="/projects" icon={FolderKanban} label={isAdmin ? "Projects" : "My Projects"} />
-                <NavItem to="/domains" icon={Globe} label={isAdmin ? "Domains" : "My Domains"} />
-                <NavItem to="/hosting" icon={HardDrive} label={isAdmin ? "Hosting" : "My Hosting"} />
-                <NavItem to="/other-services" icon={Package} label={isAdmin ? "Other Services" : "My Services"} />
-                <NavItem to="/invoices" icon={FileText} label={isAdmin ? "Invoices" : "My Invoices"} />
-                <NavItem to="/tickets" icon={LifeBuoy} label={isAdmin ? "Support Tickets" : "Support"} />
-                <NavItem to="/api-keys" icon={KeyRound} label="API Keys" />
-                <NavItem to="/webhooks" icon={Webhook} label="Webhooks" />
-                <NavItem to="/branding" icon={Palette} label="Branding" />
+                <NavGroup
+                  icon={Package}
+                  label={isAdmin ? "Services" : "My Services"}
+                  items={[
+                    { to: "/projects", label: isAdmin ? "Projects" : "My Projects" },
+                    { to: "/domains", label: isAdmin ? "Domains" : "My Domains" },
+                    { to: "/hosting", label: isAdmin ? "Hosting" : "My Hosting" },
+                    { to: "/other-services", label: isAdmin ? "Other Services" : "Other Services" },
+                  ]}
+                />
+                <NavGroup
+                  icon={FileText}
+                  label="Billing & Support"
+                  items={[
+                    { to: "/invoices", label: isAdmin ? "Invoices" : "My Invoices" },
+                    { to: "/tickets", label: isAdmin ? "Support Tickets" : "Support" },
+                  ]}
+                />
+                <NavGroup
+                  icon={KeyRound}
+                  label="Developer"
+                  items={[
+                    { to: "/api-keys", label: "API Keys" },
+                    { to: "/webhooks", label: "Webhooks" },
+                    { to: "/branding", label: "Branding" },
+                  ]}
+                />
               </SidebarMenu>
+
             </SidebarGroupContent>
           </SidebarGroup>
 
