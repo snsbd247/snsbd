@@ -141,7 +141,29 @@ function OrderDetailsPage() {
             <Row label="Item">{o.hosting_packages?.name ?? o.service_catalog?.name ?? o.domain_name ?? "—"}</Row>
             {o.domain_name && <Row label="Domain">{o.domain_name} {o.domain_action && <span className="text-xs text-muted-foreground capitalize">({o.domain_action.replace("_", " ")})</span>}</Row>}
             <Row label="Quoted price"><span className="font-medium">{formatBDT(o.quoted_price)}</span></Row>
-            {o.billing_cycle && <Row label="Billing">{o.billing_cycle}</Row>}
+            <div className="border-t pt-2">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs text-muted-foreground">Domain {o.order_type === "hosting" && <span className="text-destructive">*</span>}</span>
+                {!editingDomain && (
+                  <Button size="sm" variant="ghost" className="h-6 text-xs" onClick={() => { setDomainEdit(o.domain_name ?? ""); setEditingDomain(true); }}>
+                    {o.domain_name ? "Edit" : "Add"}
+                  </Button>
+                )}
+              </div>
+              {editingDomain ? (
+                <div className="flex gap-2">
+                  <Input value={domainEdit} onChange={(e) => setDomainEdit(e.target.value)} placeholder="example.com" className="h-8" />
+                  <Button size="sm" onClick={() => {
+                    const d = domainEdit.trim().toLowerCase();
+                    if (o.order_type === "hosting" && (!d || !d.includes("."))) { toast.error("Valid domain required"); return; }
+                    saveMeta.mutate({ domain_name: d || null as any }, { onSuccess: () => setEditingDomain(false) });
+                  }} disabled={saveMeta.isPending}>Save</Button>
+                  <Button size="sm" variant="ghost" onClick={() => setEditingDomain(false)}>Cancel</Button>
+                </div>
+              ) : (
+                <div className="text-sm">{o.domain_name || <span className="text-destructive italic">Missing — required for activation</span>} {o.domain_action && <span className="text-xs text-muted-foreground capitalize">({o.domain_action.replace("_", " ")})</span>}</div>
+              )}
+            </div>
             <Row label="Created">{formatDate(o.created_at)}</Row>
             {o.customer_notes && <div className="pt-2 border-t"><div className="text-xs text-muted-foreground">Customer notes</div><div className="italic">"{o.customer_notes}"</div></div>}
           </CardContent>
