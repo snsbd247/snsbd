@@ -46,6 +46,27 @@ function OrderPage() {
   const [sender, setSender] = useState("");
   const [notes, setNotes] = useState("");
   const [done, setDone] = useState<string | null>(null);
+  const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
+  const [couponInput, setCouponInput] = useState("");
+  const [couponResult, setCouponResult] = useState<{ valid: boolean; discount?: number; reason?: string; code?: string } | null>(null);
+
+  const { data: addonsData } = useQuery({
+    queryKey: ["addons_public", packageId],
+    queryFn: async () => (await listAddons()).items.filter((a: any) => !a.hosting_package_id || a.hosting_package_id === packageId),
+  });
+  const addons = addonsData ?? [];
+  const addonTotal = addons.filter((a: any) => selectedAddons.includes(a.id)).reduce((s: number, a: any) => s + Number(a.price || 0), 0);
+  const subtotal = Number(pkg?.price ?? 0) + addonTotal;
+  const discount = couponResult?.valid ? Number(couponResult.discount ?? 0) : 0;
+  const total = Math.max(0, subtotal - discount);
+
+  async function applyCoupon() {
+    if (!couponInput.trim()) return;
+    const r = await validateCoupon({ data: { code: couponInput, subtotal } });
+    setCouponResult(r);
+    if (r.valid) toast.success(`Coupon applied: -${formatBDT(r.discount ?? 0)}`);
+    else toast.error(r.reason ?? "Invalid coupon");
+  }
 
   const submit = useMutation({
     mutationFn: async () => {
