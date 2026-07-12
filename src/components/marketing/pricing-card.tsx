@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { Check } from "lucide-react";
-import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { EmailCaptureDialog } from "./email-capture-dialog";
 
 export type Plan = {
   name: string;
@@ -13,6 +14,7 @@ export type Plan = {
 };
 
 export function PricingCard({ plan }: { plan: Plan }) {
+  const [open, setOpen] = useState(false);
   return (
     <div
       className={`relative flex flex-col rounded-3xl border p-6 transition hover:-translate-y-1 hover:shadow-2xl ${
@@ -41,12 +43,13 @@ export function PricingCard({ plan }: { plan: Plan }) {
         ))}
       </ul>
       <Button
-        asChild
+        onClick={() => setOpen(true)}
         className={`mt-6 ${plan.featured ? "bg-emerald-500 text-[#0B1220] hover:bg-emerald-400" : ""}`}
         variant={plan.featured ? "default" : "outline"}
       >
-        <Link to="/auth" search={{ mode: "signup" }}>Order Now</Link>
+        Order Now
       </Button>
+      <EmailCaptureDialog open={open} onOpenChange={setOpen} planName={plan.name} />
     </div>
   );
 }
