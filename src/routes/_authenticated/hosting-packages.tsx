@@ -51,6 +51,7 @@ function PackagesPage() {
           billing_cycle: editing.billing_cycle ?? "yearly",
           is_active: editing.is_active ?? true,
           sort_order: String(editing.sort_order ?? 0),
+          whm_package_name: editing.whm_package_name ?? "",
         });
       } else setF(empty);
     }
