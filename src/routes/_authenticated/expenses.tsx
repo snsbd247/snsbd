@@ -89,6 +89,7 @@ function ExpensesPage() {
 
             </TableBody>
           </Table>
+          <PaginationControls {...pg} />
         </CardContent>
       </Card>
 
