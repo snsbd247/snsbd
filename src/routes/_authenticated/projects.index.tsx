@@ -119,6 +119,7 @@ function ProjectsPage() {
 
             </TableBody>
           </Table>
+          <PaginationControls {...pg} />
         </CardContent>
       </Card>
 
