@@ -39,15 +39,19 @@ function AuthPage() {
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-accent/30 px-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <img
-            src={company?.logo_url || "/favicon.png"}
-            alt={`${company?.company_name ?? "Sync & Solutions IT"} logo`}
-            className="mx-auto h-14 w-auto object-contain"
-          />
-          <h1 className="mt-4 text-2xl font-bold">{company?.company_name ?? "Sync & Solutions IT"}</h1>
-          <p className="text-sm text-muted-foreground">Sign in or create your account</p>
+          {company?.logo_url ? (
+            <img
+              src={company.logo_url}
+              alt={`${company?.company_name ?? "Company"} logo`}
+              className="mx-auto h-14 w-auto object-contain"
+            />
+          ) : (
+            <h1 className="text-2xl font-bold">{company?.company_name ?? "Sync & Solutions IT"}</h1>
+          )}
+          <p className="mt-4 text-sm text-muted-foreground">Sign in or create your account</p>
           {redirect && <p className="mt-2 text-xs text-emerald-600">Sign in to continue with your order</p>}
         </div>
+
 
         <Card>
           <CardHeader className="pb-2">
