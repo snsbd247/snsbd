@@ -23,6 +23,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Settings } from "lucide-react";
 import { useCompanySettings } from "@/lib/company-settings";
+import { useResellerBranding } from "@/lib/reseller-branding";
 import { SiteFooter } from "@/components/site-footer";
 
 
@@ -33,7 +34,13 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthedLayout() {
   const { session, loading, role, user, signOut } = useAuth();
-  const { data: company } = useCompanySettings();
+  const { data: companyRaw } = useCompanySettings();
+  const brand = useResellerBranding();
+  const company = {
+    ...companyRaw,
+    company_name: brand?.company_name || companyRaw?.company_name,
+    logo_url: brand?.logo_url || companyRaw?.logo_url,
+  } as typeof companyRaw;
   const navigate = useNavigate();
 
   useEffect(() => {

@@ -16,6 +16,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getCompanySettings } from "../lib/company-settings-api";
 import { I18nProvider } from "../lib/i18n";
 import { CurrencyProvider } from "../lib/currency";
+import { ResellerBrandingProvider } from "../lib/reseller-branding";
+import { PwaInstallPrompt } from "../components/pwa-install-prompt";
 
 function NotFoundComponent() {
   return (
@@ -120,9 +122,12 @@ function RootComponent() {
       <AuthProvider>
         <I18nProvider>
           <CurrencyProvider>
-            <DynamicFavicon />
-            <Outlet />
-            <Toaster richColors position="top-right" />
+            <ResellerBrandingProvider>
+              <DynamicFavicon />
+              <Outlet />
+              <PwaInstallPrompt />
+              <Toaster richColors position="top-right" />
+            </ResellerBrandingProvider>
           </CurrencyProvider>
         </I18nProvider>
       </AuthProvider>
