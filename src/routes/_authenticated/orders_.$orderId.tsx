@@ -126,7 +126,11 @@ function OrderDetailsPage() {
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="capitalize">{o.status}</Badge>
           {canActivate && (
-            <Button onClick={() => { setActivateOpen(true); setCreds(null); setWhmServerId(""); }}>
+            <Button
+              onClick={() => { setActivateOpen(true); setCreds(null); setWhmServerId(""); }}
+              disabled={!o.domain_name || !String(o.domain_name).includes(".")}
+              title={!o.domain_name ? "Add a domain first" : ""}
+            >
               <CheckCircle2 className="mr-2 h-4 w-4" />Verify &amp; Activate
             </Button>
           )}
