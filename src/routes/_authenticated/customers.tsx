@@ -68,6 +68,7 @@ function CustomersPage() {
   const total = customers.length;
   const withCompany = customers.filter((c) => c.company).length;
   const withPhone = customers.filter((c) => c.phone).length;
+  const pg = usePagination(customers);
 
   const gradients = [
     "from-fuchsia-500 to-pink-500",
