@@ -91,7 +91,7 @@ function ProjectsPage() {
             <TableBody>
               {isLoading && <TableRow><TableCell colSpan={role === "admin" ? 7 : 6} className="py-8 text-center text-sm text-muted-foreground">Loading…</TableCell></TableRow>}
               {!isLoading && (projects ?? []).length === 0 && <TableRow><TableCell colSpan={role === "admin" ? 7 : 6} className="py-8 text-center text-sm text-muted-foreground">No projects.</TableCell></TableRow>}
-              {(projects ?? []).map((p: any) => (
+              {pg.paged.map((p: any) => (
                 <ClickableRow key={p.id} to="/projects/$projectId" params={{ projectId: p.id }}>
                   <TableCell className="font-medium">
                     <span className="text-primary font-semibold">{p.name}</span>
