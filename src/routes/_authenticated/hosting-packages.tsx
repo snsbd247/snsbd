@@ -109,7 +109,7 @@ function PackagesPage() {
             <TableHead className="w-24" />
           </TableRow></TableHeader>
           <TableBody>
-            {(rows ?? []).map((r: any) => (
+            {pg.paged.map((r: any) => (
               <TableRow key={r.id}>
                 <TableCell className="font-medium">
                   <button className="text-primary hover:underline text-left" onClick={() => setUsageFor(r)}>{r.name}</button>
