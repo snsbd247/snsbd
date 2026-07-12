@@ -8,12 +8,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Loader2, Save, Trash2, FileText, Globe } from "lucide-react";
+import { ArrowLeft, Loader2, Save, Trash2, FileText, Globe, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate, daysUntil } from "@/lib/format";
 import { generateInvoiceDraft } from "@/lib/generate-invoice";
 import { db } from "@/lib/db-shim";
+import { registerDomainNamecheap } from "@/lib/namecheap.functions";
 
 export const Route = createFileRoute("/_authenticated/domains_/$domainId")({
   component: DomainDetailPage,
@@ -103,6 +104,15 @@ function DomainDetailPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const registerNC = useMutation({
+    mutationFn: async () => {
+      if (!domain) throw new Error("No domain");
+      return await registerDomainNamecheap({ data: { domain: domain.name, years: 1, serviceId: domain.id, customerId: domain.customer_id } });
+    },
+    onSuccess: (r) => { toast.success(`Registered via Namecheap${r.orderId ? ` (Order #${r.orderId})` : ""}`); qc.invalidateQueries({ queryKey: ["domain", domainId] }); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   if (isLoading || !f) return <div className="flex items-center gap-2 text-sm text-muted-foreground p-6"><Loader2 className="h-4 w-4 animate-spin" />Loading domain…</div>;
   if (!domain) return (
     <div className="space-y-4">
@@ -128,6 +138,7 @@ function DomainDetailPage() {
         </Button>
         {isAdmin && (
           <div className="flex gap-2">
+            <Button variant="outline" onClick={() => { if (confirm(`Register ${domain.name} via Namecheap for 1 year?`)) registerNC.mutate(); }} disabled={registerNC.isPending}><Zap className="mr-2 h-4 w-4" />{registerNC.isPending ? "Registering…" : "Register via Namecheap"}</Button>
             <Button variant="outline" onClick={() => generate.mutate()} disabled={generate.isPending}><FileText className="mr-2 h-4 w-4" />Generate invoice</Button>
             <Button variant="destructive" onClick={() => { if (confirm("Delete domain?")) del.mutate(); }}><Trash2 className="mr-2 h-4 w-4" />Delete</Button>
           </div>
