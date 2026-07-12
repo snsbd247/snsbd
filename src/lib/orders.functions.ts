@@ -138,3 +138,47 @@ export const activateHostingOrder = createServerFn({ method: "POST" })
       whm_error: whmError,
     };
   });
+
+export const updateOrderDomain = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { order_id: string; domain_name: string }) => {
+    if (!data.order_id) throw new Error("order_id required");
+    const dom = validateDomain(data.domain_name ?? "");
+    if (!dom.ok) throw new Error(dom.error);
+    return { order_id: data.order_id, domain_name: dom.value };
+  })
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Admins only");
+
+    const { data: existing, error: e1 } = await context.supabase
+      .from("customer_orders")
+      .select("id, domain_name, status")
+      .eq("id", data.order_id)
+      .maybeSingle();
+    if (e1 || !existing) throw new Error("Order not found");
+    if (existing.status === "completed") throw new Error("Order already activated — cannot change domain");
+
+    const oldDomain = (existing.domain_name ?? "") as string;
+    if (oldDomain.trim().toLowerCase() === data.domain_name) {
+      return { ok: true, changed: false };
+    }
+
+    const { error: uErr } = await context.supabase
+      .from("customer_orders")
+      .update({ domain_name: data.domain_name } as any)
+      .eq("id", data.order_id);
+    if (uErr) throw new Error(uErr.message);
+
+    await context.supabase.from("order_domain_changes").insert({
+      order_id: data.order_id,
+      actor_id: context.userId,
+      old_domain: oldDomain || null,
+      new_domain: data.domain_name,
+    } as any);
+
+    return { ok: true, changed: true };
+  });
