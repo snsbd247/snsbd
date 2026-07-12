@@ -8,7 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye } from "lucide-react";
+import { ClickableRow, StopClick } from "@/components/ui/clickable-row";
+
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { formatBDT, formatDate } from "@/lib/format";
@@ -66,19 +68,23 @@ function ExpensesPage() {
             </TableRow></TableHeader>
             <TableBody>
               {(data ?? []).map((e: any) => (
-                <TableRow key={e.id}>
+                <ClickableRow key={e.id} to="/expenses/$expenseId" params={{ expenseId: e.id }}>
                   <TableCell>{formatDate(e.expense_date)}</TableCell>
                   <TableCell><Badge variant="outline" className="capitalize">{e.category}</Badge></TableCell>
-                  <TableCell><Link to="/expenses/$expenseId" params={{ expenseId: e.id }} className="text-primary hover:underline">{e.description}</Link></TableCell>
+                  <TableCell className="text-primary font-medium">{e.description}</TableCell>
                   <TableCell>{e.vendor ?? "—"}</TableCell>
                   <TableCell className="font-medium">{formatBDT(e.amount)}</TableCell>
                   <TableCell className="text-right">
-                    <Button size="icon" variant="ghost" onClick={() => { setEditing(e); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
-                    <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete?")) del.mutate(e.id); }}><Trash2 className="h-4 w-4" /></Button>
+                    <StopClick>
+                      <Button size="sm" variant="outline" asChild className="mr-1"><Link to="/expenses/$expenseId" params={{ expenseId: e.id }}><Eye className="mr-1 h-3.5 w-3.5" />View</Link></Button>
+                      <Button size="icon" variant="ghost" onClick={() => { setEditing(e); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" className="hover:bg-rose-100 hover:text-rose-700" onClick={() => { if (confirm("Delete?")) del.mutate(e.id); }}><Trash2 className="h-4 w-4" /></Button>
+                    </StopClick>
                   </TableCell>
-                </TableRow>
+                </ClickableRow>
               ))}
               {(data ?? []).length === 0 && <TableRow><TableCell colSpan={6} className="py-8 text-center text-sm text-muted-foreground">No expenses.</TableCell></TableRow>}
+
             </TableBody>
           </Table>
         </CardContent>
