@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -111,8 +111,12 @@ function InvoiceDetailPage() {
               </SelectContent>
             </Select>
           )}
-          <Button variant="outline" onClick={() => printElementAsPdf("invoice-pdf", "a4", "p")}><Printer className="mr-2 h-4 w-4" />Print</Button>
-          <Button onClick={() => downloadElementAsPdf("invoice-pdf", `${inv.invoice_number}.pdf`, "a4", "p")}><Download className="mr-2 h-4 w-4" />Download PDF</Button>
+          <Button variant="outline" disabled={pdfBusy} onClick={async () => { setPdfBusy(true); try { await printElementAsPdf("invoice-pdf", "a4", "p"); } finally { setPdfBusy(false); } }}>
+            {pdfBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Printer className="mr-2 h-4 w-4" />}Print
+          </Button>
+          <Button disabled={pdfBusy} onClick={async () => { setPdfBusy(true); try { await downloadElementAsPdf("invoice-pdf", `${inv.invoice_number}.pdf`, "a4", "p"); } finally { setPdfBusy(false); } }}>
+            {pdfBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}Download PDF
+          </Button>
         </div>
       </div>
 
