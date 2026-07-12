@@ -43,7 +43,7 @@ function AuditPage() {
               {items.map((r: any) => (
                 <TableRow key={r.id}>
                   <TableCell className="text-xs">{formatDistanceToNow(new Date(r.created_at), { addSuffix: true })}</TableCell>
-                  <TableCell className="text-sm">{r.profiles?.email ?? r.actor_id ?? "system"}</TableCell>
+                  <TableCell className="text-xs">{r.actor_id ?? "system"}</TableCell>
                   <TableCell><Badge variant="outline">{r.action}</Badge></TableCell>
                   <TableCell className="text-xs">{r.entity ? `${r.entity}/${r.entity_id ?? "-"}` : "—"}</TableCell>
                   <TableCell className="max-w-md truncate text-xs text-muted-foreground">

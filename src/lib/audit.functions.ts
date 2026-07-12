@@ -13,7 +13,7 @@ export const listAuditLogs = createServerFn({ method: "GET" })
     await assertAdmin(context);
     let q = context.supabase
       .from("audit_logs")
-      .select("id, actor_id, action, entity, entity_id, meta, ip, created_at, profiles:actor_id(email, full_name)")
+      .select("id, actor_id, action, entity, entity_id, meta, ip, created_at")
       .order("created_at", { ascending: false })
       .limit(Math.min(data?.limit ?? 200, 500));
     if (data?.action) q = q.eq("action", data.action);
