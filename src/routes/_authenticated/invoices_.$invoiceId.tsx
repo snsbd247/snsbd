@@ -290,17 +290,22 @@ function InvoiceDetailPage() {
         {/* Footer — dark bar with red parallelogram overlapping from right, extending above */}
         <div className="relative h-[64px] w-full mt-8" style={{ background: "#1f1f1f" }}>
           <div
-            className="absolute right-0 flex items-center justify-end pr-6 text-white text-[12px] leading-tight text-right z-10"
+            className="absolute right-0 flex items-center justify-center text-white text-[12px] leading-snug text-center z-10"
             style={{
               width: "50%",
               height: "96px",
               bottom: 0,
+              paddingLeft: "18%",
+              paddingRight: "24px",
               background: "#c0392b",
               clipPath: "polygon(28% 0, 100% 0, 100% 100%, 0 100%)",
             }}
           >
-            {company?.address && <div className="whitespace-pre-line font-semibold">{company.address}</div>}
+            {company?.address && (
+              <div className="font-semibold break-words whitespace-normal">{company.address}</div>
+            )}
           </div>
+
         </div>
 
       </div>
