@@ -93,15 +93,12 @@ function ReceiptPage() {
             {company?.logo_url ? (
               <img src={company.logo_url} alt={`${company.company_name} logo`} className="h-16 object-contain" />
             ) : (
-              <div className="flex items-center gap-2">
-                <div className="h-14 w-14 rounded-full border-[3px] flex items-center justify-center text-2xl font-black" style={{ borderColor: "#c0392b", color: "#c0392b" }}>S</div>
-                <div>
-                  <div className="text-3xl font-black tracking-tight" style={{ color: NAVY }}>SNS</div>
-                  <div className="text-[9px] font-semibold tracking-[0.2em]" style={{ color: "#c0392b" }}>SYNC & SOLUTIONS IT</div>
-                </div>
+              <div className="text-[20px] font-extrabold" style={{ color: NAVY }}>
+                {company?.company_name ?? "Company"}
               </div>
             )}
           </div>
+
           <div className="text-center">
             <div className="text-[42px] leading-none font-extrabold tracking-wide" style={{ color: NAVY }}>MONEY RECEIPT</div>
           </div>
