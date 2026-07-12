@@ -14,7 +14,9 @@ import { createHostingOrder } from "@/lib/orders.functions";
 import { validateDomain } from "@/lib/domain-validate";
 import { bkashCreatePayment } from "@/lib/bkash.functions";
 import { useCompanySettings } from "@/lib/company-settings";
-import { Loader2, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { validateCoupon, listAddons } from "@/lib/addons-coupons.functions";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Loader2, ArrowLeft, CheckCircle2, Tag } from "lucide-react";
 import { db } from "@/lib/db-shim";
 
 export const Route = createFileRoute("/_authenticated/order/hosting/$packageId")({
