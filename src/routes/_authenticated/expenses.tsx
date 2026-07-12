@@ -45,6 +45,7 @@ function ExpensesPage() {
   const total = (data ?? []).reduce((s: number, e: any) => s + Number(e.amount), 0);
   const byCat: Record<string, number> = {};
   (data ?? []).forEach((e: any) => { byCat[e.category] = (byCat[e.category] ?? 0) + Number(e.amount); });
+  const pg = usePagination((data ?? []) as any[]);
 
   return (
     <div className="space-y-6">
