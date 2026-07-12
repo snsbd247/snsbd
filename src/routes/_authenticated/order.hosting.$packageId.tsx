@@ -79,6 +79,8 @@ function OrderPage() {
           manual_trx_id: trxId,
           manual_sender: sender,
           customer_notes: notes,
+          addon_ids: selectedAddons,
+          coupon_code: couponResult?.valid ? couponResult.code : undefined,
         },
       });
       if (method === "bkash_online") {
