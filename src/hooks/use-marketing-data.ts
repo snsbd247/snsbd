@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/lib/db-shim";
 import type { Plan } from "@/components/marketing/pricing-card";
 
 type HostingPackage = {
@@ -23,7 +23,7 @@ export function useHostingPackages(category: string) {
     queryKey: ["marketing_packages", category],
     staleTime: 60_000,
     queryFn: async (): Promise<Plan[]> => {
-      const { data } = await (supabase as any)
+      const { data } = await db
         .from("hosting_packages")
         .select("*")
         .eq("is_active", true)
@@ -52,7 +52,7 @@ export function useDomainPricing() {
     queryKey: ["domain_pricing"],
     staleTime: 5 * 60_000,
     queryFn: async () => {
-      const { data } = await (supabase as any)
+      const { data } = await db
         .from("domain_pricing")
         .select("tld, register_price, renew_price, transfer_price")
         .eq("is_active", true)

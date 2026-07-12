@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/integrations/db/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -171,7 +171,7 @@ function UsageDialog({ pkg, onClose }: { pkg: any; onClose: () => void }) {
     queryKey: ["hosting_package_usage", pkg?.id],
     enabled: !!pkg?.id,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from("services")
         .select("id, name, status, expiry_date, sale_price, profiles(id, full_name, email)")
         .eq("hosting_package_id", pkg.id)
