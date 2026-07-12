@@ -99,7 +99,7 @@ function WhmServersPage() {
             <TableHead>Last sync</TableHead><TableHead>Status</TableHead><TableHead className="w-48" />
           </TableRow></TableHeader>
           <TableBody>
-            {(rows ?? []).map((r: any) => (
+            {pg.paged.map((r: any) => (
               <TableRow key={r.id}>
                 <TableCell className="font-medium">{r.name}</TableCell>
                 <TableCell className="text-xs font-mono">{r.hostname}:{r.port}</TableCell>
