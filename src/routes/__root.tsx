@@ -14,6 +14,8 @@ import { AuthProvider } from "../lib/auth";
 import { Toaster } from "../components/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { getCompanySettings } from "../lib/company-settings-api";
+import { I18nProvider } from "../lib/i18n";
+import { CurrencyProvider } from "../lib/currency";
 
 function NotFoundComponent() {
   return (
@@ -114,9 +116,13 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <DynamicFavicon />
-        <Outlet />
-        <Toaster richColors position="top-right" />
+        <I18nProvider>
+          <CurrencyProvider>
+            <DynamicFavicon />
+            <Outlet />
+            <Toaster richColors position="top-right" />
+          </CurrencyProvider>
+        </I18nProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
