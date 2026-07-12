@@ -160,7 +160,7 @@ function OrderDetailsPage() {
           <Badge variant="outline" className="capitalize">{o.status}</Badge>
           {canActivate && (
             <Button
-              onClick={() => { setActivateOpen(true); setCreds(null); setWhmServerId(""); }}
+              onClick={() => { setActivateOpen(true); setCreds(null); setWhmServerId(""); setConfirmActivate(false); }}
               disabled={!validateDomain(o.domain_name ?? "").ok}
               title={!validateDomain(o.domain_name ?? "").ok ? "একটি বৈধ ডোমেইন যোগ করুন" : ""}
             >
