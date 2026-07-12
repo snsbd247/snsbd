@@ -138,6 +138,7 @@ function DomainDetailPage() {
         </Button>
         {isAdmin && (
           <div className="flex gap-2">
+            <Button variant="outline" onClick={() => { if (confirm(`Register ${domain.name} via Namecheap for 1 year?`)) registerNC.mutate(); }} disabled={registerNC.isPending}><Zap className="mr-2 h-4 w-4" />{registerNC.isPending ? "Registering…" : "Register via Namecheap"}</Button>
             <Button variant="outline" onClick={() => generate.mutate()} disabled={generate.isPending}><FileText className="mr-2 h-4 w-4" />Generate invoice</Button>
             <Button variant="destructive" onClick={() => { if (confirm("Delete domain?")) del.mutate(); }}><Trash2 className="mr-2 h-4 w-4" />Delete</Button>
           </div>
