@@ -143,6 +143,7 @@ export function ServicesManager({
 
             </TableBody>
           </Table>
+          <PaginationControls {...pg} />
         </CardContent>
       </Card>
 
