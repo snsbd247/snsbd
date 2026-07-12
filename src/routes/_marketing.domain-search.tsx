@@ -7,6 +7,7 @@ import { useDomainPricing } from "@/hooks/use-marketing-data";
 import { toast } from "sonner";
 import { submitLead } from "@/lib/leads";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { checkDomains } from "@/lib/namecheap.functions";
 
 export const Route = createFileRoute("/_marketing/domain-search")({
   head: () => ({
@@ -25,16 +26,12 @@ export const Route = createFileRoute("/_marketing/domain-search")({
 
 type Result = { domain: string; tld: string; price: string; available: boolean };
 
-function mockCheck(query: string, tlds: Array<{ tld: string; register_price: number }>): Result[] {
-  const base = query.trim().toLowerCase().replace(/^https?:\/\//, "").split("/")[0]!;
-  const bare = base.includes(".") ? base.split(".")[0]! : base;
-  return tlds.map((t) => {
-    const domain = `${bare}${t.tld}`;
-    const hash = [...domain].reduce((a, c) => (a * 33 + c.charCodeAt(0)) & 0xffffffff, 5381);
-    const available = Math.abs(hash) % 3 !== 0;
-    return { domain, tld: t.tld, price: `৳${Number(t.register_price).toLocaleString("en-BD")}`, available };
-  });
+function priceFor(tld: string, tlds: Array<{ tld: string; register_price: number }>) {
+  const match = tlds.find((t) => t.tld.toLowerCase() === tld.toLowerCase());
+  const n = Number(match?.register_price ?? 0);
+  return n > 0 ? `৳${n.toLocaleString("en-BD")}` : "—";
 }
+
 
 function Page() {
   const { data: tlds = [] } = useDomainPricing();
