@@ -4,11 +4,13 @@ import { useAuth } from "@/lib/auth";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger,
-  SidebarHeader, SidebarFooter, SidebarInset,
+  SidebarHeader, SidebarFooter, SidebarInset, SidebarSeparator,
+  SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   LayoutDashboard, Users, Globe, HardDrive, Package, FileText, FolderKanban,
-  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server,
+  UserCog, Receipt, LogOut, User as UserIcon, ShoppingCart, Server, ChevronRight,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -81,23 +83,50 @@ function AuthedLayout() {
           </SidebarGroup>
 
           {isAdmin && (
-            <SidebarGroup>
-              <SidebarGroupLabel>Management</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  <NavItem to="/customers" icon={Users} label="Customers" />
-                  <NavItem to="/orders" icon={ShoppingCart} label="Customer Orders" />
-                  <NavItem to="/hosting-packages" icon={HardDrive} label="Hosting Packages" />
-                  <NavItem to="/domain-pricing" icon={Globe} label="Domain Pricing" />
-                  <NavItem to="/service-catalog" icon={Package} label="Service Catalog" />
-                  <NavItem to="/team" icon={UserCog} label="Team & Salary" />
-                  <NavItem to="/expenses" icon={Receipt} label="Expenses" />
-                  <NavItem to="/whm-servers" icon={Server} label="WHM Servers" />
-                  <NavItem to="/payment-settings" icon={Settings} label="Payment Gateways" />
-                  <NavItem to="/settings" icon={Settings} label="Settings" />
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
+            <>
+              <SidebarSeparator />
+              <SidebarGroup>
+                <SidebarGroupLabel>Management</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    <NavGroup
+                      icon={Users}
+                      label="People"
+                      items={[
+                        { to: "/customers", label: "Customers" },
+                        { to: "/team", label: "Team & Salary" },
+                      ]}
+                    />
+                    <NavGroup
+                      icon={ShoppingCart}
+                      label="Operations"
+                      items={[
+                        { to: "/orders", label: "Customer Orders" },
+                        { to: "/expenses", label: "Expenses" },
+                        { to: "/whm-servers", label: "WHM Servers" },
+                      ]}
+                    />
+                    <NavGroup
+                      icon={Package}
+                      label="Catalog & Pricing"
+                      items={[
+                        { to: "/hosting-packages", label: "Hosting Packages" },
+                        { to: "/domain-pricing", label: "Domain Pricing" },
+                        { to: "/service-catalog", label: "Service Catalog" },
+                      ]}
+                    />
+                    <NavGroup
+                      icon={Settings}
+                      label="Configuration"
+                      items={[
+                        { to: "/payment-settings", label: "Payment Gateways" },
+                        { to: "/settings", label: "Settings" },
+                      ]}
+                    />
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </>
           )}
         </SidebarContent>
         <SidebarFooter className="border-t">
@@ -154,6 +183,49 @@ function NavItem({ to, icon: Icon, label }: { to: string; icon: React.ComponentT
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>
+  );
+}
+
+function NavGroup({
+  icon: Icon,
+  label,
+  items,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  items: { to: string; label: string }[];
+}) {
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  const hasActive = items.some((i) => path === i.to || path.startsWith(i.to + "/"));
+  return (
+    <Collapsible defaultOpen={hasActive} className="group/collapsible">
+      <SidebarMenuItem>
+        <CollapsibleTrigger asChild>
+          <SidebarMenuButton
+            className="data-[state=open]:bg-sidebar-accent/40"
+            isActive={hasActive}
+          >
+            <Icon className="h-4 w-4" />
+            <span>{label}</span>
+            <ChevronRight className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarMenuSub>
+            {items.map((i) => {
+              const active = path === i.to || path.startsWith(i.to + "/");
+              return (
+                <SidebarMenuSubItem key={i.to}>
+                  <SidebarMenuSubButton asChild isActive={active}>
+                    <Link to={i.to}>{i.label}</Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              );
+            })}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
   );
 }
 
