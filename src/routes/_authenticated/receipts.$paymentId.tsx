@@ -174,6 +174,9 @@ function ReceiptPage() {
           <div className="text-center text-[10px] text-slate-500 pb-2 print:pb-0">{company.footer_copyright}</div>
         )}
       </div>
+      </div>
+
+
 
       <div className="text-xs text-muted-foreground text-center print:hidden">
         <Link to="/invoices/$invoiceId" params={{ invoiceId: pay.invoice_id }} className="text-primary hover:underline">View linked invoice →</Link>
