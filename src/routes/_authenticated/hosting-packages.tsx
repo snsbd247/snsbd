@@ -268,3 +268,47 @@ function UsageDialog({ pkg, onClose }: { pkg: any; onClose: () => void }) {
     </Dialog>
   );
 }
+
+function WhmPackagePicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [serverId, setServerId] = useState<string>("");
+  const { data: servers } = useQuery({
+    queryKey: ["whm_servers_list_pkg"],
+    queryFn: async () => (await db.from("whm_servers").select("id, name").eq("is_active", true).order("name")).data ?? [],
+  });
+  const listPkgs = useServerFn(listWhmPackages);
+  const { data: pkgs, isFetching, refetch } = useQuery({
+    queryKey: ["whm_packages", serverId],
+    enabled: !!serverId,
+    queryFn: async () => (await listPkgs({ data: { server_id: serverId } })).packages,
+  });
+
+  return (
+    <div className="grid gap-2 rounded-md border p-3 bg-muted/30">
+      <div className="text-xs font-semibold uppercase text-muted-foreground">WHM package (optional)</div>
+      <div className="grid grid-cols-2 gap-2">
+        <Select value={serverId} onValueChange={setServerId}>
+          <SelectTrigger><SelectValue placeholder="Pick WHM server to load packages" /></SelectTrigger>
+          <SelectContent>
+            {(servers ?? []).map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={value || "__none"} onValueChange={(v) => onChange(v === "__none" ? "" : v)}>
+          <SelectTrigger><SelectValue placeholder={isFetching ? "Loading…" : "Select WHM package"} /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__none">— None (use package name) —</SelectItem>
+            {(pkgs ?? []).map((p: any) => (
+              <SelectItem key={p.name} value={p.name}>{p.name}{p.quota ? ` · ${p.quota}MB` : ""}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-xs text-muted-foreground">
+          {value ? <>Will create cPanel accounts using WHM plan <span className="font-mono">{value}</span>.</> : "If empty, WHM will use the package name as the plan."}
+        </p>
+        {serverId && <Button type="button" size="sm" variant="ghost" onClick={() => refetch()} disabled={isFetching}>Refresh</Button>}
+      </div>
+      <Input placeholder="Or type WHM package name manually" value={value} onChange={(e) => onChange(e.target.value)} />
+    </div>
+  );
+}
