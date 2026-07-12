@@ -121,7 +121,9 @@ function PortalPage() {
             <TabsTrigger value="service">Order service</TabsTrigger>
             <TabsTrigger value="orders">My orders</TabsTrigger>
             <TabsTrigger value="invoices">Invoices</TabsTrigger>
+            <TabsTrigger value="profile">Profile</TabsTrigger>
           </TabsList>
+
 
           <TabsContent value="dashboard" className="space-y-4">
             <div className="grid gap-4 md:grid-cols-3">
