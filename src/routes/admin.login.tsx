@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { useCompanySettings } from "@/lib/company-settings";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, LogOut } from "lucide-react";
 import { z } from "zod";
 
 type Search = { redirect?: string };
@@ -33,21 +33,21 @@ async function resolveLoginEmail(identifier: string): Promise<string | null> {
 function AdminLoginPage() {
   const { redirect } = Route.useSearch();
   const navigate = useNavigate();
-  const { session, role, loading } = useAuth();
+  const { session, role, loading, signOut } = useAuth();
   const { data: company } = useCompanySettings();
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [mode, setMode] = useState<"signin" | "forgot">("signin");
+  const [forgotEmail, setForgotEmail] = useState("");
 
   useEffect(() => {
-    if (!loading && session && role === "admin") {
-      if (redirect) window.location.assign(redirect);
-      else navigate({ to: "/dashboard" });
-    } else if (!loading && session && role && role !== "admin") {
-      toast.error("This login is for admins only");
-      supabase.auth.signOut();
+    if (loading || !session) return;
+    if (role === "admin") {
+      navigate({ to: redirect && redirect.startsWith("/") ? (redirect as string) : "/dashboard" });
     }
+    // Non-admin sessions must NOT reach admin. Show sign-out UI (see below).
   }, [loading, session, role, navigate, redirect]);
 
   async function onSubmit(e: React.FormEvent) {
@@ -62,8 +62,24 @@ function AdminLoginPage() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
     if (error) return toast.error(error.message);
-    toast.success("Welcome back, admin");
+    // Role check happens in the effect above; non-admins get bounced.
+    toast.success("Signed in");
   }
+
+  async function onForgot(e: React.FormEvent) {
+    e.preventDefault();
+    if (!emailSchema.safeParse(forgotEmail.trim()).success) return toast.error("Enter a valid email");
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail.trim(), {
+      redirectTo: `${window.location.origin}/reset-password?admin=true`,
+    });
+    setBusy(false);
+    if (error) return toast.error(error.message);
+    toast.success("Password reset email sent");
+    setMode("signin");
+  }
+
+  const nonAdminSignedIn = !loading && session && role && role !== "admin";
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 px-4">
@@ -73,35 +89,93 @@ function AdminLoginPage() {
             <ShieldCheck className="h-7 w-7 text-primary" />
           </div>
           <h1 className="text-2xl font-bold">{company?.company_name ?? "Nexus CRM"} — Admin</h1>
-          <p className="mt-2 text-sm text-slate-300">Restricted access. Staff & administrators only.</p>
+          <p className="mt-2 text-sm text-slate-300">Restricted access. Administrators only.</p>
         </div>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Admin sign in</CardTitle>
-            <CardDescription>Use your admin credentials to continue.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={onSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label>Username or Email</Label>
-                <Input value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder="superadmin" required />
-              </div>
-              <div className="space-y-2">
-                <Label>Password</Label>
-                <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-              </div>
-              <Button className="w-full" type="submit" disabled={busy}>
-                {busy ? "Signing in…" : "Sign in as admin"}
-              </Button>
-            </form>
-            <p className="mt-4 text-center text-xs text-muted-foreground">
-              Are you a customer?{" "}
-              <Link to="/login" className="text-primary hover:underline">
-                Customer login
-              </Link>
-            </p>
-          </CardContent>
+          {nonAdminSignedIn ? (
+            <>
+              <CardHeader>
+                <CardTitle>Wrong account</CardTitle>
+                <CardDescription>
+                  You're signed in as a customer. Sign out to access the admin login.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button
+                  className="w-full"
+                  variant="destructive"
+                  onClick={async () => {
+                    await signOut();
+                    toast.success("Signed out");
+                  }}
+                >
+                  <LogOut className="mr-2 h-4 w-4" /> Sign out
+                </Button>
+                <Link to="/client" className="block text-center text-sm text-primary hover:underline">
+                  Go to customer portal
+                </Link>
+              </CardContent>
+            </>
+          ) : mode === "forgot" ? (
+            <>
+              <CardHeader>
+                <CardTitle>Forgot admin password</CardTitle>
+                <CardDescription>Enter the admin email to receive a reset link.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={onForgot} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Admin email</Label>
+                    <Input type="email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} required />
+                  </div>
+                  <Button className="w-full" type="submit" disabled={busy}>
+                    {busy ? "Sending…" : "Send reset link"}
+                  </Button>
+                  <button type="button" onClick={() => setMode("signin")} className="w-full text-center text-sm text-muted-foreground hover:text-foreground">
+                    Back to sign in
+                  </button>
+                </form>
+              </CardContent>
+            </>
+          ) : (
+            <>
+              <CardHeader>
+                <CardTitle>Admin sign in</CardTitle>
+                <CardDescription>Use your admin credentials to continue.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={onSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Username or Email</Label>
+                    <Input value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder="superadmin" required />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label>Password</Label>
+                      <button
+                        type="button"
+                        onClick={() => setMode("forgot")}
+                        className="text-xs text-primary hover:underline"
+                      >
+                        Forgot password?
+                      </button>
+                    </div>
+                    <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                  </div>
+                  <Button className="w-full" type="submit" disabled={busy}>
+                    {busy ? "Signing in…" : "Sign in as admin"}
+                  </Button>
+                </form>
+                <p className="mt-4 text-center text-xs text-muted-foreground">
+                  Are you a customer?{" "}
+                  <Link to="/login" className="text-primary hover:underline">
+                    Customer login
+                  </Link>
+                </p>
+              </CardContent>
+            </>
+          )}
         </Card>
       </div>
     </div>

@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { useCompanySettings } from "@/lib/company-settings";
-import { UserRound } from "lucide-react";
+import { UserRound, LogOut } from "lucide-react";
 import { z } from "zod";
 
 type Search = { mode?: "signin" | "signup"; redirect?: string };
@@ -44,17 +44,22 @@ async function resolveLoginEmail(identifier: string): Promise<string | null> {
 function CustomerLoginPage() {
   const { mode, redirect } = Route.useSearch();
   const navigate = useNavigate();
-  const { session, role, loading } = useAuth();
+  const { session, role, loading, signOut } = useAuth();
   const { data: company } = useCompanySettings();
   const [tab, setTab] = useState<"signin" | "signup">(mode ?? "signin");
 
   useEffect(() => {
-    if (!loading && session) {
-      if (redirect) window.location.assign(redirect);
-      else if (role === "admin") navigate({ to: "/dashboard" });
-      else navigate({ to: "/client" });
+    if (loading || !session) return;
+    if (redirect) {
+      window.location.assign(redirect);
+    } else if (role === "admin") {
+      navigate({ to: "/dashboard" });
+    } else if (role === "customer") {
+      navigate({ to: "/client" });
     }
   }, [loading, session, role, navigate, redirect]);
+
+  const signedIn = !loading && session;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-accent/30 px-4">
@@ -73,24 +78,53 @@ function CustomerLoginPage() {
         </div>
 
         <Card>
-          <CardHeader className="pb-2">
-            <Tabs value={tab} onValueChange={(v) => setTab(v as "signin" | "signup")}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signin">Sign in</TabsTrigger>
-                <TabsTrigger value="signup">Sign up</TabsTrigger>
-              </TabsList>
-              <TabsContent value="signin"><SignInForm /></TabsContent>
-              <TabsContent value="signup"><SignUpForm /></TabsContent>
-            </Tabs>
-          </CardHeader>
-          <CardContent>
-            <p className="text-center text-xs text-muted-foreground">
-              Are you an admin?{" "}
-              <Link to="/admin/login" className="text-primary hover:underline">
-                Admin login
-              </Link>
-            </p>
-          </CardContent>
+          {signedIn ? (
+            <>
+              <CardHeader>
+                <CardTitle>Already signed in</CardTitle>
+                <CardDescription>Continue as {session.user.email}, or sign out to switch accounts.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button
+                  className="w-full"
+                  onClick={() => navigate({ to: role === "admin" ? "/dashboard" : "/client" })}
+                >
+                  Continue
+                </Button>
+                <Button
+                  className="w-full"
+                  variant="outline"
+                  onClick={async () => {
+                    await signOut();
+                    toast.success("Signed out");
+                  }}
+                >
+                  <LogOut className="mr-2 h-4 w-4" /> Sign out
+                </Button>
+              </CardContent>
+            </>
+          ) : (
+            <>
+              <CardHeader className="pb-2">
+                <Tabs value={tab} onValueChange={(v) => setTab(v as "signin" | "signup")}>
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="signin">Sign in</TabsTrigger>
+                    <TabsTrigger value="signup">Sign up</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="signin"><SignInForm /></TabsContent>
+                  <TabsContent value="signup"><SignUpForm /></TabsContent>
+                </Tabs>
+              </CardHeader>
+              <CardContent>
+                <p className="text-center text-xs text-muted-foreground">
+                  Are you an admin?{" "}
+                  <Link to="/admin/login" className="text-primary hover:underline">
+                    Admin login
+                  </Link>
+                </p>
+              </CardContent>
+            </>
+          )}
         </Card>
       </div>
     </div>
@@ -101,6 +135,8 @@ function SignInForm() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [forgot, setForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -117,6 +153,37 @@ function SignInForm() {
     toast.success("Welcome back");
   }
 
+  async function onForgot(e: React.FormEvent) {
+    e.preventDefault();
+    if (!emailSchema.safeParse(forgotEmail.trim()).success) return toast.error("Enter a valid email");
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail.trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setBusy(false);
+    if (error) return toast.error(error.message);
+    toast.success("Password reset email sent");
+    setForgot(false);
+  }
+
+  if (forgot) {
+    return (
+      <form onSubmit={onForgot} className="mt-4 space-y-4">
+        <div className="space-y-2">
+          <Label>Your account email</Label>
+          <Input type="email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} required />
+          <p className="text-xs text-muted-foreground">
+            Password reset requires an email address on file. Username-only accounts cannot self-reset.
+          </p>
+        </div>
+        <Button className="w-full" type="submit" disabled={busy}>{busy ? "Sending…" : "Send reset link"}</Button>
+        <button type="button" onClick={() => setForgot(false)} className="w-full text-center text-sm text-muted-foreground hover:text-foreground">
+          Back to sign in
+        </button>
+      </form>
+    );
+  }
+
   return (
     <form onSubmit={onSubmit} className="mt-4 space-y-4">
       <div className="space-y-2">
@@ -124,7 +191,12 @@ function SignInForm() {
         <Input value={identifier} onChange={(e) => setIdentifier(e.target.value)} required />
       </div>
       <div className="space-y-2">
-        <Label>Password</Label>
+        <div className="flex items-center justify-between">
+          <Label>Password</Label>
+          <button type="button" onClick={() => setForgot(true)} className="text-xs text-primary hover:underline">
+            Forgot password?
+          </button>
+        </div>
         <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
       </div>
       <Button className="w-full" type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</Button>
@@ -177,8 +249,8 @@ function SignUpForm() {
         <Input value={username} onChange={(e) => setUsername(e.target.value)} required />
       </div>
       <div className="space-y-2">
-        <Label>Email <span className="text-muted-foreground">(optional)</span></Label>
-        <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Leave blank to skip" />
+        <Label>Email <span className="text-muted-foreground">(recommended for password reset)</span></Label>
+        <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
       </div>
       <div className="space-y-2">
         <Label>Password</Label>

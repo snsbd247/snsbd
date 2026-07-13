@@ -42,18 +42,37 @@ function AuthedLayout() {
     logo_url: brand?.logo_url || companyRaw?.logo_url,
   } as typeof companyRaw;
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  // Admin-only route prefixes — customers get bounced to /client.
+  const ADMIN_ONLY_PREFIXES = [
+    "/customers", "/team", "/orders", "/expenses", "/whm-servers",
+    "/renewals", "/reports", "/announcements", "/referrals-admin",
+    "/resellers", "/audit-log", "/domain-pricing", "/hosting-packages",
+    "/service-catalog", "/coupons", "/addons", "/payment-settings",
+    "/settings",
+  ];
+  const isAdminOnlyPath = ADMIN_ONLY_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));
 
   useEffect(() => {
-    if (!loading && !session) navigate({ to: "/auth" });
-  }, [loading, session, navigate]);
+    if (loading) return;
+    if (!session) {
+      navigate({ to: "/login", search: { redirect: pathname } as any });
+      return;
+    }
+    if (role && role !== "admin" && isAdminOnlyPath) {
+      navigate({ to: "/client" });
+    }
+  }, [loading, session, role, navigate, pathname, isAdminOnlyPath]);
 
-  if (loading || !session) {
+  if (loading || !session || (role && role !== "admin" && isAdminOnlyPath)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-sm text-muted-foreground">Loading…</div>
       </div>
     );
   }
+
 
   const isAdmin = role === "admin";
   const initials = (user?.email ?? "?").slice(0, 2).toUpperCase();
