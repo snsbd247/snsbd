@@ -147,7 +147,7 @@ function InvoiceDetailPage() {
             }}
           >
             {company?.logo_url ? (
-              <img src={company.logo_url} alt={`${company.company_name} logo`} className="h-14 object-contain" style={{ marginTop: "-18px", filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.55)) drop-shadow(0 0 6px rgba(0,0,0,0.35))" }} />
+              <img src={company.logo_url} alt={`${company.company_name} logo`} className="h-14 object-contain" style={{ marginTop: "-18px", filter: "drop-shadow(0 0 0.5px #fff) drop-shadow(0 0 0.5px #fff) drop-shadow(0 0 0.5px #fff) drop-shadow(0 0 0.5px #fff)" }} />
             ) : (
               <div className="text-white font-bold text-lg px-3" style={{ marginTop: "-18px" }}>
                 {company?.company_name ?? "Company"}
