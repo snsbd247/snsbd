@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { SectionHeading, CtaBand } from "@/components/marketing/section";
+import { usePageContent } from "@/lib/page-content";
 import { Users, Target, Award, Heart } from "lucide-react";
 
 export const Route = createFileRoute("/_marketing/about")({
