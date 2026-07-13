@@ -166,6 +166,7 @@ function AuthedLayout() {
                       icon={BookOpen}
                       label="Content"
                       items={[
+                        { to: "/page-contents", label: "Website Pages" },
                         { to: "/kb", label: "Knowledge Base" },
                         { to: "/announcements", label: "Announcements" },
                       ]}
