@@ -79,9 +79,8 @@ export function MarketingHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button asChild variant="ghost" className="hidden text-white/70 hover:bg-white/10 hover:text-white md:inline-flex">
-            <Link to="/admin/login">Admin</Link>
-          </Button>
+
+
           <Button asChild variant="ghost" className="hidden text-white hover:bg-white/10 hover:text-white sm:inline-flex">
             <Link to="/login">Client Area</Link>
           </Button>
