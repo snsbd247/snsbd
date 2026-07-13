@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/marketing/section";
 import { useDomainPricing } from "@/hooks/use-marketing-data";
+import { usePageContent } from "@/lib/page-content";
 import { Globe, Search } from "lucide-react";
 
 export const Route = createFileRoute("/_marketing/register-domain")({
