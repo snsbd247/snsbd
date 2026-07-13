@@ -19,6 +19,7 @@ import { Route as MarketingIndexRouteImport } from './routes/_marketing.index'
 import { Route as PortalBkashCallbackRouteImport } from './routes/portal.bkash-callback'
 import { Route as ClientSslczCallbackRouteImport } from './routes/client.sslcz-callback'
 import { Route as ClientBkashCallbackRouteImport } from './routes/client.bkash-callback'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as MarketingWebHostingRouteImport } from './routes/_marketing.web-hosting'
 import { Route as MarketingVpsRouteImport } from './routes/_marketing.vps'
 import { Route as MarketingTermsRouteImport } from './routes/_marketing.terms'
@@ -132,6 +133,11 @@ const ClientBkashCallbackRoute = ClientBkashCallbackRouteImport.update({
   id: '/bkash-callback',
   path: '/bkash-callback',
   getParentRoute: () => ClientRoute,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const MarketingWebHostingRoute = MarketingWebHostingRouteImport.update({
   id: '/web-hosting',
@@ -535,6 +541,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof MarketingTermsRoute
   '/vps': typeof MarketingVpsRoute
   '/web-hosting': typeof MarketingWebHostingRoute
+  '/admin/login': typeof AdminLoginRoute
   '/client/bkash-callback': typeof ClientBkashCallbackRoute
   '/client/sslcz-callback': typeof ClientSslczCallbackRoute
   '/portal/bkash-callback': typeof PortalBkashCallbackRoute
@@ -610,6 +617,7 @@ export interface FileRoutesByTo {
   '/terms': typeof MarketingTermsRoute
   '/vps': typeof MarketingVpsRoute
   '/web-hosting': typeof MarketingWebHostingRoute
+  '/admin/login': typeof AdminLoginRoute
   '/client/bkash-callback': typeof ClientBkashCallbackRoute
   '/client/sslcz-callback': typeof ClientSslczCallbackRoute
   '/portal/bkash-callback': typeof PortalBkashCallbackRoute
@@ -687,6 +695,7 @@ export interface FileRoutesById {
   '/_marketing/terms': typeof MarketingTermsRoute
   '/_marketing/vps': typeof MarketingVpsRoute
   '/_marketing/web-hosting': typeof MarketingWebHostingRoute
+  '/admin/login': typeof AdminLoginRoute
   '/client/bkash-callback': typeof ClientBkashCallbackRoute
   '/client/sslcz-callback': typeof ClientSslczCallbackRoute
   '/portal/bkash-callback': typeof PortalBkashCallbackRoute
@@ -765,6 +774,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/vps'
     | '/web-hosting'
+    | '/admin/login'
     | '/client/bkash-callback'
     | '/client/sslcz-callback'
     | '/portal/bkash-callback'
@@ -840,6 +850,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/vps'
     | '/web-hosting'
+    | '/admin/login'
     | '/client/bkash-callback'
     | '/client/sslcz-callback'
     | '/portal/bkash-callback'
@@ -916,6 +927,7 @@ export interface FileRouteTypes {
     | '/_marketing/terms'
     | '/_marketing/vps'
     | '/_marketing/web-hosting'
+    | '/admin/login'
     | '/client/bkash-callback'
     | '/client/sslcz-callback'
     | '/portal/bkash-callback'
@@ -950,6 +962,7 @@ export interface RootRouteChildren {
   ClientRoute: typeof ClientRouteWithChildren
   PortalRoute: typeof PortalRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  AdminLoginRoute: typeof AdminLoginRoute
   ApiPublicHooksEnforceOverdueRoute: typeof ApiPublicHooksEnforceOverdueRoute
   ApiPublicHooksNotifyLeadRoute: typeof ApiPublicHooksNotifyLeadRoute
   ApiPublicHooksRegistrarCallbackRoute: typeof ApiPublicHooksRegistrarCallbackRoute
@@ -1030,6 +1043,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/client/bkash-callback'
       preLoaderRoute: typeof ClientBkashCallbackRouteImport
       parentRoute: typeof ClientRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_marketing/web-hosting': {
       id: '/_marketing/web-hosting'
@@ -1668,6 +1688,7 @@ const rootRouteChildren: RootRouteChildren = {
   ClientRoute: ClientRouteWithChildren,
   PortalRoute: PortalRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  AdminLoginRoute: AdminLoginRoute,
   ApiPublicHooksEnforceOverdueRoute: ApiPublicHooksEnforceOverdueRoute,
   ApiPublicHooksNotifyLeadRoute: ApiPublicHooksNotifyLeadRoute,
   ApiPublicHooksRegistrarCallbackRoute: ApiPublicHooksRegistrarCallbackRoute,
@@ -1679,13 +1700,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
