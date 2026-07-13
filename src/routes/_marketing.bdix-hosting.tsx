@@ -4,6 +4,7 @@ import { PricingCard } from "@/components/marketing/pricing-card";
 import { SectionHeading, CtaBand } from "@/components/marketing/section";
 import { bdixHostingPlans } from "@/content/plans";
 import { useHostingPackages } from "@/hooks/use-marketing-data";
+import { usePageContent } from "@/lib/page-content";
 import { Zap, Globe, Shield } from "lucide-react";
 
 export const Route = createFileRoute("/_marketing/bdix-hosting")({
