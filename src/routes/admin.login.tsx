@@ -41,6 +41,8 @@ function AdminLoginPage() {
   const [busy, setBusy] = useState(false);
   const [mode, setMode] = useState<"signin" | "forgot">("signin");
   const [forgotEmail, setForgotEmail] = useState("");
+  const [acknowledged, setAcknowledged] = useState(false);
+
 
   useEffect(() => {
     if (loading || !session) return;
