@@ -839,6 +839,30 @@ export type Database = {
         }
         Relationships: []
       }
+      page_contents: {
+        Row: {
+          content: Json
+          slug: string
+          title: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          content?: Json
+          slug: string
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          content?: Json
+          slug?: string
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       payment_gateways: {
         Row: {
           app_key: string | null
