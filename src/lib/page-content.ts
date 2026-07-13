@@ -141,7 +141,12 @@ export async function upsertPageContent(slug: string, rec: Omit<PageRecord, "slu
   const { error } = await supabase.from("page_contents").upsert(payload, { onConflict: "slug" });
   if (error) throw error;
   await supabase.from("page_content_versions").insert({
-    ...payload,
+    slug,
+    content: payload.content,
+    seo_title: payload.seo_title,
+    seo_description: payload.seo_description,
+    og_image: payload.og_image,
+    hero_image: payload.hero_image,
     created_by: userRes.user?.id ?? null,
   });
   invalidatePageContent(slug);
