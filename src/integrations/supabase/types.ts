@@ -839,9 +839,49 @@ export type Database = {
         }
         Relationships: []
       }
+      page_content_versions: {
+        Row: {
+          content: Json
+          created_at: string
+          created_by: string | null
+          hero_image: string | null
+          id: string
+          og_image: string | null
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          created_by?: string | null
+          hero_image?: string | null
+          id?: string
+          og_image?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          created_by?: string | null
+          hero_image?: string | null
+          id?: string
+          og_image?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+        }
+        Relationships: []
+      }
       page_contents: {
         Row: {
           content: Json
+          hero_image: string | null
+          og_image: string | null
+          seo_description: string | null
+          seo_title: string | null
           slug: string
           title: string | null
           updated_at: string
@@ -849,6 +889,10 @@ export type Database = {
         }
         Insert: {
           content?: Json
+          hero_image?: string | null
+          og_image?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           slug: string
           title?: string | null
           updated_at?: string
@@ -856,6 +900,10 @@ export type Database = {
         }
         Update: {
           content?: Json
+          hero_image?: string | null
+          og_image?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           slug?: string
           title?: string | null
           updated_at?: string
