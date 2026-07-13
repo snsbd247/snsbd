@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/marketing/section";
 import { useDomainPricing } from "@/hooks/use-marketing-data";
+import { usePageContent } from "@/lib/page-content";
 import { Globe, Search } from "lucide-react";
 
 export const Route = createFileRoute("/_marketing/register-domain")({
@@ -19,12 +20,16 @@ export const Route = createFileRoute("/_marketing/register-domain")({
 
 function Page() {
   const { data: tlds = [] } = useDomainPricing();
+  const c = usePageContent("register-domain", {
+    hero_title: "Find your perfect domain",
+    hero_subtitle: "Search 500+ extensions and register in seconds. Free DNS, forwarding and WHOIS privacy included.",
+  });
   return (
     <>
       <section className="bg-gradient-to-br from-[#0B1220] to-[#0F172A] py-20 text-white">
         <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-          <h1 className="text-4xl font-black sm:text-5xl">Find your perfect domain</h1>
-          <p className="mt-4 text-white/70">Search 500+ extensions and register in seconds. Free DNS, forwarding and WHOIS privacy included.</p>
+          <h1 className="text-4xl font-black sm:text-5xl">{c.hero_title}</h1>
+          <p className="mt-4 text-white/70">{c.hero_subtitle}</p>
           <form className="mt-8 flex gap-2" onSubmit={(e) => e.preventDefault()}>
             <div className="flex flex-1 items-center gap-2 rounded-xl bg-white px-3 py-3 text-slate-900">
               <Globe className="h-4 w-4 text-slate-400" />

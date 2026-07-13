@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import { useCompanySettings } from "@/lib/company-settings";
 import { submitLead } from "@/lib/leads";
+import { usePageContent } from "@/lib/page-content";
 import { toast } from "sonner";
 
 
@@ -22,12 +23,16 @@ export const Route = createFileRoute("/_marketing/contact")({
 
 function Page() {
   const { data } = useCompanySettings();
+  const c = usePageContent("contact", {
+    hero_title: "Let's talk",
+    hero_subtitle: "Sales, support or just a friendly hello — we'd love to hear from you.",
+  });
   return (
     <>
       <section className="bg-gradient-to-br from-[#0B1220] to-[#0F172A] py-20 text-white">
         <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-          <h1 className="text-4xl font-black sm:text-5xl">Let's talk</h1>
-          <p className="mt-4 text-white/70">Sales, support or just a friendly hello — we'd love to hear from you.</p>
+          <h1 className="text-4xl font-black sm:text-5xl">{c.hero_title}</h1>
+          <p className="mt-4 text-white/70">{c.hero_subtitle}</p>
         </div>
       </section>
 

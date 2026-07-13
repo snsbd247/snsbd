@@ -48,6 +48,7 @@ import { Route as AuthenticatedRenewalsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedReferralsAdminRouteImport } from './routes/_authenticated/referrals-admin'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedPaymentSettingsRouteImport } from './routes/_authenticated/payment-settings'
+import { Route as AuthenticatedPageContentsRouteImport } from './routes/_authenticated/page-contents'
 import { Route as AuthenticatedOtherServicesRouteImport } from './routes/_authenticated/other-services'
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
@@ -283,6 +284,12 @@ const AuthenticatedPaymentSettingsRoute =
   AuthenticatedPaymentSettingsRouteImport.update({
     id: '/payment-settings',
     path: '/payment-settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPageContentsRoute =
+  AuthenticatedPageContentsRouteImport.update({
+    id: '/page-contents',
+    path: '/page-contents',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedOtherServicesRoute =
@@ -529,6 +536,7 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/orders': typeof AuthenticatedOrdersRoute
   '/other-services': typeof AuthenticatedOtherServicesRoute
+  '/page-contents': typeof AuthenticatedPageContentsRoute
   '/payment-settings': typeof AuthenticatedPaymentSettingsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/referrals-admin': typeof AuthenticatedReferralsAdminRoute
@@ -607,6 +615,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/orders': typeof AuthenticatedOrdersRoute
   '/other-services': typeof AuthenticatedOtherServicesRoute
+  '/page-contents': typeof AuthenticatedPageContentsRoute
   '/payment-settings': typeof AuthenticatedPaymentSettingsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/referrals-admin': typeof AuthenticatedReferralsAdminRoute
@@ -687,6 +696,7 @@ export interface FileRoutesById {
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/orders': typeof AuthenticatedOrdersRoute
   '/_authenticated/other-services': typeof AuthenticatedOtherServicesRoute
+  '/_authenticated/page-contents': typeof AuthenticatedPageContentsRoute
   '/_authenticated/payment-settings': typeof AuthenticatedPaymentSettingsRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/referrals-admin': typeof AuthenticatedReferralsAdminRoute
@@ -768,6 +778,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/orders'
     | '/other-services'
+    | '/page-contents'
     | '/payment-settings'
     | '/profile'
     | '/referrals-admin'
@@ -846,6 +857,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/orders'
     | '/other-services'
+    | '/page-contents'
     | '/payment-settings'
     | '/profile'
     | '/referrals-admin'
@@ -925,6 +937,7 @@ export interface FileRouteTypes {
     | '/_authenticated/notifications'
     | '/_authenticated/orders'
     | '/_authenticated/other-services'
+    | '/_authenticated/page-contents'
     | '/_authenticated/payment-settings'
     | '/_authenticated/profile'
     | '/_authenticated/referrals-admin'
@@ -1273,6 +1286,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPaymentSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/page-contents': {
+      id: '/_authenticated/page-contents'
+      path: '/page-contents'
+      fullPath: '/page-contents'
+      preLoaderRoute: typeof AuthenticatedPageContentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/other-services': {
       id: '/_authenticated/other-services'
       path: '/other-services'
@@ -1568,6 +1588,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRoute
   AuthenticatedOtherServicesRoute: typeof AuthenticatedOtherServicesRoute
+  AuthenticatedPageContentsRoute: typeof AuthenticatedPageContentsRoute
   AuthenticatedPaymentSettingsRoute: typeof AuthenticatedPaymentSettingsRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedReferralsAdminRoute: typeof AuthenticatedReferralsAdminRoute
@@ -1614,6 +1635,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedOrdersRoute: AuthenticatedOrdersRoute,
   AuthenticatedOtherServicesRoute: AuthenticatedOtherServicesRoute,
+  AuthenticatedPageContentsRoute: AuthenticatedPageContentsRoute,
   AuthenticatedPaymentSettingsRoute: AuthenticatedPaymentSettingsRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedReferralsAdminRoute: AuthenticatedReferralsAdminRoute,
@@ -1742,13 +1764,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

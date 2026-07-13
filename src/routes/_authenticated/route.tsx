@@ -50,7 +50,7 @@ function AuthedLayout() {
     "/renewals", "/reports", "/announcements", "/referrals-admin",
     "/resellers", "/audit-log", "/domain-pricing", "/hosting-packages",
     "/service-catalog", "/coupons", "/addons", "/payment-settings",
-    "/settings",
+    "/settings", "/page-contents",
   ];
   const isAdminOnlyPath = ADMIN_ONLY_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));
 
@@ -166,6 +166,7 @@ function AuthedLayout() {
                       icon={BookOpen}
                       label="Content"
                       items={[
+                        { to: "/page-contents", label: "Website Pages" },
                         { to: "/kb", label: "Knowledge Base" },
                         { to: "/announcements", label: "Announcements" },
                       ]}

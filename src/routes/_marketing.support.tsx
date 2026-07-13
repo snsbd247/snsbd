@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/marketing/section";
+import { usePageContent } from "@/lib/page-content";
 import { LifeBuoy, BookOpen, MessageCircle, Ticket } from "lucide-react";
 
 export const Route = createFileRoute("/_marketing/support")({
@@ -25,12 +26,16 @@ const faqs = [
 ];
 
 function Page() {
+  const c = usePageContent("support", {
+    hero_title: "How can we help?",
+    hero_subtitle: "Browse our knowledge base, chat with support or open a ticket — we're online 24/7.",
+  });
   return (
     <>
       <section className="bg-gradient-to-br from-[#0B1220] to-[#0F172A] py-20 text-white">
         <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-          <h1 className="text-4xl font-black sm:text-5xl">How can we help?</h1>
-          <p className="mt-4 text-white/70">Browse our knowledge base, chat with support or open a ticket — we're online 24/7.</p>
+          <h1 className="text-4xl font-black sm:text-5xl">{c.hero_title}</h1>
+          <p className="mt-4 text-white/70">{c.hero_subtitle}</p>
         </div>
       </section>
 

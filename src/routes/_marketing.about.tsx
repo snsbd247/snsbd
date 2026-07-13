@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { SectionHeading, CtaBand } from "@/components/marketing/section";
+import { usePageContent } from "@/lib/page-content";
 import { Users, Target, Award, Heart } from "lucide-react";
 
 export const Route = createFileRoute("/_marketing/about")({
@@ -24,13 +25,18 @@ const values = [
 ];
 
 function Page() {
+  const c = usePageContent("about", {
+    badge: "About Us",
+    hero_title: "Powering Bangladesh's digital economy",
+    hero_subtitle: "Since day one, our mission has been simple: give every business in Bangladesh the infrastructure and support it needs to thrive online.",
+  });
   return (
     <>
       <section className="bg-gradient-to-br from-[#0B1220] to-[#0F172A] py-20 text-white">
         <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-          <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300">About Us</div>
-          <h1 className="mt-4 text-4xl font-black sm:text-5xl">Powering Bangladesh's digital economy</h1>
-          <p className="mt-4 text-white/70">Since day one, our mission has been simple: give every business in Bangladesh the infrastructure and support it needs to thrive online.</p>
+          <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300">{c.badge}</div>
+          <h1 className="mt-4 text-4xl font-black sm:text-5xl">{c.hero_title}</h1>
+          <p className="mt-4 text-white/70">{c.hero_subtitle}</p>
         </div>
       </section>
 

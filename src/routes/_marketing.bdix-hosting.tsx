@@ -4,6 +4,7 @@ import { PricingCard } from "@/components/marketing/pricing-card";
 import { SectionHeading, CtaBand } from "@/components/marketing/section";
 import { bdixHostingPlans } from "@/content/plans";
 import { useHostingPackages } from "@/hooks/use-marketing-data";
+import { usePageContent } from "@/lib/page-content";
 import { Zap, Globe, Shield } from "lucide-react";
 
 export const Route = createFileRoute("/_marketing/bdix-hosting")({
@@ -22,13 +23,18 @@ export const Route = createFileRoute("/_marketing/bdix-hosting")({
 function Page() {
   const { data: plans } = useHostingPackages("bdix");
   const list = plans && plans.length > 0 ? plans : bdixHostingPlans;
+  const c = usePageContent("bdix-hosting", {
+    badge: "BDIX Optimized",
+    hero_title: "Lightning fast BDIX hosting",
+    hero_subtitle: "Peer with every major ISP in Bangladesh via BDIX and deliver sub-second page loads to your local audience.",
+  });
   return (
     <>
       <section className="bg-gradient-to-br from-[#0B1220] to-[#0F172A] py-20 text-white">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
-          <div className="inline-flex rounded-full bg-amber-400/10 px-3 py-1 text-xs font-semibold text-amber-300">BDIX Optimized</div>
-          <h1 className="mt-4 text-4xl font-black sm:text-5xl">Lightning fast BDIX hosting</h1>
-          <p className="mt-4 text-white/70">Peer with every major ISP in Bangladesh via BDIX and deliver sub-second page loads to your local audience.</p>
+          <div className="inline-flex rounded-full bg-amber-400/10 px-3 py-1 text-xs font-semibold text-amber-300">{c.badge}</div>
+          <h1 className="mt-4 text-4xl font-black sm:text-5xl">{c.hero_title}</h1>
+          <p className="mt-4 text-white/70">{c.hero_subtitle}</p>
         </div>
       </section>
 

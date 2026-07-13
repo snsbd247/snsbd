@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { PricingCard } from "@/components/marketing/pricing-card";
 import { SectionHeading, CtaBand } from "@/components/marketing/section";
 import { webHostingPlans } from "@/content/plans";
+import { usePageContent } from "@/lib/page-content";
 
 export const Route = createFileRoute("/_marketing/")({
   head: () => ({
@@ -29,6 +30,14 @@ const features = [
 ];
 
 function Home() {
+  const c = usePageContent("home", {
+    badge: "New: Free Migration for 2026",
+    hero_title: "Hosting that keeps your business",
+    hero_highlight: "fast & online",
+    hero_subtitle: "Web hosting, BDIX servers, cloud VPS and domains — powered by LiteSpeed, NVMe storage and a team that actually answers.",
+    cta_primary: "See Hosting Plans",
+    cta_secondary: "Search Domain",
+  });
   return (
     <>
       {/* HERO */}
@@ -37,21 +46,21 @@ function Home() {
         <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:py-28">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300">
-              <span className="h-2 w-2 rounded-full bg-emerald-400" /> New: Free Migration for 2026
+              <span className="h-2 w-2 rounded-full bg-emerald-400" /> {c.badge}
             </div>
             <h1 className="mt-5 text-4xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-              Hosting that keeps your business{" "}
-              <span className="bg-gradient-to-r from-emerald-300 to-amber-300 bg-clip-text text-transparent">fast & online</span>.
+              {c.hero_title}{" "}
+              <span className="bg-gradient-to-r from-emerald-300 to-amber-300 bg-clip-text text-transparent">{c.hero_highlight}</span>.
             </h1>
             <p className="mt-5 max-w-xl text-lg text-white/70">
-              Web hosting, BDIX servers, cloud VPS and domains — powered by LiteSpeed, NVMe storage and a team that actually answers.
+              {c.hero_subtitle}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="bg-emerald-500 text-[#0B1220] hover:bg-emerald-400">
-                <Link to="/web-hosting">See Hosting Plans <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                <Link to="/web-hosting">{c.cta_primary} <ArrowRight className="ml-2 h-4 w-4" /></Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-white/20 bg-white/5 text-white hover:bg-white/10 hover:text-white">
-                <Link to="/register-domain">Search Domain</Link>
+                <Link to="/register-domain">{c.cta_secondary}</Link>
               </Button>
             </div>
             <div className="mt-8 flex flex-wrap items-center gap-6 text-sm text-white/60">

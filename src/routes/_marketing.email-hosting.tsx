@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { PricingCard } from "@/components/marketing/pricing-card";
 import { SectionHeading, CtaBand } from "@/components/marketing/section";
 import type { Plan } from "@/components/marketing/pricing-card";
+import { usePageContent } from "@/lib/page-content";
 
 const plans: Plan[] = [
   { name: "Email Lite", price: "৳99", period: "mo", features: ["5 Mailboxes", "5 GB per mailbox", "Webmail + IMAP/POP", "Spam & virus filter"] },
@@ -24,12 +25,16 @@ export const Route = createFileRoute("/_marketing/email-hosting")({
 });
 
 function Page() {
+  const c = usePageContent("email-hosting", {
+    hero_title: "Professional business email",
+    hero_subtitle: "Look professional with you@yourdomain.com — powered by enterprise-grade infrastructure.",
+  });
   return (
     <>
       <section className="bg-gradient-to-br from-[#0B1220] to-[#0F172A] py-20 text-white">
         <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-          <h1 className="text-4xl font-black sm:text-5xl">Professional business email</h1>
-          <p className="mt-4 text-white/70">Look professional with you@yourdomain.com — powered by enterprise-grade infrastructure.</p>
+          <h1 className="text-4xl font-black sm:text-5xl">{c.hero_title}</h1>
+          <p className="mt-4 text-white/70">{c.hero_subtitle}</p>
         </div>
       </section>
 
