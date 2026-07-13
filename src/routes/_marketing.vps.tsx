@@ -19,12 +19,16 @@ export const Route = createFileRoute("/_marketing/vps")({
 });
 
 function Page() {
+  const c = usePageContent("vps", {
+    hero_title: "Cloud VPS with full root access",
+    hero_subtitle: "KVM virtualization, NVMe storage, instant deploy and dedicated resources — all backed by 24/7 support.",
+  });
   return (
     <>
       <section className="bg-gradient-to-br from-[#0B1220] to-[#0F172A] py-20 text-white">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
-          <h1 className="text-4xl font-black sm:text-5xl">Cloud VPS with full root access</h1>
-          <p className="mt-4 text-white/70">KVM virtualization, NVMe storage, instant deploy and dedicated resources — all backed by 24/7 support.</p>
+          <h1 className="text-4xl font-black sm:text-5xl">{c.hero_title}</h1>
+          <p className="mt-4 text-white/70">{c.hero_subtitle}</p>
         </div>
       </section>
 
