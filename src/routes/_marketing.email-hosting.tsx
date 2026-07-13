@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { PricingCard } from "@/components/marketing/pricing-card";
 import { SectionHeading, CtaBand } from "@/components/marketing/section";
 import type { Plan } from "@/components/marketing/pricing-card";
+import { usePageContent } from "@/lib/page-content";
 
 const plans: Plan[] = [
   { name: "Email Lite", price: "৳99", period: "mo", features: ["5 Mailboxes", "5 GB per mailbox", "Webmail + IMAP/POP", "Spam & virus filter"] },
