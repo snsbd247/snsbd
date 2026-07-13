@@ -41,6 +41,8 @@ function AdminLoginPage() {
   const [busy, setBusy] = useState(false);
   const [mode, setMode] = useState<"signin" | "forgot">("signin");
   const [forgotEmail, setForgotEmail] = useState("");
+  const [acknowledged, setAcknowledged] = useState(false);
+
 
   useEffect(() => {
     if (loading || !session) return;
@@ -93,7 +95,29 @@ function AdminLoginPage() {
         </div>
 
         <Card>
-          {nonAdminSignedIn ? (
+          {!session && !acknowledged ? (
+            <>
+              <CardHeader>
+                <CardTitle>Admin access only</CardTitle>
+                <CardDescription>
+                  This page is restricted to administrators. If you are a customer, please use the customer login instead.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button asChild className="w-full">
+                  <Link to="/login">Go to customer login</Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setAcknowledged(true)}
+                >
+                  Continue as administrator
+                </Button>
+              </CardContent>
+            </>
+          ) : nonAdminSignedIn ? (
+
             <>
               <CardHeader>
                 <CardTitle>Wrong account</CardTitle>
