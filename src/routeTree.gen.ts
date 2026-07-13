@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PortalRouteImport } from './routes/portal'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as ClientRouteImport } from './routes/client'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as MarketingRouteImport } from './routes/_marketing'
@@ -94,6 +95,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const PortalRoute = PortalRouteImport.update({
   id: '/portal',
   path: '/portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ClientRoute = ClientRouteImport.update({
@@ -495,6 +501,7 @@ export interface FileRoutesByFullPath {
   '/': typeof MarketingIndexRoute
   '/auth': typeof AuthRoute
   '/client': typeof ClientRouteWithChildren
+  '/login': typeof LoginRoute
   '/portal': typeof PortalRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/addons': typeof AuthenticatedAddonsRoute
@@ -571,6 +578,7 @@ export interface FileRoutesByTo {
   '/': typeof MarketingIndexRoute
   '/auth': typeof AuthRoute
   '/client': typeof ClientRouteWithChildren
+  '/login': typeof LoginRoute
   '/portal': typeof PortalRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/addons': typeof AuthenticatedAddonsRoute
@@ -649,6 +657,7 @@ export interface FileRoutesById {
   '/_marketing': typeof MarketingRouteWithChildren
   '/auth': typeof AuthRoute
   '/client': typeof ClientRouteWithChildren
+  '/login': typeof LoginRoute
   '/portal': typeof PortalRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/addons': typeof AuthenticatedAddonsRoute
@@ -728,6 +737,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/client'
+    | '/login'
     | '/portal'
     | '/sitemap.xml'
     | '/addons'
@@ -804,6 +814,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/client'
+    | '/login'
     | '/portal'
     | '/sitemap.xml'
     | '/addons'
@@ -881,6 +892,7 @@ export interface FileRouteTypes {
     | '/_marketing'
     | '/auth'
     | '/client'
+    | '/login'
     | '/portal'
     | '/sitemap.xml'
     | '/_authenticated/addons'
@@ -960,6 +972,7 @@ export interface RootRouteChildren {
   MarketingRoute: typeof MarketingRouteWithChildren
   AuthRoute: typeof AuthRoute
   ClientRoute: typeof ClientRouteWithChildren
+  LoginRoute: typeof LoginRoute
   PortalRoute: typeof PortalRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminLoginRoute: typeof AdminLoginRoute
@@ -986,6 +999,13 @@ declare module '@tanstack/react-router' {
       path: '/portal'
       fullPath: '/portal'
       preLoaderRoute: typeof PortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/client': {
@@ -1686,6 +1706,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketingRoute: MarketingRouteWithChildren,
   AuthRoute: AuthRoute,
   ClientRoute: ClientRouteWithChildren,
+  LoginRoute: LoginRoute,
   PortalRoute: PortalRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminLoginRoute: AdminLoginRoute,
