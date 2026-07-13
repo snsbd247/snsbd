@@ -34,14 +34,19 @@ const includes = [
 function Page() {
   const { data: plans } = useHostingPackages("web");
   const list = plans && plans.length > 0 ? plans : webHostingPlans;
+  const c = usePageContent("web-hosting", {
+    badge: "Web Hosting",
+    hero_title: "Blazing fast hosting from ৳99/mo",
+    hero_subtitle: "LiteSpeed + NVMe storage, free SSL, daily backups and 24/7 human support. Everything you need to launch and grow.",
+  });
 
   return (
     <>
       <section className="bg-gradient-to-br from-[#0B1220] to-[#0F172A] py-20 text-white">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
-          <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300">Web Hosting</div>
-          <h1 className="mt-4 text-4xl font-black sm:text-5xl">Blazing fast hosting from ৳99/mo</h1>
-          <p className="mt-4 text-white/70">LiteSpeed + NVMe storage, free SSL, daily backups and 24/7 human support. Everything you need to launch and grow.</p>
+          <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300">{c.badge}</div>
+          <h1 className="mt-4 text-4xl font-black sm:text-5xl">{c.hero_title}</h1>
+          <p className="mt-4 text-white/70">{c.hero_subtitle}</p>
         </div>
       </section>
 
