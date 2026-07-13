@@ -79,11 +79,14 @@ export function MarketingHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <Button asChild variant="ghost" className="hidden text-white/70 hover:bg-white/10 hover:text-white md:inline-flex">
+            <Link to="/admin/login">Admin</Link>
+          </Button>
           <Button asChild variant="ghost" className="hidden text-white hover:bg-white/10 hover:text-white sm:inline-flex">
-            <Link to="/auth">Client Area</Link>
+            <Link to="/login">Client Area</Link>
           </Button>
           <Button asChild className="bg-emerald-500 text-[#0B1220] hover:bg-emerald-400">
-            <Link to="/auth" search={{ mode: "signup" }}>Get Started</Link>
+            <Link to="/login" search={{ mode: "signup" }}>Get Started</Link>
           </Button>
           <button
             className="grid h-10 w-10 place-items-center rounded-md text-white lg:hidden"
@@ -93,6 +96,7 @@ export function MarketingHeader() {
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
+
       </div>
 
       {open && (
