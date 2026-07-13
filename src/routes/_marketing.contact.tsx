@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import { useCompanySettings } from "@/lib/company-settings";
 import { submitLead } from "@/lib/leads";
+import { usePageContent } from "@/lib/page-content";
 import { toast } from "sonner";
 
 
