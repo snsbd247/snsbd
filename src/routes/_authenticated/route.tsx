@@ -50,7 +50,7 @@ function AuthedLayout() {
     "/renewals", "/reports", "/announcements", "/referrals-admin",
     "/resellers", "/audit-log", "/domain-pricing", "/hosting-packages",
     "/service-catalog", "/coupons", "/addons", "/payment-settings",
-    "/settings",
+    "/settings", "/page-contents",
   ];
   const isAdminOnlyPath = ADMIN_ONLY_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));
 
