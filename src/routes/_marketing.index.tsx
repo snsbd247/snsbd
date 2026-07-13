@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { PricingCard } from "@/components/marketing/pricing-card";
 import { SectionHeading, CtaBand } from "@/components/marketing/section";
 import { webHostingPlans } from "@/content/plans";
+import { usePageContent } from "@/lib/page-content";
 
 export const Route = createFileRoute("/_marketing/")({
   head: () => ({
