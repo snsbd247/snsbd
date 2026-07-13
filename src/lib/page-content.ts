@@ -97,7 +97,29 @@ export function usePageRecord(slug: string, defaults: PageContent = {}): PageRec
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
+  // Apply SEO fields to the document head (client-side; complements static head())
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    if (rec.seo_title) document.title = rec.seo_title;
+    setMeta("name", "description", rec.seo_description);
+    setMeta("property", "og:title", rec.seo_title);
+    setMeta("property", "og:description", rec.seo_description);
+    setMeta("property", "og:image", rec.og_image);
+    setMeta("name", "twitter:image", rec.og_image);
+  }, [rec.seo_title, rec.seo_description, rec.og_image]);
+
   return rec;
+}
+
+function setMeta(attr: "name" | "property", key: string, value?: string | null) {
+  if (!value) return;
+  let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
+  if (!el) {
+    el = document.createElement("meta");
+    el.setAttribute(attr, key);
+    document.head.appendChild(el);
+  }
+  el.setAttribute("content", value);
 }
 
 // Backwards-compat: just returns the content map
