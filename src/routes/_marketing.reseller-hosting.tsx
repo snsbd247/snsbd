@@ -4,6 +4,7 @@ import { PricingCard } from "@/components/marketing/pricing-card";
 import { SectionHeading, CtaBand } from "@/components/marketing/section";
 import { resellerPlans } from "@/content/plans";
 import { useHostingPackages } from "@/hooks/use-marketing-data";
+import { usePageContent } from "@/lib/page-content";
 
 export const Route = createFileRoute("/_marketing/reseller-hosting")({
   head: () => ({
