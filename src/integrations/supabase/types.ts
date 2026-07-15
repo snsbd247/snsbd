@@ -131,6 +131,10 @@ export type Database = {
           footer_copyright: string | null
           grace_days: number
           id: boolean
+          invoice_background_url: string | null
+          invoice_logo_style: string | null
+          invoice_template_key: string | null
+          invoice_theme: Json | null
           late_fee_percent: number
           logo_url: string | null
           phone: string | null
@@ -150,6 +154,10 @@ export type Database = {
           footer_copyright?: string | null
           grace_days?: number
           id?: boolean
+          invoice_background_url?: string | null
+          invoice_logo_style?: string | null
+          invoice_template_key?: string | null
+          invoice_theme?: Json | null
           late_fee_percent?: number
           logo_url?: string | null
           phone?: string | null
@@ -169,6 +177,10 @@ export type Database = {
           footer_copyright?: string | null
           grace_days?: number
           id?: boolean
+          invoice_background_url?: string | null
+          invoice_logo_style?: string | null
+          invoice_template_key?: string | null
+          invoice_theme?: Json | null
           late_fee_percent?: number
           logo_url?: string | null
           phone?: string | null
@@ -532,6 +544,45 @@ export type Database = {
           },
         ]
       }
+      invoice_templates: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          is_default: boolean
+          name: string
+          sort_order: number
+          template_key: string
+          theme: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          name: string
+          sort_order?: number
+          template_key: string
+          theme?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          name?: string
+          sort_order?: number
+          template_key?: string
+          theme?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           amount_paid: number
@@ -549,6 +600,8 @@ export type Database = {
           status: Database["public"]["Enums"]["invoice_status"]
           subtotal: number
           tax: number
+          template_key: string | null
+          theme_override: Json | null
           total: number
           updated_at: string
         }
@@ -568,6 +621,8 @@ export type Database = {
           status?: Database["public"]["Enums"]["invoice_status"]
           subtotal?: number
           tax?: number
+          template_key?: string | null
+          theme_override?: Json | null
           total?: number
           updated_at?: string
         }
@@ -587,6 +642,8 @@ export type Database = {
           status?: Database["public"]["Enums"]["invoice_status"]
           subtotal?: number
           tax?: number
+          template_key?: string | null
+          theme_override?: Json | null
           total?: number
           updated_at?: string
         }
