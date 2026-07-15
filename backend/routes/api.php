@@ -12,6 +12,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProjectActivityLogController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectMilestoneController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SalaryPaymentController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SupportTicketController;
@@ -150,6 +151,10 @@ Route::prefix('v1')->group(function () {
         Route::patch ('expenses/{id}',   [ExpenseController::class, 'update'])->middleware('permission:admin,staff');
         Route::put   ('expenses/{id}',   [ExpenseController::class, 'update'])->middleware('permission:admin,staff');
         Route::delete('expenses/{id}',   [ExpenseController::class, 'destroy'])->middleware('permission:admin');
+
+        // Reports (admin/staff)
+        Route::get('reports/dashboard', [ReportsController::class, 'dashboard'])->middleware('permission:admin,staff');
+        Route::get('reports/finance',   [ReportsController::class, 'finance'])->middleware('permission:admin,staff');
     });
 
     // Public CRM/KB (no auth)
