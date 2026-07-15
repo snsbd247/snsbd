@@ -1,6 +1,8 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { bridgeLogin, bridgeRegister } from "@/integrations/supabase/laravel-bridge";
+import { isLaravelMode } from "@/lib/laravel-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -142,15 +144,24 @@ function SignInForm() {
     e.preventDefault();
     if (!identifier.trim()) return toast.error("Enter your username or email");
     setBusy(true);
-    const email = await resolveLoginEmail(identifier);
-    if (!email) {
+    try {
+      if (isLaravelMode()) {
+        await bridgeLogin(identifier.trim(), password);
+        toast.success("Welcome back");
+        return;
+      }
+      const email = await resolveLoginEmail(identifier);
+      if (!email) {
+        return toast.error("No account found");
+      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) return toast.error(error.message);
+      toast.success("Welcome back");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Sign in failed");
+    } finally {
       setBusy(false);
-      return toast.error("No account found");
     }
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setBusy(false);
-    if (error) return toast.error(error.message);
-    toast.success("Welcome back");
   }
 
   async function onForgot(e: React.FormEvent) {
@@ -226,21 +237,38 @@ function SignUpForm() {
     if (!finalEmail) return toast.error("Invalid email address");
 
     setBusy(true);
-    const { data, error } = await supabase.auth.signUp({
-      email: finalEmail,
-      password,
-      options: {
-        emailRedirectTo: window.location.origin + (redirect ?? "/client"),
-        data: { full_name: fullName || username, username: username.trim().toLowerCase() },
-      },
-    });
-    setBusy(false);
-    if (error) return toast.error(error.message);
-    toast.success("Account created");
-    // New signups are always customers — force customer portal regardless of role-fetch timing.
-    if (data.session) {
-      if (redirect && redirect.startsWith("/")) window.location.assign(redirect);
-      else navigate({ to: "/client" });
+    try {
+      if (isLaravelMode()) {
+        await bridgeRegister({
+          name: fullName || username,
+          username: username.trim().toLowerCase(),
+          email: finalEmail,
+          password,
+        });
+        toast.success("Account created");
+        if (redirect && redirect.startsWith("/")) window.location.assign(redirect);
+        else navigate({ to: "/client" });
+        return;
+      }
+      const { data, error } = await supabase.auth.signUp({
+        email: finalEmail,
+        password,
+        options: {
+          emailRedirectTo: window.location.origin + (redirect ?? "/client"),
+          data: { full_name: fullName || username, username: username.trim().toLowerCase() },
+        },
+      });
+      if (error) return toast.error(error.message);
+      toast.success("Account created");
+      // New signups are always customers — force customer portal regardless of role-fetch timing.
+      if (data.session) {
+        if (redirect && redirect.startsWith("/")) window.location.assign(redirect);
+        else navigate({ to: "/client" });
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Signup failed");
+    } finally {
+      setBusy(false);
     }
   }
 
