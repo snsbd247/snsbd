@@ -5,12 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ServicePackageChange extends Model
+class ServiceEvent extends Model
 {
-    protected $fillable = [
-        'service_id','old_package_id','new_package_id',
-        'old_package_name','new_package_name','actor_id',
-    ];
+    protected $fillable = ['service_id','status','message','actor_id','metadata'];
+    protected $casts = ['metadata' => 'array'];
 
     public function service(): BelongsTo { return $this->belongsTo(Service::class); }
     public function actor(): BelongsTo   { return $this->belongsTo(User::class, 'actor_id'); }
