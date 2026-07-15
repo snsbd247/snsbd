@@ -4,12 +4,18 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BillingCatalogController;
 use App\Http\Controllers\CustomerOrderController;
 use App\Http\Controllers\DomainPricingController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\KbArticleController;
+use App\Http\Controllers\LeadController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProjectActivityLogController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectMilestoneController;
+use App\Http\Controllers\SalaryPaymentController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\SupportTicketController;
+use App\Http\Controllers\TeamMemberController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
