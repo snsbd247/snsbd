@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BillingCatalogController;
+use App\Http\Controllers\CustomerOrderController;
+use App\Http\Controllers\DomainPricingController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ServiceController;
@@ -19,6 +21,9 @@ Route::prefix('v1')->group(function () {
     Route::get('hosting-packages',  [ServiceController::class, 'packages']);
     Route::get('service-catalog',   [ServiceController::class, 'catalog']);
     Route::get('product-addons',    [ServiceController::class, 'addons']);
+    Route::get('domain-pricing',    [DomainPricingController::class, 'index']);
+
+
 
     // Authenticated (Sanctum)
     Route::middleware('auth:sanctum')->group(function () {
@@ -57,5 +62,21 @@ Route::prefix('v1')->group(function () {
         Route::put   ('hosting-packages/{package}',  [ServiceController::class, 'updatePackage']);
         Route::patch ('hosting-packages/{package}',  [ServiceController::class, 'updatePackage']);
         Route::delete('hosting-packages/{package}',  [ServiceController::class, 'destroyPackage']);
+
+        // Customer orders
+        Route::post  ('customer-orders/hosting',                        [CustomerOrderController::class, 'placeHosting']);
+        Route::get   ('customer-orders',                                [CustomerOrderController::class, 'index'])->middleware('permission:admin,staff');
+        Route::get   ('customer-orders/{id}',                           [CustomerOrderController::class, 'show']);
+        Route::patch ('customer-orders/{id}',                           [CustomerOrderController::class, 'update'])->middleware('permission:admin,staff');
+        Route::put   ('customer-orders/{id}',                           [CustomerOrderController::class, 'update'])->middleware('permission:admin,staff');
+        Route::delete('customer-orders/{id}',                           [CustomerOrderController::class, 'destroy'])->middleware('permission:admin');
+        Route::post  ('customer-orders/{id}/activate',                  [CustomerOrderController::class, 'activate'])->middleware('permission:admin,staff');
+        Route::post  ('customer-orders/{id}/change-domain',             [CustomerOrderController::class, 'changeDomain'])->middleware('permission:admin,staff');
+
+        // Domain pricing admin
+        Route::post  ('domain-pricing',        [DomainPricingController::class, 'store'])->middleware('permission:admin');
+        Route::patch ('domain-pricing/{id}',   [DomainPricingController::class, 'update'])->middleware('permission:admin');
+        Route::put   ('domain-pricing/{id}',   [DomainPricingController::class, 'update'])->middleware('permission:admin');
+        Route::delete('domain-pricing/{id}',   [DomainPricingController::class, 'destroy'])->middleware('permission:admin');
     });
 });
