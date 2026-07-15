@@ -6,6 +6,9 @@ use App\Http\Controllers\CustomerOrderController;
 use App\Http\Controllers\DomainPricingController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProjectActivityLogController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectMilestoneController;
 use App\Http\Controllers\ServiceController;
 use Illuminate\Support\Facades\Route;
 
@@ -78,5 +81,24 @@ Route::prefix('v1')->group(function () {
         Route::patch ('domain-pricing/{id}',   [DomainPricingController::class, 'update'])->middleware('permission:admin');
         Route::put   ('domain-pricing/{id}',   [DomainPricingController::class, 'update'])->middleware('permission:admin');
         Route::delete('domain-pricing/{id}',   [DomainPricingController::class, 'destroy'])->middleware('permission:admin');
+
+        // Projects
+        Route::get   ('projects',              [ProjectController::class, 'index']);
+        Route::post  ('projects',              [ProjectController::class, 'store'])->middleware('permission:admin,staff');
+        Route::get   ('projects/{id}',         [ProjectController::class, 'show']);
+        Route::patch ('projects/{id}',         [ProjectController::class, 'update'])->middleware('permission:admin,staff');
+        Route::put   ('projects/{id}',         [ProjectController::class, 'update'])->middleware('permission:admin,staff');
+        Route::delete('projects/{id}',         [ProjectController::class, 'destroy'])->middleware('permission:admin');
+
+        // Milestones
+        Route::get   ('project-milestones',        [ProjectMilestoneController::class, 'index']);
+        Route::post  ('project-milestones',        [ProjectMilestoneController::class, 'store'])->middleware('permission:admin,staff');
+        Route::patch ('project-milestones/{id}',   [ProjectMilestoneController::class, 'update'])->middleware('permission:admin,staff');
+        Route::put   ('project-milestones/{id}',   [ProjectMilestoneController::class, 'update'])->middleware('permission:admin,staff');
+        Route::delete('project-milestones/{id}',   [ProjectMilestoneController::class, 'destroy'])->middleware('permission:admin,staff');
+
+        // Project activity logs
+        Route::get ('project-activity-logs', [ProjectActivityLogController::class, 'index']);
+        Route::post('project-activity-logs', [ProjectActivityLogController::class, 'store'])->middleware('permission:admin,staff');
     });
 });
