@@ -54,6 +54,7 @@ import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedKbRouteImport } from './routes/_authenticated/kb'
 import { Route as AuthenticatedInvoicesRouteImport } from './routes/_authenticated/invoices'
+import { Route as AuthenticatedInvoiceSettingsRouteImport } from './routes/_authenticated/invoice-settings'
 import { Route as AuthenticatedHostingPackagesRouteImport } from './routes/_authenticated/hosting-packages'
 import { Route as AuthenticatedHostingRouteImport } from './routes/_authenticated/hosting'
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
@@ -319,6 +320,12 @@ const AuthenticatedInvoicesRoute = AuthenticatedInvoicesRouteImport.update({
   path: '/invoices',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedInvoiceSettingsRoute =
+  AuthenticatedInvoiceSettingsRouteImport.update({
+    id: '/invoice-settings',
+    path: '/invoice-settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedHostingPackagesRoute =
   AuthenticatedHostingPackagesRouteImport.update({
     id: '/hosting-packages',
@@ -531,6 +538,7 @@ export interface FileRoutesByFullPath {
   '/expenses': typeof AuthenticatedExpensesRoute
   '/hosting': typeof AuthenticatedHostingRoute
   '/hosting-packages': typeof AuthenticatedHostingPackagesRoute
+  '/invoice-settings': typeof AuthenticatedInvoiceSettingsRoute
   '/invoices': typeof AuthenticatedInvoicesRoute
   '/kb': typeof AuthenticatedKbRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -610,6 +618,7 @@ export interface FileRoutesByTo {
   '/expenses': typeof AuthenticatedExpensesRoute
   '/hosting': typeof AuthenticatedHostingRoute
   '/hosting-packages': typeof AuthenticatedHostingPackagesRoute
+  '/invoice-settings': typeof AuthenticatedInvoiceSettingsRoute
   '/invoices': typeof AuthenticatedInvoicesRoute
   '/kb': typeof AuthenticatedKbRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -691,6 +700,7 @@ export interface FileRoutesById {
   '/_authenticated/expenses': typeof AuthenticatedExpensesRoute
   '/_authenticated/hosting': typeof AuthenticatedHostingRoute
   '/_authenticated/hosting-packages': typeof AuthenticatedHostingPackagesRoute
+  '/_authenticated/invoice-settings': typeof AuthenticatedInvoiceSettingsRoute
   '/_authenticated/invoices': typeof AuthenticatedInvoicesRoute
   '/_authenticated/kb': typeof AuthenticatedKbRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
@@ -773,6 +783,7 @@ export interface FileRouteTypes {
     | '/expenses'
     | '/hosting'
     | '/hosting-packages'
+    | '/invoice-settings'
     | '/invoices'
     | '/kb'
     | '/notifications'
@@ -852,6 +863,7 @@ export interface FileRouteTypes {
     | '/expenses'
     | '/hosting'
     | '/hosting-packages'
+    | '/invoice-settings'
     | '/invoices'
     | '/kb'
     | '/notifications'
@@ -932,6 +944,7 @@ export interface FileRouteTypes {
     | '/_authenticated/expenses'
     | '/_authenticated/hosting'
     | '/_authenticated/hosting-packages'
+    | '/_authenticated/invoice-settings'
     | '/_authenticated/invoices'
     | '/_authenticated/kb'
     | '/_authenticated/notifications'
@@ -1328,6 +1341,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInvoicesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/invoice-settings': {
+      id: '/_authenticated/invoice-settings'
+      path: '/invoice-settings'
+      fullPath: '/invoice-settings'
+      preLoaderRoute: typeof AuthenticatedInvoiceSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/hosting-packages': {
       id: '/_authenticated/hosting-packages'
       path: '/hosting-packages'
@@ -1583,6 +1603,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRoute
   AuthenticatedHostingRoute: typeof AuthenticatedHostingRoute
   AuthenticatedHostingPackagesRoute: typeof AuthenticatedHostingPackagesRoute
+  AuthenticatedInvoiceSettingsRoute: typeof AuthenticatedInvoiceSettingsRoute
   AuthenticatedInvoicesRoute: typeof AuthenticatedInvoicesRoute
   AuthenticatedKbRoute: typeof AuthenticatedKbRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
@@ -1630,6 +1651,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedExpensesRoute: AuthenticatedExpensesRoute,
   AuthenticatedHostingRoute: AuthenticatedHostingRoute,
   AuthenticatedHostingPackagesRoute: AuthenticatedHostingPackagesRoute,
+  AuthenticatedInvoiceSettingsRoute: AuthenticatedInvoiceSettingsRoute,
   AuthenticatedInvoicesRoute: AuthenticatedInvoicesRoute,
   AuthenticatedKbRoute: AuthenticatedKbRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,

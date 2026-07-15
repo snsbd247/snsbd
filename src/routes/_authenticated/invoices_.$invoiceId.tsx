@@ -2,18 +2,18 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Download, Printer, Loader2, Trash2, Receipt as ReceiptIcon } from "lucide-react";
 import { downloadElementAsPdf, printElementAsPdf } from "@/lib/pdf";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
-import { useCompanySettings, amountInWords } from "@/lib/company-settings";
+import { useCompanySettings } from "@/lib/company-settings";
 import { formatBDT, formatDate } from "@/lib/format";
 import { db } from "@/lib/db-shim";
+import { InvoiceRender } from "@/components/invoice/invoice-render";
+import { useInvoiceTemplates, resolveTheme, type InvoiceTheme } from "@/lib/invoice-theme";
 
 export const Route = createFileRoute("/_authenticated/invoices_/$invoiceId")({
   component: InvoiceDetailPage,
@@ -90,6 +90,17 @@ function InvoiceDetailPage() {
   const inv = data.inv;
   const balance = Number(inv.total) - Number(inv.amount_paid);
 
+  const { data: templates } = useInvoiceTemplates();
+  const theme = resolveTheme(
+    templates,
+    company?.invoice_template_key as string | undefined,
+    company?.invoice_theme as Partial<InvoiceTheme> | undefined,
+    company?.invoice_logo_style as string | undefined,
+    company?.invoice_background_url as string | undefined,
+    (inv as any).template_key,
+    (inv as any).theme_override,
+  );
+
   return (
     <div className="space-y-6 max-w-4xl">
       <nav className="text-xs text-muted-foreground flex items-center gap-1.5 print:hidden" aria-label="Breadcrumb">
@@ -122,196 +133,9 @@ function InvoiceDetailPage() {
       </div>
 
       <div className="w-full overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible print:overflow-visible print:mx-0 print:px-0">
-      <div id="invoice-pdf" className="bg-white text-slate-900 mx-auto shadow-lg print:shadow-none relative overflow-hidden" style={{ width: 900, maxWidth: "none" }}>
-
-        {/* subtle hex background pattern */}
-        <div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none opacity-[0.06]"
-          style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='64' viewBox='0 0 56 64'><path d='M28 2 L54 17 L54 47 L28 62 L2 47 L2 17 Z' fill='none' stroke='%23c0392b' stroke-width='1'/></svg>\")",
-            backgroundSize: "56px 64px",
-          }}
-        />
-
-        {/* TOP BAR — dark with red parallelogram overlapping and extending below */}
-        <div className="relative h-[84px] w-full" style={{ background: "#1f1f1f" }}>
-          <div
-            className="absolute left-0 top-0 flex items-center pl-6 z-10"
-            style={{
-              width: "38%",
-              height: "120px",
-              background: "#c0392b",
-              clipPath: "polygon(0 0, 100% 0, 72% 100%, 0 100%)",
-            }}
-          >
-            {company?.logo_url ? (
-              <img src={company.logo_url} alt={`${company.company_name} logo`} className="h-14 object-contain" style={{ marginTop: "-18px", filter: "drop-shadow(0 0 0.5px #fff) drop-shadow(0 0 0.5px #fff) drop-shadow(0 0 0.5px #fff) drop-shadow(0 0 0.5px #fff)" }} />
-            ) : (
-              <div className="text-white font-bold text-lg px-3" style={{ marginTop: "-18px" }}>
-                {company?.company_name ?? "Company"}
-              </div>
-            )}
-
-          </div>
-
-
-          <div
-            className="absolute inset-y-0 right-6 grid grid-cols-2 gap-x-10 gap-y-2 text-white text-[12px] content-center"
-          >
-            <span className="flex items-center gap-2 whitespace-nowrap">
-              <span className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-full border border-white/70 text-[10px]">✆</span>
-              <span className="font-semibold">{company?.phone ?? "+880 0000000000"}</span>
-            </span>
-            <span className="flex items-center gap-2 whitespace-nowrap">
-              <span className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-full border border-white/70 text-[10px]">✉</span>
-              <span className="font-semibold">{company?.email ?? "info@example.com"}</span>
-            </span>
-            <span className="flex items-center gap-2 whitespace-nowrap">
-              <span className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-full border border-white/70 text-[10px]">🌐</span>
-              <span className="font-semibold">{(company?.facebook_url ?? "www.fb.com/yourpage").replace(/^https?:\/\//, "")}</span>
-            </span>
-            <span className="flex items-center gap-2 whitespace-nowrap">
-              <span className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-full border border-white/70 text-[10px]">🌐</span>
-              <span className="font-semibold">{(company?.website ?? "www.yourdomain.com").replace(/^https?:\/\//, "")}</span>
-            </span>
-          </div>
-        </div>
-
-        {/* SALES INVOICE badge */}
-        <div className="relative flex justify-center pt-6 pb-4">
-          <div className="px-8 py-2 rounded-md text-white font-bold tracking-wide" style={{ background: "#1f1f1f" }}>SALES INVOICE</div>
-        </div>
-
-        {/* CUSTOMER / INVOICE META */}
-        <div className="relative grid grid-cols-2 gap-6 px-8 pb-4 text-[13px]">
-          <div className="space-y-1">
-            <div><span className="font-bold">Customer ID:</span> SN-{String(inv.profiles?.id ?? "").slice(0, 6).toUpperCase()}</div>
-            <div><span className="font-bold">Customer Name:</span> {inv.profiles?.full_name ?? inv.profiles?.email ?? "—"}</div>
-            {inv.profiles?.address && <div><span className="font-bold">Customer Address:</span> {inv.profiles.address}</div>}
-            {inv.profiles?.phone && <div><span className="font-bold">Customer Phone:</span> {inv.profiles.phone}</div>}
-          </div>
-          <div className="space-y-1 text-right">
-            <div><span className="font-bold">Invoice No:</span> {inv.invoice_number}</div>
-            <div><span className="font-bold">Date:</span> {formatDate(inv.issue_date)}</div>
-            <div><span className="font-bold">Invoice by:</span> {company?.company_name ?? "—"}</div>
-          </div>
-        </div>
-
-        {/* ITEMS TABLE with watermark */}
-        <div className="relative px-8 pb-4">
-          <div className="relative border border-slate-300">
-            {company?.logo_url && (
-              <img
-                src={company.logo_url}
-                alt=""
-                aria-hidden
-                className="absolute inset-0 m-auto opacity-10 pointer-events-none object-contain"
-                style={{ maxHeight: "60%", maxWidth: "60%" }}
-              />
-            )}
-            <table className="w-full text-[13px] border-collapse relative">
-              <thead>
-                <tr style={{ background: "#dcdcdc" }} className="text-slate-900">
-                  <th className="border border-slate-300 py-2 w-12 text-center font-bold">SL</th>
-                  <th className="border border-slate-300 py-2 text-center font-bold">Product & Service</th>
-                  <th className="border border-slate-300 py-2 w-24 text-center font-bold">Rate</th>
-                  <th className="border border-slate-300 py-2 w-20 text-center font-bold">QTY</th>
-                  <th className="border border-slate-300 py-2 w-28 text-center font-bold">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.items.map((it: any, idx: number) => (
-                  <tr key={it.id}>
-                    <td className="border border-slate-300 px-2 py-1.5 text-center">{idx + 1}</td>
-                    <td className="border border-slate-300 px-2 py-1.5">{it.description}</td>
-                    <td className="border border-slate-300 px-2 py-1.5 text-right">{formatBDT(it.unit_price)}</td>
-                    <td className="border border-slate-300 px-2 py-1.5 text-center">{it.quantity}</td>
-                    <td className="border border-slate-300 px-2 py-1.5 text-right">{formatBDT(it.total)}</td>
-                  </tr>
-                ))}
-                {Array.from({ length: Math.max(0, 8 - data.items.length) }).map((_, i) => (
-                  <tr key={`sp-${i}`}>
-                    <td className="border border-slate-300 px-2 py-1.5">&nbsp;</td>
-                    <td className="border border-slate-300 px-2 py-1.5">&nbsp;</td>
-                    <td className="border border-slate-300 px-2 py-1.5">&nbsp;</td>
-                    <td className="border border-slate-300 px-2 py-1.5">&nbsp;</td>
-                    <td className="border border-slate-300 px-2 py-1.5">&nbsp;</td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot className="text-[13px]">
-                <tr>
-                  <td colSpan={3} className="border-0" />
-                  <td className="border border-slate-300 px-2 py-1.5 text-right font-bold" style={{ background: "#dcdcdc" }}>Total</td>
-                  <td className="border border-slate-300 px-2 py-1.5 text-right">{formatBDT(inv.subtotal)}</td>
-                </tr>
-                <tr>
-                  <td colSpan={3} className="border-0" />
-                  <td className="border border-slate-300 px-2 py-1.5 text-right font-bold" style={{ background: "#dcdcdc" }}>SD (0%)</td>
-                  <td className="border border-slate-300 px-2 py-1.5 text-right">-</td>
-                </tr>
-                <tr>
-                  <td colSpan={3} className="border-0" />
-                  <td className="border border-slate-300 px-2 py-1.5 text-right font-bold" style={{ background: "#dcdcdc" }}>VAT (15%)</td>
-                  <td className="border border-slate-300 px-2 py-1.5 text-right">{formatBDT(inv.tax)}</td>
-                </tr>
-                <tr>
-                  <td colSpan={3} className="border-0" />
-                  <td className="border border-slate-300 px-2 py-1.5 text-right font-bold" style={{ background: "#dcdcdc" }}>Discount</td>
-                  <td className="border border-slate-300 px-2 py-1.5 text-right">-</td>
-                </tr>
-                <tr>
-                  <td colSpan={3} className="border-0" />
-                  <td className="border border-slate-300 px-2 py-2 text-right font-extrabold" style={{ borderTop: "2px solid #1f1f1f" }}>&nbsp;</td>
-                  <td className="border border-slate-300 px-2 py-2 text-right font-extrabold text-[14px]" style={{ borderTop: "2px solid #1f1f1f" }}>{formatBDT(inv.total)}</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </div>
-
-        {/* IN WORDS */}
-        <div className="relative px-8 py-3 text-[13px]">
-          <span className="font-bold">In Word:</span> {amountInWords(Number(inv.total))} Taka Only.
-        </div>
-
-        {/* NOTES */}
-        {inv.notes && (
-          <div className="relative px-8 pb-2 text-[12px] text-slate-700 whitespace-pre-wrap">
-            <span className="font-bold">Notes: </span>{inv.notes}
-          </div>
-        )}
-
-        {/* Signature line */}
-        <div className="relative px-8 pt-8 pb-4 text-center text-[12px] text-slate-700">
-          This is a software generated invoice and no signature required.
-        </div>
-
-        {/* Footer — dark bar with red parallelogram overlapping from right, extending above */}
-        <div className="relative h-[64px] w-full mt-8" style={{ background: "#1f1f1f" }}>
-          <div
-            className="absolute right-0 flex items-center justify-center text-white text-[12px] leading-snug text-center z-10"
-            style={{
-              width: "50%",
-              height: "96px",
-              bottom: 0,
-              paddingLeft: "18%",
-              paddingRight: "24px",
-              background: "#c0392b",
-              clipPath: "polygon(28% 0, 100% 0, 100% 100%, 0 100%)",
-            }}
-          >
-            {company?.address && (
-              <div className="font-semibold break-words whitespace-normal">{company.address}</div>
-            )}
-          </div>
-
-        </div>
-
+        <InvoiceRender inv={inv as any} items={data.items as any} company={company as any} theme={theme} />
       </div>
-      </div>
+
 
 
 

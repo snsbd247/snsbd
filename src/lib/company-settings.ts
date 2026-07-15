@@ -13,6 +13,10 @@ export type CompanySettings = {
   website: string | null;
   footer_copyright: string | null;
   late_fee_percent: number;
+  invoice_template_key?: string | null;
+  invoice_theme?: Record<string, unknown> | null;
+  invoice_logo_style?: string | null;
+  invoice_background_url?: string | null;
 };
 
 export const COMPANY_DEFAULTS: CompanySettings = {
@@ -27,6 +31,10 @@ export const COMPANY_DEFAULTS: CompanySettings = {
   website: null,
   footer_copyright: null,
   late_fee_percent: 2,
+  invoice_template_key: "classic-red",
+  invoice_theme: null,
+  invoice_logo_style: "shadow",
+  invoice_background_url: null,
 };
 
 export function useCompanySettings() {
