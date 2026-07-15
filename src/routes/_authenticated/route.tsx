@@ -199,6 +199,7 @@ function AuthedLayout() {
                       label="Configuration"
                       items={[
                         { to: "/payment-settings", label: "Payment Gateways" },
+                        { to: "/invoice-settings", label: "Invoice Theme" },
                         { to: "/settings", label: "Settings" },
                       ]}
                     />
