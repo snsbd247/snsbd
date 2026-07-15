@@ -205,6 +205,7 @@ function SignInForm() {
 }
 
 function SignUpForm() {
+  const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -225,7 +226,7 @@ function SignUpForm() {
     if (!finalEmail) return toast.error("Invalid email address");
 
     setBusy(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: finalEmail,
       password,
       options: {
@@ -236,6 +237,11 @@ function SignUpForm() {
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Account created");
+    // New signups are always customers — force customer portal regardless of role-fetch timing.
+    if (data.session) {
+      if (redirect && redirect.startsWith("/")) window.location.assign(redirect);
+      else navigate({ to: "/client" });
+    }
   }
 
   return (
