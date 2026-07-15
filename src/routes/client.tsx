@@ -102,19 +102,25 @@ function PortalPage() {
   if (status === "error") return <div className="p-8 text-sm text-destructive">{err}</div>;
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-white to-pink-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
       <div className="flex-1 p-6 space-y-6 max-w-6xl w-full mx-auto">
-        <div className="flex items-start justify-between">
-          <div>
-            <div className="text-xs text-muted-foreground">Customer portal</div>
-            <h1 className="text-2xl font-bold">{profile?.full_name ?? profile?.email}</h1>
-            {profile?.company && <div className="text-sm text-muted-foreground">{profile.company}</div>}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-6 text-white shadow-lg">
+          <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
+          <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+          <div className="relative flex items-start justify-between gap-4">
+            <div>
+              <div className="text-xs uppercase tracking-wider text-white/80">Customer portal</div>
+              <h1 className="text-3xl font-bold drop-shadow-sm">{profile?.full_name ?? profile?.email}</h1>
+              {profile?.company && <div className="mt-1 text-sm text-white/85">{profile.company}</div>}
+            </div>
+            <Button variant="secondary" size="sm" onClick={signOut} className="bg-white/95 text-slate-900 hover:bg-white">
+              <LogOut className="mr-2 h-4 w-4" />Sign out
+            </Button>
           </div>
-          <Button variant="outline" size="sm" onClick={signOut}><LogOut className="mr-2 h-4 w-4" />Sign out</Button>
         </div>
 
         <Tabs defaultValue="dashboard">
-          <TabsList className="flex-wrap">
+          <TabsList className="flex-wrap bg-white/70 dark:bg-slate-900/60 backdrop-blur border shadow-sm">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="projects">Projects</TabsTrigger>
             <TabsTrigger value="domain">Order domain</TabsTrigger>
@@ -128,10 +134,20 @@ function PortalPage() {
 
           <TabsContent value="dashboard" className="space-y-4">
             <div className="grid gap-4 md:grid-cols-3">
-              <Card><CardHeader><CardTitle className="text-sm">Services</CardTitle></CardHeader><CardContent className="text-2xl font-bold">{services.length}</CardContent></Card>
-              <Card><CardHeader><CardTitle className="text-sm">Projects</CardTitle></CardHeader><CardContent className="text-2xl font-bold">{projects.length}</CardContent></Card>
-              <Card><CardHeader><CardTitle className="text-sm">Pending orders</CardTitle></CardHeader><CardContent className="text-2xl font-bold">{orders.filter((o) => o.status === "pending").length}</CardContent></Card>
+              <Card className="border-0 bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-md">
+                <CardHeader><CardTitle className="text-sm text-white/90">Services</CardTitle></CardHeader>
+                <CardContent className="text-3xl font-bold">{services.length}</CardContent>
+              </Card>
+              <Card className="border-0 bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md">
+                <CardHeader><CardTitle className="text-sm text-white/90">Projects</CardTitle></CardHeader>
+                <CardContent className="text-3xl font-bold">{projects.length}</CardContent>
+              </Card>
+              <Card className="border-0 bg-gradient-to-br from-orange-500 to-pink-500 text-white shadow-md">
+                <CardHeader><CardTitle className="text-sm text-white/90">Pending orders</CardTitle></CardHeader>
+                <CardContent className="text-3xl font-bold">{orders.filter((o) => o.status === "pending").length}</CardContent>
+              </Card>
             </div>
+
             <Card>
               <CardHeader><CardTitle className="text-base">My services</CardTitle></CardHeader>
               <CardContent className="space-y-2 text-sm">
