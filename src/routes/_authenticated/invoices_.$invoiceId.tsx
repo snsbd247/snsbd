@@ -2,18 +2,18 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Download, Printer, Loader2, Trash2, Receipt as ReceiptIcon } from "lucide-react";
 import { downloadElementAsPdf, printElementAsPdf } from "@/lib/pdf";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
-import { useCompanySettings, amountInWords } from "@/lib/company-settings";
+import { useCompanySettings } from "@/lib/company-settings";
 import { formatBDT, formatDate } from "@/lib/format";
 import { db } from "@/lib/db-shim";
+import { InvoiceRender } from "@/components/invoice/invoice-render";
+import { useInvoiceTemplates, resolveTheme, type InvoiceTheme } from "@/lib/invoice-theme";
 
 export const Route = createFileRoute("/_authenticated/invoices_/$invoiceId")({
   component: InvoiceDetailPage,
