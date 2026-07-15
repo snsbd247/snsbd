@@ -6,23 +6,20 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Usage: Route::middleware('permission:admin')->group(...);
- *        Route::middleware('permission:admin|staff')->group(...);
- */
 class CheckPermission
 {
-    public function handle(Request $request, Closure $next, string $roles): Response
+    /**
+     * Usage: ->middleware('permission:admin') or 'permission:admin,staff'
+     */
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         $user = $request->user();
         if (! $user) {
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
-        $allowed = explode('|', $roles);
-        $userRoles = $user->customRoles()->pluck('role')->toArray();
-
-        if (! array_intersect($allowed, $userRoles)) {
+        $userRoles = $user->roles()->pluck('role')->all();
+        if (empty(array_intersect($roles, $userRoles))) {
             return response()->json(['message' => 'Forbidden.'], 403);
         }
 
