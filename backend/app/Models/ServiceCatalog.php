@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class ServiceCatalog extends Model
 {
     protected $table = 'service_catalog';
-    protected $guarded = ['id'];
-    protected $casts = ['is_active' => 'bool', 'price' => 'decimal:2'];
+    protected $fillable = ['name','category','description','price','billing_cycle','is_active','sort_order'];
+    protected $casts = ['price' => 'decimal:2', 'is_active' => 'bool'];
 }
