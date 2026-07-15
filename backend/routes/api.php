@@ -4,12 +4,18 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BillingCatalogController;
 use App\Http\Controllers\CustomerOrderController;
 use App\Http\Controllers\DomainPricingController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\KbArticleController;
+use App\Http\Controllers\LeadController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProjectActivityLogController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectMilestoneController;
+use App\Http\Controllers\SalaryPaymentController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\SupportTicketController;
+use App\Http\Controllers\TeamMemberController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -100,5 +106,54 @@ Route::prefix('v1')->group(function () {
         // Project activity logs
         Route::get ('project-activity-logs', [ProjectActivityLogController::class, 'index']);
         Route::post('project-activity-logs', [ProjectActivityLogController::class, 'store'])->middleware('permission:admin,staff');
+
+        // Leads (CRM)
+        Route::get   ('leads',        [LeadController::class, 'index'])->middleware('permission:admin,staff');
+        Route::post  ('leads',        [LeadController::class, 'store'])->middleware('permission:admin,staff');
+        Route::get   ('leads/{id}',   [LeadController::class, 'show'])->middleware('permission:admin,staff');
+        Route::patch ('leads/{id}',   [LeadController::class, 'update'])->middleware('permission:admin,staff');
+        Route::put   ('leads/{id}',   [LeadController::class, 'update'])->middleware('permission:admin,staff');
+        Route::delete('leads/{id}',   [LeadController::class, 'destroy'])->middleware('permission:admin,staff');
+
+        // Support tickets
+        Route::get ('tickets',              [SupportTicketController::class, 'index']);
+        Route::post('tickets',              [SupportTicketController::class, 'store']);
+        Route::get ('tickets/{id}',         [SupportTicketController::class, 'show']);
+        Route::post('tickets/{id}/reply',   [SupportTicketController::class, 'reply']);
+        Route::post('tickets/{id}/close',   [SupportTicketController::class, 'close']);
+
+        // KB admin writes
+        Route::get   ('kb-articles',        [KbArticleController::class, 'index'])->middleware('permission:admin,staff');
+        Route::post  ('kb-articles',        [KbArticleController::class, 'store'])->middleware('permission:admin,staff');
+        Route::patch ('kb-articles/{id}',   [KbArticleController::class, 'update'])->middleware('permission:admin,staff');
+        Route::put   ('kb-articles/{id}',   [KbArticleController::class, 'update'])->middleware('permission:admin,staff');
+        Route::delete('kb-articles/{id}',   [KbArticleController::class, 'destroy'])->middleware('permission:admin');
+
+        // HR — team members
+        Route::get   ('team-members',        [TeamMemberController::class, 'index'])->middleware('permission:admin,staff');
+        Route::post  ('team-members',        [TeamMemberController::class, 'store'])->middleware('permission:admin');
+        Route::get   ('team-members/{id}',   [TeamMemberController::class, 'show'])->middleware('permission:admin,staff');
+        Route::patch ('team-members/{id}',   [TeamMemberController::class, 'update'])->middleware('permission:admin');
+        Route::put   ('team-members/{id}',   [TeamMemberController::class, 'update'])->middleware('permission:admin');
+        Route::delete('team-members/{id}',   [TeamMemberController::class, 'destroy'])->middleware('permission:admin');
+
+        // Salary payments
+        Route::get   ('salary-payments',        [SalaryPaymentController::class, 'index'])->middleware('permission:admin');
+        Route::post  ('salary-payments',        [SalaryPaymentController::class, 'store'])->middleware('permission:admin');
+        Route::patch ('salary-payments/{id}',   [SalaryPaymentController::class, 'update'])->middleware('permission:admin');
+        Route::delete('salary-payments/{id}',   [SalaryPaymentController::class, 'destroy'])->middleware('permission:admin');
+
+        // Expenses
+        Route::get   ('expenses',        [ExpenseController::class, 'index'])->middleware('permission:admin,staff');
+        Route::post  ('expenses',        [ExpenseController::class, 'store'])->middleware('permission:admin,staff');
+        Route::get   ('expenses/{id}',   [ExpenseController::class, 'show'])->middleware('permission:admin,staff');
+        Route::patch ('expenses/{id}',   [ExpenseController::class, 'update'])->middleware('permission:admin,staff');
+        Route::put   ('expenses/{id}',   [ExpenseController::class, 'update'])->middleware('permission:admin,staff');
+        Route::delete('expenses/{id}',   [ExpenseController::class, 'destroy'])->middleware('permission:admin');
     });
+
+    // Public CRM/KB (no auth)
+    Route::post('leads/capture', [LeadController::class, 'capture']);
+    Route::get ('kb',            [KbArticleController::class, 'published']);
+    Route::get ('kb/{slug}',     [KbArticleController::class, 'showBySlug']);
 });
