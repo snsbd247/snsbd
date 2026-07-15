@@ -1,40 +1,41 @@
-# SyncSolutionBD Backend (Laravel 11)
+# SyncSolutionBD Laravel Backend
 
-## Local install
+Laravel 11 + Sanctum + MySQL 8. Serves the React frontend from `public/`.
+
+## Local setup
 
 ```bash
 cd backend
 cp .env.example .env
 composer install
 php artisan key:generate
-# Configure MySQL creds in .env
 php artisan migrate --seed
 php artisan serve
 ```
 
-Super Admin (created by seeder):
-- Username: `superadmin`
-- Password: `Admin@123`
-- Email: `superadmin@syncsolutionbd.com`
+Super admin (from seeder):
 
-## API auth
+- username: `superadmin`
+- email: `superadmin@syncsolutionbd.com`
+- password: `Admin123`
 
-- `POST /api/auth/register` — first user auto-becomes admin
-- `POST /api/auth/login` — body: `{ login, password }` (login = email OR username)
-- `GET  /api/auth/me` — Bearer token
-- `POST /api/auth/logout`
+## API (v1)
 
-Token is returned in the login/register response as `token`; frontend sends it as `Authorization: Bearer <token>`.
+| Method | Path                   | Auth | Purpose                       |
+|--------|------------------------|------|-------------------------------|
+| POST   | `/api/v1/auth/register`| —    | Create user + profile + role  |
+| POST   | `/api/v1/auth/login`   | —    | `{ identifier, password }`    |
+| GET    | `/api/v1/auth/me`      | Bearer | Current user + profile + roles |
+| POST   | `/api/v1/auth/logout`  | Bearer | Revoke current token          |
 
-## Next modules (in migration order)
+`identifier` accepts email OR username.
 
-1. Auth ✅ (this step)
-2. Company Settings
-3. Hosting Packages + Domain Pricing
-4. Customer Orders + Payments
-5. Services + WHM
-6. Invoices
-7. Projects + Milestones
-8. Leads
-9. Team + Salary
-10. Expenses
+## Middleware
+
+- `permission:admin` — requires the named role(s)
+- `branch`           — reseller scope placeholder
+
+## Roles
+
+Enum: `admin`, `customer`, `moderator`, `reseller`, `staff`. Stored in
+`user_custom_roles` (never on `profiles`/`users`).

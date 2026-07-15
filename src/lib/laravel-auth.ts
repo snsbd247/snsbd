@@ -1,127 +1,152 @@
 /**
- * Laravel API bridge — safe extension.
+ * Laravel/MySQL bridge.
  *
- * When VITE_API_BASE_URL is set (VPS build), calls go to Laravel.
- * When it's empty (Lovable preview), callers should fall back to Supabase.
- *
- * Usage:
- *   if (isLaravelMode()) { ... use laravelApi() ... }
- *   else { ... existing supabase code ... }
+ * Safety contract:
+ *   - When `VITE_API_BASE_URL` is set → Laravel API is used.
+ *   - When it is NOT set (Lovable preview) → this module is inert.
+ *     Existing Supabase calls elsewhere in the app keep working unchanged.
  */
 
-const TOKEN_KEY = 'laravel_auth_token';
+const TOKEN_KEY = "laravel_auth_token";
+
+// ---------- Base config ----------
 
 export function getApiBaseUrl(): string | null {
-  const url = import.meta.env.VITE_API_BASE_URL as string | undefined;
-  return url && url.trim() !== '' ? url.replace(/\/$/, '') : null;
+  const raw = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim();
+  return raw && raw.length > 0 ? raw.replace(/\/+$/, "") : null;
 }
 
 export function isLaravelMode(): boolean {
   return getApiBaseUrl() !== null;
 }
 
+// Legacy alias used elsewhere in the codebase.
+export const isLaravelBackendEnabled = isLaravelMode;
+
+// ---------- Token storage ----------
+
 export function getLaravelToken(): string | null {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
   return window.localStorage.getItem(TOKEN_KEY);
 }
 
-export function setLaravelToken(token: string): void {
-  if (typeof window === 'undefined') return;
-  window.localStorage.setItem(TOKEN_KEY, token);
+export function setLaravelToken(token: string | null): void {
+  if (typeof window === "undefined") return;
+  if (token) window.localStorage.setItem(TOKEN_KEY, token);
+  else window.localStorage.removeItem(TOKEN_KEY);
 }
 
 export function clearLaravelToken(): void {
-  if (typeof window === 'undefined') return;
-  window.localStorage.removeItem(TOKEN_KEY);
+  setLaravelToken(null);
 }
 
-export interface LaravelApiOptions extends Omit<RequestInit, 'body'> {
+// ---------- Types ----------
+
+export interface LaravelUser {
+  id: number;
+  email: string;
+  username: string | null;
+  name: string | null;
+}
+
+export interface LaravelAuthResult {
+  user: LaravelUser;
+  roles: string[];
+}
+
+interface RawUserResponse {
+  id: number;
+  email: string;
+  profile?: {
+    full_name?: string | null;
+    username?: string | null;
+    avatar_url?: string | null;
+  } | null;
+  roles?: Array<{ role: string }>;
+}
+
+function normalizeUser(u: RawUserResponse): LaravelAuthResult {
+  return {
+    user: {
+      id: u.id,
+      email: u.email,
+      username: u.profile?.username ?? null,
+      name: u.profile?.full_name ?? null,
+    },
+    roles: (u.roles ?? []).map((r) => r.role),
+  };
+}
+
+// ---------- Generic API helper ----------
+
+export interface LaravelApiOptions {
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: unknown;
-  auth?: boolean; // default true
+  auth?: boolean;
+  headers?: Record<string, string>;
 }
 
-/**
- * Low-level fetch wrapper. Throws on non-2xx with { status, message, errors }.
- */
-export async function laravelApi<T = unknown>(
+export async function laravelApi<T>(
   path: string,
-  options: LaravelApiOptions = {},
+  opts: LaravelApiOptions = {},
 ): Promise<T> {
   const base = getApiBaseUrl();
-  if (!base) throw new Error('VITE_API_BASE_URL not set — Laravel mode disabled');
+  if (!base) throw new Error("Laravel API base URL is not configured.");
 
-  const { body, auth = true, headers, ...rest } = options;
-  const finalHeaders: Record<string, string> = {
-    Accept: 'application/json',
-    ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
-    ...(headers as Record<string, string> | undefined),
-  };
+  const method = opts.method ?? "GET";
+  const headers = new Headers(opts.headers);
+  headers.set("Accept", "application/json");
 
-  if (auth) {
-    const token = getLaravelToken();
-    if (token) finalHeaders.Authorization = `Bearer ${token}`;
+  let body: BodyInit | undefined;
+  if (opts.body !== undefined && method !== "GET") {
+    headers.set("Content-Type", "application/json");
+    body = JSON.stringify(opts.body);
   }
 
-  const url = path.startsWith('http') ? path : `${base}${path.startsWith('/') ? path : `/${path}`}`;
+  // auth defaults: true unless explicitly disabled
+  const useAuth = opts.auth !== false;
+  if (useAuth) {
+    const token = getLaravelToken();
+    if (token) headers.set("Authorization", `Bearer ${token}`);
+  }
 
-  const res = await fetch(url, {
-    ...rest,
-    headers: finalHeaders,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
+  // path may be either "/api/v1/foo" or "/foo" — normalize to "/api/v1/..."
+  const normalized = path.startsWith("/api/")
+    ? path
+    : `/api/v1${path.startsWith("/") ? path : `/${path}`}`;
 
+  const res = await fetch(`${base}${normalized}`, { method, headers, body });
   const text = await res.text();
   const data = text ? safeJson(text) : null;
 
   if (!res.ok) {
-    const err = new Error(
-      (data && typeof data === 'object' && 'message' in data && typeof (data as { message: unknown }).message === 'string'
-        ? (data as { message: string }).message
-        : `HTTP ${res.status}`),
-    ) as Error & { status: number; errors?: unknown };
-    err.status = res.status;
-    if (data && typeof data === 'object' && 'errors' in data) {
-      err.errors = (data as { errors: unknown }).errors;
-    }
-    throw err;
+    const message =
+      (data && (data.message || data.error)) || `HTTP ${res.status}`;
+    throw new Error(typeof message === "string" ? message : JSON.stringify(message));
   }
-
   return data as T;
 }
 
-function safeJson(text: string): unknown {
+function safeJson(text: string): { message?: string; error?: string } & Record<string, unknown> {
   try {
     return JSON.parse(text);
   } catch {
-    return text;
+    return { message: text };
   }
 }
 
-/* ---------- Auth helpers ---------- */
+// ---------- Auth endpoints ----------
 
-export interface LaravelUser {
-  id: number;
-  name: string;
-  username: string;
-  email: string;
-  phone: string | null;
-  avatar_url: string | null;
-}
-
-export interface LaravelAuthResponse {
-  user: LaravelUser;
-  roles: string[];
-  token: string;
-}
-
-export async function laravelLogin(login: string, password: string): Promise<LaravelAuthResponse> {
-  const res = await laravelApi<LaravelAuthResponse>('/auth/login', {
-    method: 'POST',
-    body: { login, password },
-    auth: false,
-  });
+export async function laravelLogin(
+  login: string,
+  password: string,
+): Promise<LaravelAuthResult> {
+  const res = await laravelApi<{ user: RawUserResponse; token: string }>(
+    "/auth/login",
+    { method: "POST", body: { identifier: login, password }, auth: false },
+  );
   setLaravelToken(res.token);
-  return res;
+  return normalizeUser(res.user);
 }
 
 export async function laravelRegister(input: {
@@ -129,33 +154,38 @@ export async function laravelRegister(input: {
   username: string;
   email: string;
   password: string;
-}): Promise<LaravelAuthResponse> {
-  const res = await laravelApi<LaravelAuthResponse>('/auth/register', {
-    method: 'POST',
-    body: input,
-    auth: false,
-  });
+}): Promise<LaravelAuthResult> {
+  const res = await laravelApi<{ user: RawUserResponse; token: string }>(
+    "/auth/register",
+    {
+      method: "POST",
+      body: {
+        email: input.email,
+        password: input.password,
+        full_name: input.name,
+        username: input.username,
+      },
+      auth: false,
+    },
+  );
   setLaravelToken(res.token);
-  return res;
+  return normalizeUser(res.user);
 }
 
-export async function laravelMe(): Promise<{ user: LaravelUser; roles: string[] } | null> {
-  const token = getLaravelToken();
-  if (!token) return null;
+export async function laravelMe(): Promise<LaravelAuthResult | null> {
+  if (!getLaravelToken()) return null;
   try {
-    return await laravelApi<{ user: LaravelUser; roles: string[] }>('/auth/me');
-  } catch (err) {
-    if ((err as { status?: number }).status === 401) {
-      clearLaravelToken();
-      return null;
-    }
-    throw err;
+    const res = await laravelApi<{ user: RawUserResponse }>("/auth/me");
+    return normalizeUser(res.user);
+  } catch {
+    clearLaravelToken();
+    return null;
   }
 }
 
 export async function laravelLogout(): Promise<void> {
   try {
-    await laravelApi('/auth/logout', { method: 'POST' });
+    await laravelApi("/auth/logout", { method: "POST" });
   } finally {
     clearLaravelToken();
   }

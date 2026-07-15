@@ -2,88 +2,91 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Profile;
 use App\Models\User;
 use App\Models\UserCustomRole;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    /**
-     * POST /api/auth/login
-     * Accepts either email or username in the "login" field.
-     */
-    public function login(Request $request)
+    public function register(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'login' => 'required|string',
-            'password' => 'required|string',
+            'email'     => 'required|email|unique:users,email',
+            'password'  => 'required|string|min:8',
+            'full_name' => 'nullable|string|max:255',
+            'username'  => 'nullable|string|max:64|unique:profiles,username',
         ]);
 
-        $user = User::where('email', $data['login'])
-            ->orWhere('username', $data['login'])
-            ->first();
+        $user = DB::transaction(function () use ($data) {
+            $user = User::create([
+                'email'    => $data['email'],
+                'password' => Hash::make($data['password']),
+            ]);
+
+            Profile::create([
+                'user_id'   => $user->id,
+                'email'     => $data['email'],
+                'full_name' => $data['full_name'] ?? $data['email'],
+                'username'  => $data['username'] ?? null,
+            ]);
+
+            $isFirst = User::count() === 1;
+            UserCustomRole::create([
+                'user_id' => $user->id,
+                'role'    => $isFirst ? 'admin' : 'customer',
+            ]);
+
+            return $user;
+        });
+
+        $token = $user->createToken('api')->plainTextToken;
+
+        return response()->json([
+            'user'  => $user->load(['profile', 'roles']),
+            'token' => $token,
+        ], 201);
+    }
+
+    public function login(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'identifier' => 'required|string', // email OR username
+            'password'   => 'required|string',
+        ]);
+
+        $email = filter_var($data['identifier'], FILTER_VALIDATE_EMAIL)
+            ? $data['identifier']
+            : optional(Profile::whereRaw('LOWER(username) = ?', [strtolower($data['identifier'])])->first())->email;
+
+        $user = $email ? User::where('email', $email)->first() : null;
 
         if (! $user || ! Hash::check($data['password'], $user->password)) {
             throw ValidationException::withMessages([
-                'login' => ['Invalid credentials.'],
+                'identifier' => ['Invalid credentials.'],
             ]);
         }
 
         $token = $user->createToken('api')->plainTextToken;
 
         return response()->json([
-            'user' => $user,
-            'roles' => $user->customRoles()->pluck('role'),
+            'user'  => $user->load(['profile', 'roles']),
             'token' => $token,
         ]);
     }
 
-    /**
-     * POST /api/auth/register
-     * First registered user becomes admin, everyone else = customer.
-     */
-    public function register(Request $request)
+    public function me(Request $request): JsonResponse
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:64|unique:users,username',
-            'email' => 'required|email|max:255|unique:users,email',
-            'password' => 'required|string|min:8',
-        ]);
-
-        $user = User::create([
-            'name' => $data['name'],
-            'username' => $data['username'],
-            'email' => $data['email'],
-            'password' => $data['password'], // auto-hashed via cast
-        ]);
-
-        $role = User::count() === 1 ? 'admin' : 'customer';
-        UserCustomRole::create(['user_id' => $user->id, 'role' => $role]);
-
-        $token = $user->createToken('api')->plainTextToken;
-
         return response()->json([
-            'user' => $user,
-            'roles' => [$role],
-            'token' => $token,
-        ], 201);
-    }
-
-    /** GET /api/auth/me */
-    public function me(Request $request)
-    {
-        $user = $request->user();
-        return response()->json([
-            'user' => $user,
-            'roles' => $user->customRoles()->pluck('role'),
+            'user' => $request->user()->load(['profile', 'roles']),
         ]);
     }
 
-    /** POST /api/auth/logout */
-    public function logout(Request $request)
+    public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
         return response()->json(['ok' => true]);
