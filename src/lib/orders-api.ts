@@ -1,28 +1,28 @@
-import { isLaravelMode, laravelFetch } from "@/lib/laravel-auth";
+import { isLaravelMode, laravelApi } from "@/lib/laravel-auth";
 
 function ensure() {
   if (!isLaravelMode()) throw new Error("Laravel mode not enabled");
 }
 
 export const ordersApi = {
-  list: async (params?: Record<string, string | number>) => {
+  list: <T = unknown>(params?: Record<string, string | number>) => {
     ensure();
     const qs = params ? "?" + new URLSearchParams(params as any).toString() : "";
-    return laravelFetch(`/customer-orders${qs}`);
+    return laravelApi<T>(`/customer-orders${qs}`);
   },
-  get: async (id: number | string) => {
+  get: <T = unknown>(id: number | string) => {
     ensure();
-    return laravelFetch(`/customer-orders/${id}`);
+    return laravelApi<T>(`/customer-orders/${id}`);
   },
-  update: async (id: number | string, payload: Record<string, unknown>) => {
+  update: <T = unknown>(id: number | string, body: Record<string, unknown>) => {
     ensure();
-    return laravelFetch(`/customer-orders/${id}`, { method: "PATCH", body: JSON.stringify(payload) });
+    return laravelApi<T>(`/customer-orders/${id}`, { method: "PATCH", body });
   },
-  remove: async (id: number | string) => {
+  remove: (id: number | string) => {
     ensure();
-    return laravelFetch(`/customer-orders/${id}`, { method: "DELETE" });
+    return laravelApi(`/customer-orders/${id}`, { method: "DELETE" });
   },
-  placeHosting: async (payload: {
+  placeHosting: <T = { order_id: number; subtotal: number; discount: number; total: number }>(body: {
     package_id: number;
     domain_name: string;
     billing_cycle?: string;
@@ -34,39 +34,42 @@ export const ordersApi = {
     coupon_code?: string;
   }) => {
     ensure();
-    return laravelFetch(`/customer-orders/hosting`, { method: "POST", body: JSON.stringify(payload) });
+    return laravelApi<T>(`/customer-orders/hosting`, { method: "POST", body });
   },
-  activate: async (id: number | string, whm_server_id?: number | null) => {
+  activate: <T = { ok: boolean; service_id: number; cpanel_username: string }>(
+    id: number | string,
+    whm_server_id?: number | null,
+  ) => {
     ensure();
-    return laravelFetch(`/customer-orders/${id}/activate`, {
+    return laravelApi<T>(`/customer-orders/${id}/activate`, {
       method: "POST",
-      body: JSON.stringify({ whm_server_id: whm_server_id ?? null }),
+      body: { whm_server_id: whm_server_id ?? null },
     });
   },
-  changeDomain: async (id: number | string, domain_name: string) => {
+  changeDomain: <T = { ok: boolean; changed: boolean }>(id: number | string, domain_name: string) => {
     ensure();
-    return laravelFetch(`/customer-orders/${id}/change-domain`, {
+    return laravelApi<T>(`/customer-orders/${id}/change-domain`, {
       method: "POST",
-      body: JSON.stringify({ domain_name }),
+      body: { domain_name },
     });
   },
 };
 
 export const domainPricingApi = {
-  list: async () => {
+  list: <T = unknown>() => {
     ensure();
-    return laravelFetch(`/domain-pricing`);
+    return laravelApi<T>(`/domain-pricing`);
   },
-  create: async (payload: Record<string, unknown>) => {
+  create: <T = unknown>(body: Record<string, unknown>) => {
     ensure();
-    return laravelFetch(`/domain-pricing`, { method: "POST", body: JSON.stringify(payload) });
+    return laravelApi<T>(`/domain-pricing`, { method: "POST", body });
   },
-  update: async (id: number | string, payload: Record<string, unknown>) => {
+  update: <T = unknown>(id: number | string, body: Record<string, unknown>) => {
     ensure();
-    return laravelFetch(`/domain-pricing/${id}`, { method: "PATCH", body: JSON.stringify(payload) });
+    return laravelApi<T>(`/domain-pricing/${id}`, { method: "PATCH", body });
   },
-  remove: async (id: number | string) => {
+  remove: (id: number | string) => {
     ensure();
-    return laravelFetch(`/domain-pricing/${id}`, { method: "DELETE" });
+    return laravelApi(`/domain-pricing/${id}`, { method: "DELETE" });
   },
 };
