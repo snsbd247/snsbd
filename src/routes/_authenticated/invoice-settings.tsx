@@ -100,10 +100,10 @@ function InvoiceSettingsPage() {
       };
       if (logoUrl !== company?.logo_url) payload.logo_url = logoUrl;
       if (existing?.id !== undefined) {
-        const { error } = await supabase.from("company_settings").update(payload).eq("id", existing.id);
+        const { error } = await supabase.from("company_settings").update(payload as any).eq("id", existing.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("company_settings").insert(payload);
+        const { error } = await supabase.from("company_settings").insert(payload as any);
         if (error) throw error;
       }
     },
